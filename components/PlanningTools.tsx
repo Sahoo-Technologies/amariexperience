@@ -1,8 +1,10 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer, Legend } from 'recharts';
 import { INITIAL_BUDGET, INITIAL_GUESTS } from '../constants';
-import { BudgetItem, Guest } from '../types';
-import { Plus, Trash2, CheckCircle, XCircle, Clock, PieChart as PieIcon, Users, Calendar } from 'lucide-react';
+import { BudgetItem, Guest, ItineraryItem } from '../types';
+import { Plus, Trash2, PieChart as PieIcon, Users, Calendar, MapPin } from 'lucide-react';
+
+const ITINERARY_STORAGE_KEY = 'amari_guest_itinerary_v1';
 
 // Sandy Beach Theme Colors
 const COLORS = [
@@ -15,10 +17,35 @@ const COLORS = [
 ];
 
 const PlanningTools: React.FC = () => {
-  const [activeTab, setActiveTab] = useState<'budget' | 'guests' | 'timeline'>('budget');
+  const [activeTab, setActiveTab] = useState<'budget' | 'guests' | 'timeline' | 'itinerary'>('budget');
   const [budgetItems, setBudgetItems] = useState<BudgetItem[]>(INITIAL_BUDGET);
   const [guests, setGuests] = useState<Guest[]>(INITIAL_GUESTS);
   const [newGuestName, setNewGuestName] = useState('');
+
+  const [itineraryItems, setItineraryItems] = useState<ItineraryItem[]>([]);
+  const [itineraryDay, setItineraryDay] = useState('');
+  const [itineraryTime, setItineraryTime] = useState('');
+  const [itineraryPlace, setItineraryPlace] = useState('');
+  const [itineraryNotes, setItineraryNotes] = useState('');
+
+  useEffect(() => {
+    try {
+      const raw = localStorage.getItem(ITINERARY_STORAGE_KEY);
+      if (!raw) return;
+      const parsed = JSON.parse(raw) as ItineraryItem[];
+      if (Array.isArray(parsed)) setItineraryItems(parsed);
+    } catch {
+      // Ignore malformed storage
+    }
+  }, []);
+
+  useEffect(() => {
+    try {
+      localStorage.setItem(ITINERARY_STORAGE_KEY, JSON.stringify(itineraryItems));
+    } catch {
+      // Ignore storage write issues
+    }
+  }, [itineraryItems]);
 
   // Budget Logic
   const totalEstimated = budgetItems.reduce((acc, item) => acc + item.estimated, 0);
@@ -36,10 +63,40 @@ const PlanningTools: React.FC = () => {
     setGuests(guests.filter(g => g.id !== id));
   };
 
+  const addItineraryItem = () => {
+    const day = itineraryDay.trim();
+    const time = itineraryTime.trim();
+    const place = itineraryPlace.trim();
+    const notes = itineraryNotes.trim();
+
+    if (!day && !time && !place && !notes) return;
+    if (!place) return;
+
+    const newItem: ItineraryItem = {
+      id: `${Date.now()}_${Math.random().toString(16).slice(2)}`,
+      day,
+      time,
+      place,
+      notes,
+      createdAt: Date.now(),
+    };
+
+    setItineraryItems((prev) => [newItem, ...prev]);
+    setItineraryDay('');
+    setItineraryTime('');
+    setItineraryPlace('');
+    setItineraryNotes('');
+  };
+
+  const removeItineraryItem = (id: string) => {
+    setItineraryItems((prev) => prev.filter((i) => i.id !== id));
+  };
+
   const tabs = [
       { id: 'budget', label: 'Budget Planner', icon: PieIcon },
       { id: 'guests', label: 'Guest List', icon: Users },
       { id: 'timeline', label: 'Timeline', icon: Calendar },
+      { id: 'itinerary', label: 'Guest Itinerary', icon: MapPin },
   ];
 
   return (
@@ -242,6 +299,98 @@ const PlanningTools: React.FC = () => {
                 </div>
               </div>
             ))}
+          </div>
+        )}
+
+        {/* GUEST ITINERARY TOOL */}
+        {activeTab === 'itinerary' && (
+          <div className="max-w-3xl mx-auto">
+            <div className="mb-8">
+              <h3 className="text-2xl font-serif font-bold text-amari-900 mb-2">Places to Visit</h3>
+              <p className="text-stone-500">Create a simple itinerary for guests: day, time, and what to do.</p>
+            </div>
+
+            <div className="bg-amari-50 rounded-3xl border border-amari-100 p-6 md:p-8 mb-8">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-xs font-bold uppercase tracking-widest text-stone-500 mb-2">Day</label>
+                  <input
+                    value={itineraryDay}
+                    onChange={(e) => setItineraryDay(e.target.value)}
+                    placeholder="e.g. Friday"
+                    className="w-full bg-white border border-amari-100 rounded-2xl px-4 py-3 outline-none text-amari-900 placeholder:text-stone-400"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-bold uppercase tracking-widest text-stone-500 mb-2">Time</label>
+                  <input
+                    value={itineraryTime}
+                    onChange={(e) => setItineraryTime(e.target.value)}
+                    placeholder="e.g. 10:00"
+                    className="w-full bg-white border border-amari-100 rounded-2xl px-4 py-3 outline-none text-amari-900 placeholder:text-stone-400"
+                  />
+                </div>
+                <div className="md:col-span-2">
+                  <label className="block text-xs font-bold uppercase tracking-widest text-stone-500 mb-2">Place / Activity</label>
+                  <input
+                    value={itineraryPlace}
+                    onChange={(e) => setItineraryPlace(e.target.value)}
+                    placeholder="e.g. Snorkelling / Spa / Tour"
+                    className="w-full bg-white border border-amari-100 rounded-2xl px-4 py-3 outline-none text-amari-900 placeholder:text-stone-400"
+                  />
+                </div>
+                <div className="md:col-span-2">
+                  <label className="block text-xs font-bold uppercase tracking-widest text-stone-500 mb-2">Notes (optional)</label>
+                  <textarea
+                    value={itineraryNotes}
+                    onChange={(e) => setItineraryNotes(e.target.value)}
+                    placeholder="Add helpful details for guests..."
+                    rows={3}
+                    className="w-full bg-white border border-amari-100 rounded-2xl px-4 py-3 outline-none text-amari-900 placeholder:text-stone-400 resize-none"
+                  />
+                </div>
+              </div>
+
+              <div className="mt-6 flex justify-end">
+                <button
+                  onClick={addItineraryItem}
+                  className="bg-amari-500 text-white px-6 py-3 rounded-xl hover:bg-amari-600 flex items-center gap-2 font-bold transition shadow-md"
+                >
+                  <Plus size={18} /> Add Item
+                </button>
+              </div>
+            </div>
+
+            <div className="space-y-4">
+              {itineraryItems.map((item) => (
+                <div key={item.id} className="bg-white border border-amari-100 rounded-2xl p-6 flex gap-4 justify-between items-start">
+                  <div className="min-w-0">
+                    <div className="flex flex-wrap items-center gap-2 mb-2">
+                      <span className="inline-block px-3 py-1 bg-amari-100 text-amari-800 text-xs font-bold rounded-full">
+                        {item.day || 'Day'}{item.time ? ` • ${item.time}` : ''}
+                      </span>
+                      <span className="text-xs font-bold uppercase tracking-widest text-amari-500">Guest Itinerary</span>
+                    </div>
+                    <h4 className="text-lg font-serif font-bold text-amari-900 leading-snug break-words">{item.place}</h4>
+                    {item.notes && (
+                      <p className="mt-2 text-sm text-stone-600 leading-relaxed whitespace-pre-line break-words">{item.notes}</p>
+                    )}
+                  </div>
+                  <button onClick={() => removeItineraryItem(item.id)} className="text-stone-300 hover:text-amari-terracotta transition p-2 flex-shrink-0">
+                    <Trash2 size={18} />
+                  </button>
+                </div>
+              ))}
+
+              {itineraryItems.length === 0 && (
+                <div className="text-center py-20">
+                  <div className="w-20 h-20 bg-amari-50 rounded-full flex items-center justify-center mx-auto mb-4 border border-amari-100">
+                    <MapPin className="text-amari-200" size={32} />
+                  </div>
+                  <p className="text-stone-400">No itinerary items yet. Add your first place to visit.</p>
+                </div>
+              )}
+            </div>
           </div>
         )}
       </div>

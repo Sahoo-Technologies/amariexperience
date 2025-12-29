@@ -51,3 +51,22 @@ export interface VendorApplication {
   submittedAt: number;
   status: 'Pending' | 'Approved' | 'Rejected';
 }
+
+export interface InspirationPost {
+  id: string;
+  authorType: 'Guest' | 'Vendor';
+  authorName: string;
+  title: string;
+  imageUrl: string;
+  story: string;
+  createdAt: number;
+}
+
+export interface ItineraryItem {
+  id: string;
+  day: string;
+  time: string;
+  place: string;
+  notes: string;
+  createdAt: number;
+}
