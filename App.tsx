@@ -168,8 +168,9 @@ const App: React.FC = () => {
     <Router>
       <Layout>
         <Routes>
-          <Route path="/" element={<VendorOnboarding />} />
+          <Route path="/" element={<CouplesLanding />} />
           <Route path="/couples" element={<CouplesLanding />} />
+          <Route path="/partner" element={<VendorOnboarding />} />
           <Route path="/vendors" element={<VendorDirectory />} />
           <Route path="/tools" element={<PlanningTools />} />
           <Route path="/flights" element={<AirlineBooking />} />

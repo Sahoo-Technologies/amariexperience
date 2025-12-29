@@ -41,7 +41,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
               <Link to="/tools" className={`py-2 ${isActive('/tools')}`}>Tools</Link>
               <Link to="/concierge" className={`py-2 ${isActive('/concierge')}`}>Concierge</Link>
               <div className="h-8 w-px bg-amari-100 mx-2"></div>
-              <Link to="/" className={`bg-amari-600 text-white px-6 py-3 rounded-xl text-sm font-medium hover:bg-amari-900 transition shadow-lg shadow-amari-200 hover:shadow-xl flex items-center gap-2 ${location.pathname === '/' ? 'ring-2 ring-offset-2 ring-amari-600' : ''}`}>
+              <Link to="/partner" className={`bg-amari-600 text-white px-6 py-3 rounded-xl text-sm font-medium hover:bg-amari-900 transition shadow-lg shadow-amari-200 hover:shadow-xl flex items-center gap-2 ${location.pathname === '/partner' ? 'ring-2 ring-offset-2 ring-amari-600' : ''}`}>
                 Partner with Us
               </Link>
             </div>
@@ -62,7 +62,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
         {isMobileMenuOpen && (
           <div className="md:hidden bg-white border-t border-amari-100 shadow-xl absolute w-full">
             <div className="px-4 pt-4 pb-6 space-y-2">
-              <Link to="/" onClick={() => setIsMobileMenuOpen(false)} className="block w-full text-center bg-amari-600 text-white px-4 py-3 rounded-xl font-bold hover:bg-amari-900 mb-6 shadow-md">
+              <Link to="/partner" onClick={() => setIsMobileMenuOpen(false)} className="block w-full text-center bg-amari-600 text-white px-4 py-3 rounded-xl font-bold hover:bg-amari-900 mb-6 shadow-md">
                 Partner with Us
               </Link>
               <Link to="/couples" onClick={() => setIsMobileMenuOpen(false)} className="block px-4 py-3 text-stone-600 hover:bg-amari-50 hover:text-amari-600 rounded-xl font-medium transition">For Couples</Link>
@@ -124,7 +124,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
           <div>
             <h4 className="text-white font-serif text-lg mb-6">For Business</h4>
             <ul className="space-y-4 text-sm">
-              <li><Link to="/" className="inline-block bg-amari-300 text-amari-900 px-6 py-2.5 rounded-lg transition font-bold hover:bg-white hover:text-amari-600">Join as Vendor</Link></li>
+              <li><Link to="/partner" className="inline-block bg-amari-300 text-amari-900 px-6 py-2.5 rounded-lg transition font-bold hover:bg-white hover:text-amari-600">Join as Vendor</Link></li>
             </ul>
           </div>
         </div>
