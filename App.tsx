@@ -118,7 +118,7 @@ const CouplesLanding = () => (
 
 const ConciergePage = () => (
   <div className="max-w-7xl mx-auto py-20 px-4">
-    <div className="bg-[#1a3038] text-white rounded-[2rem] p-8 md:p-20 overflow-hidden relative shadow-2xl">
+    <div className="bg-amari-900 text-white rounded-[2rem] p-8 md:p-20 overflow-hidden relative shadow-2xl">
       {/* Decorative Circles */}
       <div className="absolute top-0 right-0 w-96 h-96 bg-amari-500 rounded-full blur-[128px] opacity-20 -mr-20 -mt-20"></div>
       <div className="absolute bottom-0 left-0 w-80 h-80 bg-amari-gold rounded-full blur-[100px] opacity-10 -ml-20 -mb-20"></div>

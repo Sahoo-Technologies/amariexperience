@@ -58,14 +58,14 @@ const VendorOnboarding: React.FC = () => {
   return (
     <div className="min-h-screen flex flex-col lg:flex-row bg-amari-50">
       {/* Left Panel - Hero/Info (Desktop) */}
-      <div className="lg:w-5/12 bg-[#1d3540] relative hidden lg:flex flex-col justify-between p-16 text-white overflow-hidden">
+      <div className="lg:w-5/12 bg-amari-900 relative hidden lg:flex flex-col justify-between p-16 text-white overflow-hidden">
         <div className="absolute inset-0 z-0">
           <img 
             src="https://images.unsplash.com/photo-1519167758481-83f550bb49b3?q=80&w=1996&auto=format&fit=crop" 
             alt="Luxury Wedding Setup" 
             className="w-full h-full object-cover opacity-40 scale-105 animate-in fade-in duration-1000 mix-blend-overlay"
           />
-          <div className="absolute inset-0 bg-gradient-to-b from-[#1d3540]/80 via-[#1d3540]/60 to-[#1d3540]/95"></div>
+          <div className="absolute inset-0 bg-gradient-to-b from-amari-900/80 via-amari-900/60 to-amari-900/95"></div>
         </div>
         
         <div className="relative z-10 animate-in slide-in-from-top-4 duration-700">

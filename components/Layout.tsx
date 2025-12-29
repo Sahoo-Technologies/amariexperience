@@ -88,7 +88,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
       </main>
 
       {/* Footer */}
-      <footer className="bg-[#1a3038] text-amari-200 py-16 border-t-[6px] border-amari-300">
+      <footer className="bg-amari-900 text-amari-200 py-16 border-t-[6px] border-amari-300">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 md:grid-cols-4 gap-12">
           <div className="space-y-6">
             <div className="flex items-center gap-3">
