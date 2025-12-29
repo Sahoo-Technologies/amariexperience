@@ -132,25 +132,37 @@ const InspirationGallery: React.FC = () => {
         </div>
       </div>
 
-      <div className="text-center mb-8">
-        <h3 className="text-2xl font-serif font-bold text-amari-900">Gallery</h3>
-        <p className="mt-3 text-stone-600">A few coastal moments to spark ideas.</p>
-      </div>
+      <section className="bg-white rounded-3xl shadow-sm border border-amari-100 p-6 md:p-8 mb-10">
+        <div className="text-center mb-8">
+          <span className="inline-flex items-center justify-center rounded-full bg-amari-50 border border-amari-100 px-5 py-2 text-amari-500 text-[10px] font-bold uppercase tracking-[0.25em]">
+            Gallery
+          </span>
+          <h3 className="mt-4 text-2xl md:text-3xl font-serif font-bold text-amari-900">Coastal Moments</h3>
+          <p className="mt-3 text-stone-600">A few beachy details to spark ideas.</p>
+        </div>
 
-      <div className="columns-1 md:columns-2 lg:columns-3 gap-4 space-y-4 mb-10">
-        {IMAGES.map((src, index) => (
-          <div key={index} className="break-inside-avoid relative group overflow-hidden rounded-xl">
-            <img
-              src={src}
-              alt="Wedding Inspiration"
-              className="w-full h-auto object-cover transform transition duration-500 group-hover:scale-110"
-            />
-            <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
-              <span className="text-white border border-white px-4 py-2 uppercase text-xs tracking-widest font-bold">View</span>
+        <div className="columns-1 md:columns-2 lg:columns-3 gap-4 space-y-4">
+          {IMAGES.map((src, index) => (
+            <div
+              key={index}
+              className="break-inside-avoid relative group overflow-hidden rounded-2xl border border-amari-100 bg-white shadow-sm transition will-change-transform hover:-translate-y-0.5 hover:shadow-md"
+            >
+              <img
+                src={src}
+                alt="Wedding Inspiration"
+                loading="lazy"
+                decoding="async"
+                className="w-full h-auto object-cover transform transition duration-700 group-hover:scale-105"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/55 via-black/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end justify-center p-4">
+                <span className="inline-flex items-center justify-center rounded-full bg-white/15 backdrop-blur-md border border-white/25 px-5 py-2 uppercase text-xs tracking-widest font-bold text-white">
+                  View
+                </span>
+              </div>
             </div>
-          </div>
-        ))}
-      </div>
+          ))}
+        </div>
+      </section>
 
       <div className="bg-white rounded-3xl shadow-sm border border-amari-100 p-6 md:p-8 mb-10">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
