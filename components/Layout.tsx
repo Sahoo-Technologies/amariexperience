@@ -69,6 +69,12 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
               <Link to="/vendors" onClick={() => setIsMobileMenuOpen(false)} className="block px-4 py-3 text-stone-600 hover:bg-amari-50 hover:text-amari-600 rounded-xl font-medium transition">Directory</Link>
               <Link to="/tools" onClick={() => setIsMobileMenuOpen(false)} className="block px-4 py-3 text-stone-600 hover:bg-amari-50 hover:text-amari-600 rounded-xl font-medium transition">Planning Tools</Link>
               <Link to="/concierge" onClick={() => setIsMobileMenuOpen(false)} className="block px-4 py-3 text-stone-600 hover:bg-amari-50 hover:text-amari-600 rounded-xl font-medium transition">Concierge</Link>
+              <div className="pt-2 mt-2 border-t border-amari-100/70"></div>
+              <Link to="/about" onClick={() => setIsMobileMenuOpen(false)} className="block px-4 py-3 text-stone-600 hover:bg-amari-50 hover:text-amari-600 rounded-xl font-medium transition">About Us</Link>
+              <Link to="/community" onClick={() => setIsMobileMenuOpen(false)} className="block px-4 py-3 text-stone-600 hover:bg-amari-50 hover:text-amari-600 rounded-xl font-medium transition">Community</Link>
+              <Link to="/activities" onClick={() => setIsMobileMenuOpen(false)} className="block px-4 py-3 text-stone-600 hover:bg-amari-50 hover:text-amari-600 rounded-xl font-medium transition">Activities</Link>
+              <Link to="/gallery" onClick={() => setIsMobileMenuOpen(false)} className="block px-4 py-3 text-stone-600 hover:bg-amari-50 hover:text-amari-600 rounded-xl font-medium transition">Inspiration Board</Link>
+              <Link to="/history" onClick={() => setIsMobileMenuOpen(false)} className="block px-4 py-3 text-stone-600 hover:bg-amari-50 hover:text-amari-600 rounded-xl font-medium transition">Diani History</Link>
               <Link to="/admin" onClick={() => setIsMobileMenuOpen(false)} className="block px-4 py-3 text-xs text-amari-300 hover:text-amari-500 uppercase tracking-widest mt-4">Admin Access</Link>
             </div>
           </div>
@@ -100,12 +106,17 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
               <li><Link to="/couples" className="hover:text-amari-300 transition hover:translate-x-1 inline-block">For Couples</Link></li>
               <li><Link to="/vendors" className="hover:text-amari-300 transition hover:translate-x-1 inline-block">Vendor Directory</Link></li>
               <li><Link to="/tools" className="hover:text-amari-300 transition hover:translate-x-1 inline-block">Planning Tools</Link></li>
+              <li><Link to="/gallery" className="hover:text-amari-300 transition hover:translate-x-1 inline-block">Inspiration Board</Link></li>
+              <li><Link to="/activities" className="hover:text-amari-300 transition hover:translate-x-1 inline-block">Activities</Link></li>
+              <li><Link to="/history" className="hover:text-amari-300 transition hover:translate-x-1 inline-block">Diani History</Link></li>
             </ul>
           </div>
           <div>
             <h4 className="text-white font-serif text-lg mb-6">Support</h4>
             <ul className="space-y-3 text-sm">
               <li><Link to="/concierge" className="hover:text-amari-300 transition hover:translate-x-1 inline-block">Concierge Services</Link></li>
+              <li><Link to="/about" className="hover:text-amari-300 transition hover:translate-x-1 inline-block">About Us</Link></li>
+              <li><Link to="/community" className="hover:text-amari-300 transition hover:translate-x-1 inline-block">Community</Link></li>
               <li><a href="#" className="hover:text-amari-300 transition hover:translate-x-1 inline-block">Contact Us</a></li>
               <li><a href="#" className="hover:text-amari-300 transition hover:translate-x-1 inline-block">FAQ</a></li>
             </ul>

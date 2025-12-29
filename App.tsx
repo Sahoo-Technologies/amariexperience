@@ -8,6 +8,10 @@ import InspirationGallery from './components/InspirationGallery';
 import GeminiPlanner from './components/GeminiPlanner';
 import VendorOnboarding from './components/VendorOnboarding';
 import AdminDashboard from './components/AdminDashboard';
+import AboutUs from './components/AboutUs';
+import Community from './components/Community';
+import Activities from './components/Activities';
+import DianiHistory from './components/DianiHistory';
 import { ArrowRight, Check, Star, Heart, Sun, MapPin } from 'lucide-react';
 
 const CouplesLanding = () => (
@@ -166,6 +170,10 @@ const App: React.FC = () => {
           <Route path="/tools" element={<PlanningTools />} />
           <Route path="/flights" element={<AirlineBooking />} />
           <Route path="/gallery" element={<InspirationGallery />} />
+          <Route path="/about" element={<AboutUs />} />
+          <Route path="/community" element={<Community />} />
+          <Route path="/activities" element={<Activities />} />
+          <Route path="/history" element={<DianiHistory />} />
           <Route path="/concierge" element={<ConciergePage />} />
           <Route path="/admin" element={<AdminDashboard />} />
         </Routes>
