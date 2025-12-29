@@ -110,10 +110,6 @@ const CouplesLanding = () => (
     <div className="bg-white py-12">
         <VendorDirectory />
     </div>
-    
-    <div className="bg-amari-50 py-12">
-        <InspirationGallery />
-    </div>
   </>
 );
 

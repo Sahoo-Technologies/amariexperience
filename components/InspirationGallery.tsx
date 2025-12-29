@@ -18,7 +18,7 @@ const InspirationGallery: React.FC = () => {
   const [authorType, setAuthorType] = useState<InspirationPost['authorType']>('Guest');
   const [authorName, setAuthorName] = useState('');
   const [title, setTitle] = useState('');
-  const [imageUrl, setImageUrl] = useState('');
+  const [imageDataUrl, setImageDataUrl] = useState<string | null>(null);
   const [story, setStory] = useState('');
   const [error, setError] = useState<string | null>(null);
 
@@ -45,16 +45,45 @@ const InspirationGallery: React.FC = () => {
     return [...posts].sort((a, b) => b.createdAt - a.createdAt);
   }, [posts]);
 
+  const onSelectImageFile = (file: File | null) => {
+    setError(null);
+    if (!file) {
+      setImageDataUrl(null);
+      return;
+    }
+
+    if (!file.type.startsWith('image/')) {
+      setError('Please choose an image file.');
+      setImageDataUrl(null);
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = () => {
+      const result = typeof reader.result === 'string' ? reader.result : null;
+      if (!result) {
+        setError('Could not read the image file.');
+        setImageDataUrl(null);
+        return;
+      }
+      setImageDataUrl(result);
+    };
+    reader.onerror = () => {
+      setError('Could not read the image file.');
+      setImageDataUrl(null);
+    };
+    reader.readAsDataURL(file);
+  };
+
   const submitPost = () => {
     setError(null);
 
     const trimmedTitle = title.trim();
-    const trimmedImageUrl = imageUrl.trim();
     const trimmedStory = story.trim();
     const trimmedAuthorName = authorName.trim();
 
-    if (!trimmedImageUrl) {
-      setError('Please add an image URL.');
+    if (!imageDataUrl) {
+      setError('Please upload an image.');
       return;
     }
     if (!trimmedTitle && !trimmedStory) {
@@ -67,7 +96,7 @@ const InspirationGallery: React.FC = () => {
       authorType,
       authorName: trimmedAuthorName,
       title: trimmedTitle,
-      imageUrl: trimmedImageUrl,
+      imageDataUrl,
       story: trimmedStory,
       createdAt: Date.now(),
     };
@@ -75,7 +104,7 @@ const InspirationGallery: React.FC = () => {
     setPosts((prev) => [newPost, ...prev]);
     setAuthorName('');
     setTitle('');
-    setImageUrl('');
+    setImageDataUrl(null);
     setStory('');
   };
 
@@ -111,13 +140,18 @@ const InspirationGallery: React.FC = () => {
           </div>
 
           <div className="md:col-span-2">
-            <label className="block text-xs font-bold uppercase tracking-widest text-stone-500 mb-2">Image URL</label>
+            <label className="block text-xs font-bold uppercase tracking-widest text-stone-500 mb-2">Upload Photo</label>
             <input
-              value={imageUrl}
-              onChange={(e) => setImageUrl(e.target.value)}
-              placeholder="https://..."
-              className="w-full bg-amari-50 border border-amari-100 rounded-2xl px-4 py-3 outline-none text-amari-900 placeholder:text-stone-400"
+              type="file"
+              accept="image/*"
+              onChange={(e) => onSelectImageFile(e.target.files?.[0] ?? null)}
+              className="w-full bg-amari-50 border border-amari-100 rounded-2xl px-4 py-3 outline-none text-amari-900 file:mr-4 file:rounded-xl file:border-0 file:bg-amari-300 file:px-4 file:py-2 file:font-bold file:text-amari-900 hover:file:bg-amari-200"
             />
+            {imageDataUrl && (
+              <div className="mt-3 overflow-hidden rounded-2xl border border-amari-100 bg-white">
+                <img src={imageDataUrl} alt="Selected upload" className="w-full h-auto object-cover" />
+              </div>
+            )}
           </div>
 
           <div className="md:col-span-2">
@@ -165,7 +199,11 @@ const InspirationGallery: React.FC = () => {
             {sortedPosts.map((post) => (
               <div key={post.id} className="break-inside-avoid bg-white rounded-2xl border border-amari-100 overflow-hidden shadow-sm">
                 <div className="relative">
-                  <img src={post.imageUrl} alt={post.title || 'Inspiration post'} className="w-full h-auto object-cover" />
+                  <img
+                    src={post.imageDataUrl || post.imageUrl || ''}
+                    alt={post.title || 'Inspiration post'}
+                    className="w-full h-auto object-cover"
+                  />
                 </div>
                 <div className="p-5">
                   <div className="flex items-center justify-between gap-3 mb-2">

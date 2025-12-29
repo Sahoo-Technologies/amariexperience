@@ -57,7 +57,8 @@ export interface InspirationPost {
   authorType: 'Guest' | 'Vendor';
   authorName: string;
   title: string;
-  imageUrl: string;
+  imageUrl?: string;
+  imageDataUrl?: string;
   story: string;
   createdAt: number;
 }
