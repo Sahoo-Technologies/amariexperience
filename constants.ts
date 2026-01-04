@@ -8,7 +8,7 @@ export const MOCK_VENDORS: Vendor[] = [
     rating: 4.9,
     priceRange: '$$$$',
     description: 'Luxurious beachfront venue with pristine white sands and ocean views for unforgettable ceremonies.',
-    imageUrl: 'https://picsum.photos/id/1040/400/300',
+    imageUrl: '/beach.jpeg',
     location: 'Diani Beach Road'
   },
   {
@@ -18,7 +18,7 @@ export const MOCK_VENDORS: Vendor[] = [
     rating: 4.8,
     priceRange: '$$$',
     description: 'Expert destination wedding planning team specializing in Diani Coast celebrations.',
-    imageUrl: 'https://picsum.photos/id/1039/400/300',
+    imageUrl: '/swahiliresort.jpeg',
     location: 'Diani Beach'
   },
   {
