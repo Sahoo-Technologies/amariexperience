@@ -28,7 +28,7 @@ export const MOCK_VENDORS: Vendor[] = [
     rating: 4.7,
     priceRange: '$$',
     description: 'Authentic coastal cuisine blending traditional Swahili flavors with modern culinary excellence.',
-    imageUrl: 'https://picsum.photos/id/250/400/300',
+    imageUrl: '/swahili-cuisine.jpg',
     location: 'Diani Coast'
   },
   {
@@ -38,7 +38,7 @@ export const MOCK_VENDORS: Vendor[] = [
     rating: 5.0,
     priceRange: '$$$',
     description: 'Professional photography and film services capturing the magic of destination weddings.',
-    imageUrl: 'https://picsum.photos/id/493/400/300',
+    imageUrl: 'https://picsum.photos/id/250/400/300',
     location: 'Diani Beach'
   },
   {
@@ -58,7 +58,7 @@ export const MOCK_VENDORS: Vendor[] = [
     rating: 4.8,
     priceRange: '$$$$',
     description: 'Exclusive beachfront resort with tropical gardens and private beach access.',
-    imageUrl: 'https://picsum.photos/id/212/400/300',
+    imageUrl: '/whatsapp-10.jpeg',
     location: 'Diani Beach'
   }
 ];
