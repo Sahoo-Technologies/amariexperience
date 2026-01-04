@@ -247,21 +247,56 @@ const VendorOnboarding: React.FC = () => {
                   className="w-full bg-amari-50 border-0 rounded-xl px-4 py-4 text-amari-900 ring-1 ring-inset ring-amari-200 focus:ring-2 focus:ring-amari-500 transition-all placeholder:text-amari-300 focus:bg-white"
                   placeholder="e.g. The Coastal Lens"
                 />
+              </div>
 
               <div className="space-y-2 group">
                 <label className="text-sm font-bold text-amari-900 group-focus-within:text-amari-600 transition-colors">Vendor Type (required)</label>
+                <div className="relative">
+                  <select 
+                    required
+                    name="vendorType"
+                    value={formData.vendorType}
+                    onChange={handleChange}
+                    className="w-full bg-amari-50 border-0 rounded-xl px-4 py-4 text-amari-900 ring-1 ring-inset ring-amari-200 focus:ring-2 focus:ring-amari-500 transition-all appearance-none focus:bg-white cursor-pointer"
+                  >
+                    <option value="">Select vendor type</option>
+                    <option value="Venues and Locations">Venues and Locations</option>
+                    <option value="Planning and Coordination">Planning and Coordination</option>
+                    <option value="Decor and Styling">Decor and Styling</option>
+                    <option value="Photography and Videography">Photography and Videography</option>
+                    <option value="Beauty and Fashion">Beauty and Fashion</option>
+                    <option value="Catering and Cake">Catering and Cake</option>
+                    <option value="Entertainment and Music">Entertainment and Music</option>
+                    <option value="Transport and Logistics">Transport and Logistics</option>
+                    <option value="Stationery and Print">Stationery and Print</option>
+                    <option value="Legal and Admin">Legal and Admin</option>
+                    <option value="Extras and Unique Experiences">Extras and Unique Experiences</option>
+                  </select>
+                  <div className="absolute right-4 top-4 pointer-events-none text-amari-400">
+                    <ArrowRight size={20} className="rotate-90" />
+                  </div>
+                </div>
+              </div>
+
+              <div className="space-y-2 group">
+                <label className="text-sm font-bold text-amari-900 group-focus-within:text-amari-600 transition-colors">Location / City (required)</label>
+                <div className="space-y-4">
+                  <div className="relative">
+                    <MapPin className="absolute left-4 top-4 text-amari-400 group-focus-within:text-amari-500 transition-colors" size={20} />
+                    <input 
+                      required
                       type="text" 
                       name="location"
                       value={formData.location}
                       onChange={handleChange}
                       className="w-full bg-amari-50 border-0 rounded-xl pl-12 pr-4 py-4 text-amari-900 ring-1 ring-inset ring-amari-200 focus:ring-2 focus:ring-amari-500 transition-all placeholder:text-amari-300 focus:bg-white"
-                      placeholder="Click on the map to select location"
+                      placeholder="Click on map to select location"
                       readOnly
                     />
                   </div>
                   
                   <div className="space-y-2">
-                    <p className="text-xs text-amari-500 font-medium">Click on the map to drop a pin and select your business location</p>
+                    <p className="text-xs text-amari-500 font-medium">Click on map to drop a pin and select your business location</p>
                     <div 
                       ref={mapRef}
                       className="w-full h-64 rounded-xl border-2 border-amari-200 overflow-hidden"
