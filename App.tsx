@@ -9,6 +9,7 @@ import GeminiPlanner from './components/GeminiPlanner';
 import VendorOnboarding from './components/VendorOnboarding';
 import AdminDashboard from './components/AdminDashboard';
 import AboutUs from './components/AboutUs';
+import AboutMe from './components/AboutMe';
 import Community from './components/Community';
 import Activities from './components/Activities';
 import DianiHistory from './components/DianiHistory';
@@ -279,6 +280,7 @@ const App: React.FC = () => {
           <Route path="/flights" element={<AirlineBooking />} />
           <Route path="/gallery" element={<InspirationGallery />} />
           <Route path="/about" element={<AboutUs />} />
+          <Route path="/about-me" element={<AboutMe />} />
           <Route path="/community" element={<Community />} />
           <Route path="/activities" element={<Activities />} />
           <Route path="/history" element={<DianiHistory />} />

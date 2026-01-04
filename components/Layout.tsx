@@ -110,6 +110,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
               <NavLink to="/gallery" className={navLinkClass}>Inspiration</NavLink>
               <NavLink to="/concierge" className={navLinkClass}>Concierge</NavLink>
               <NavLink to="/about" className={navLinkClass}>About</NavLink>
+              <NavLink to="/about-me" className={navLinkClass}>About Me</NavLink>
               <NavLink to="/contact" className={navLinkClass}>Contact</NavLink>
               <NavLink to="/faq" className={navLinkClass}>FAQ</NavLink>
               <div className="h-8 w-px bg-amari-100 mx-2"></div>
@@ -156,6 +157,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
               <NavLink to="/concierge" className={({ isActive }) => `block px-4 py-3 rounded-xl font-medium transition ${isActive ? 'bg-amari-50 text-amari-600' : 'text-stone-600 hover:bg-amari-50 hover:text-amari-600'}`}>Concierge</NavLink>
               <div className="pt-2 mt-2 border-t border-amari-100/70"></div>
               <NavLink to="/about" className={({ isActive }) => `block px-4 py-3 rounded-xl font-medium transition ${isActive ? 'bg-amari-50 text-amari-600' : 'text-stone-600 hover:bg-amari-50 hover:text-amari-600'}`}>About Us</NavLink>
+              <NavLink to="/about-me" className={({ isActive }) => `block px-4 py-3 rounded-xl font-medium transition ${isActive ? 'bg-amari-50 text-amari-600' : 'text-stone-600 hover:bg-amari-50 hover:text-amari-600'}`}>About Me</NavLink>
               <NavLink to="/community" className={({ isActive }) => `block px-4 py-3 rounded-xl font-medium transition ${isActive ? 'bg-amari-50 text-amari-600' : 'text-stone-600 hover:bg-amari-50 hover:text-amari-600'}`}>Community</NavLink>
               <NavLink to="/activities" className={({ isActive }) => `block px-4 py-3 rounded-xl font-medium transition ${isActive ? 'bg-amari-50 text-amari-600' : 'text-stone-600 hover:bg-amari-50 hover:text-amari-600'}`}>Activities</NavLink>
               <NavLink to="/history" className={({ isActive }) => `block px-4 py-3 rounded-xl font-medium transition ${isActive ? 'bg-amari-50 text-amari-600' : 'text-stone-600 hover:bg-amari-50 hover:text-amari-600'}`}>Diani History</NavLink>
