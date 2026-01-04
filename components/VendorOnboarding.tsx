@@ -1,24 +1,107 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { VendorCategory } from '../types';
 import { submitApplication } from '../services/vendorService';
 import { CheckCircle, Store, MapPin, Phone, Mail, ArrowRight, Upload, Info, Globe, Target, Eye, Waves } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
+// Declare Leaflet on window object
+declare global {
+  interface Window {
+    L: any;
+  }
+}
+
 const VendorOnboarding: React.FC = () => {
   const [submitted, setSubmitted] = useState(false);
+  const [selectedLocation, setSelectedLocation] = useState<{ lat: number; lng: number; address: string } | null>(null);
+  const [mapCenter] = useState({ lat: -4.2767, lng: 39.5935 }); // Diani Beach coordinates
+  const mapRef = useRef<HTMLDivElement>(null);
+
   const [formData, setFormData] = useState({
     businessName: '',
-    category: VendorCategory.Venue,
-    description: '',
-    priceRange: '$$' as '$$' | '$$$' | '$$$$',
+    vendorType: '',
     location: '',
-    contactEmail: '',
-    contactPhone: ''
+    businessRegistration: null as File | null,
+    contactPersonName: '',
+    email: '',
+    phone: '',
+    portfolioPhotos: [] as File[]
   });
+
+  useEffect(() => {
+    // Load OpenStreetMap script
+    const script = document.createElement('script');
+    script.src = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.js';
+    script.async = true;
+    document.body.appendChild(script);
+
+    const link = document.createElement('link');
+    link.rel = 'stylesheet';
+    link.href = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.css';
+    document.head.appendChild(link);
+
+    return () => {
+      document.body.removeChild(script);
+      document.head.removeChild(link);
+    };
+  }, []);
+
+  useEffect(() => {
+    if (mapRef.current && window.L) {
+      const map = window.L.map(mapRef.current).setView([mapCenter.lat, mapCenter.lng], 13);
+      
+      window.L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: ' OpenStreetMap contributors'
+      }).addTo(map);
+
+      let marker: any = null;
+
+      const onMapClick = (e: any) => {
+        const { lat, lng } = e.latlng;
+        
+        if (marker) {
+          marker.remove();
+        }
+        
+        marker = window.L.marker([lat, lng]).addTo(map);
+        
+        // Reverse geocoding to get address
+        fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`)
+          .then(response => response.json())
+          .then(data => {
+            const address = data.display_name || `${lat.toFixed(6)}, ${lng.toFixed(6)}`;
+            setSelectedLocation({ lat, lng, address });
+            setFormData(prev => ({ ...prev, location: address }));
+          })
+          .catch(() => {
+            const address = `${lat.toFixed(6)}, ${lng.toFixed(6)}`;
+            setSelectedLocation({ lat, lng, address });
+            setFormData(prev => ({ ...prev, location: address }));
+          });
+      };
+
+      map.on('click', onMapClick);
+
+      return () => {
+        map.remove();
+      };
+    }
+  }, [mapCenter]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
+  };
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, files } = e.target;
+    if (files && files.length > 0) {
+      if (name === 'businessRegistration') {
+        setFormData(prev => ({ ...prev, businessRegistration: files[0] }));
+      } else if (name === 'portfolioPhotos') {
+        setFormData(prev => ({ ...prev, portfolioPhotos: Array.from(files).slice(0, 3) }));
+      }
+    }
   };
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -149,108 +232,111 @@ const VendorOnboarding: React.FC = () => {
 
           <form onSubmit={handleSubmit} className="space-y-8 bg-white p-8 md:p-10 rounded-[2rem] shadow-xl border border-amari-100">
             
-            {/* Section 1 */}
+            {/* Business Information Section */}
             <div className="space-y-8">
               <h3 className="text-sm font-bold text-amari-500 uppercase tracking-widest border-b border-amari-100 pb-4">Business Information</h3>
               
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                <div className="space-y-2 group">
-                  <label className="text-sm font-bold text-amari-900 group-focus-within:text-amari-600 transition-colors">Business Name</label>
-                  <input 
-                    required
-                    type="text" 
-                    name="businessName"
-                    value={formData.businessName}
-                    onChange={handleChange}
-                    className="w-full bg-amari-50 border-0 rounded-xl px-4 py-4 text-amari-900 ring-1 ring-inset ring-amari-200 focus:ring-2 focus:ring-amari-500 transition-all placeholder:text-amari-300 focus:bg-white"
-                    placeholder="e.g. The Coastal Lens"
-                  />
-                </div>
-                <div className="space-y-2 group">
-                  <label className="text-sm font-bold text-amari-900 group-focus-within:text-amari-600 transition-colors">Category</label>
-                  <div className="relative">
-                    <select 
-                      name="category"
-                      value={formData.category}
-                      onChange={handleChange}
-                      className="w-full bg-amari-50 border-0 rounded-xl px-4 py-4 text-amari-900 ring-1 ring-inset ring-amari-200 focus:ring-2 focus:ring-amari-500 transition-all appearance-none focus:bg-white cursor-pointer"
-                    >
-                      {Object.values(VendorCategory).map(cat => (
-                        <option key={cat} value={cat}>{cat}</option>
-                      ))}
-                    </select>
-                    <div className="absolute right-4 top-4 pointer-events-none text-amari-400">
-                      <ArrowRight size={20} className="rotate-90" />
-                    </div>
-                  </div>
-                </div>
-              </div>
+              <div className="space-y-2 group">
+                <label className="text-sm font-bold text-amari-900 group-focus-within:text-amari-600 transition-colors">Business Name (required)</label>
+                <input 
+                  required
+                  type="text" 
+                  name="businessName"
+                  value={formData.businessName}
+                  onChange={handleChange}
+                  className="w-full bg-amari-50 border-0 rounded-xl px-4 py-4 text-amari-900 ring-1 ring-inset ring-amari-200 focus:ring-2 focus:ring-amari-500 transition-all placeholder:text-amari-300 focus:bg-white"
+                  placeholder="e.g. The Coastal Lens"
+                />
 
               <div className="space-y-2 group">
-                <label className="text-sm font-bold text-amari-900 group-focus-within:text-amari-600 transition-colors">Description</label>
-                <textarea 
-                  required
-                  name="description"
-                  value={formData.description}
-                  onChange={handleChange}
-                  rows={4}
-                  className="w-full bg-amari-50 border-0 rounded-xl px-4 py-4 text-amari-900 ring-1 ring-inset ring-amari-200 focus:ring-2 focus:ring-amari-500 transition-all placeholder:text-amari-300 resize-none focus:bg-white"
-                  placeholder="Tell us about your style, experience, and what makes your service unique..."
-                ></textarea>
-                <div className="flex gap-2 text-xs text-amari-400 items-center mt-1">
-                  <Info size={14} />
-                  <span>This will appear on your public profile.</span>
-                </div>
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                 <div className="space-y-2">
-                  <label className="text-sm font-bold text-amari-900">Pricing Tier</label>
-                  <div className="grid grid-cols-3 gap-3">
-                    {['$$', '$$$', '$$$$'].map((tier) => (
-                      <button
-                        key={tier}
-                        type="button"
-                        onClick={() => setFormData(prev => ({ ...prev, priceRange: tier as any }))}
-                        className={`py-3 rounded-xl text-sm font-bold border transition-all ${formData.priceRange === tier ? 'bg-amari-900 text-white border-amari-900 shadow-md transform scale-105' : 'bg-white text-stone-500 border-amari-200 hover:border-amari-400 hover:bg-amari-50'}`}
-                      >
-                        {tier}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-                 <div className="space-y-2 group">
-                  <label className="text-sm font-bold text-amari-900 group-focus-within:text-amari-600 transition-colors">Business Location</label>
-                  <div className="relative">
-                    <MapPin className="absolute left-4 top-4 text-amari-400 group-focus-within:text-amari-500 transition-colors" size={20} />
-                    <input 
-                      required
+                <label className="text-sm font-bold text-amari-900 group-focus-within:text-amari-600 transition-colors">Vendor Type (required)</label>
                       type="text" 
                       name="location"
                       value={formData.location}
                       onChange={handleChange}
                       className="w-full bg-amari-50 border-0 rounded-xl pl-12 pr-4 py-4 text-amari-900 ring-1 ring-inset ring-amari-200 focus:ring-2 focus:ring-amari-500 transition-all placeholder:text-amari-300 focus:bg-white"
-                      placeholder="Street address or Area"
+                      placeholder="Click on the map to select location"
+                      readOnly
                     />
                   </div>
+                  
+                  <div className="space-y-2">
+                    <p className="text-xs text-amari-500 font-medium">Click on the map to drop a pin and select your business location</p>
+                    <div 
+                      ref={mapRef}
+                      className="w-full h-64 rounded-xl border-2 border-amari-200 overflow-hidden"
+                      style={{ minHeight: '256px' }}
+                    />
+                  </div>
+                  
+                  {selectedLocation && (
+                    <div className="bg-amari-50 rounded-xl p-3 border border-amari-100">
+                      <div className="flex items-start gap-2">
+                        <MapPin size={16} className="text-amari-500 mt-1 flex-shrink-0" />
+                        <div>
+                          <p className="text-sm font-medium text-amari-900">Selected Location:</p>
+                          <p className="text-xs text-amari-600 mt-1">{selectedLocation.address}</p>
+                          <p className="text-xs text-amari-400 mt-1">
+                            Coordinates: {selectedLocation.lat.toFixed(6)}, {selectedLocation.lng.toFixed(6)}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              <div className="space-y-2 group">
+                <label className="text-sm font-bold text-amari-900 group-focus-within:text-amari-600 transition-colors">Upload Business Registration Document (required)</label>
+                <div className="relative">
+                  <input 
+                    required
+                    type="file" 
+                    name="businessRegistration"
+                    onChange={handleFileChange}
+                    accept=".pdf,.jpg,.jpeg,.png"
+                    className="w-full bg-amari-50 border-0 rounded-xl px-4 py-4 text-amari-900 ring-1 ring-inset ring-amari-200 focus:ring-2 focus:ring-amari-500 transition-all file:mr-4 file:rounded-xl file:border-0 file:bg-amari-300 file:px-4 file:py-2 file:font-bold file:text-amari-900 hover:file:bg-amari-200 focus:bg-white"
+                  />
+                </div>
+                {formData.businessRegistration && (
+                  <div className="mt-2 text-sm text-amari-600">
+                    ✓ {formData.businessRegistration.name}
+                  </div>
+                )}
+                <div className="flex gap-2 text-xs text-amari-400 items-center mt-1">
+                  <Info size={14} />
+                  <span>Accepted formats: PDF, JPG, PNG. Max file size: 5MB</span>
                 </div>
               </div>
             </div>
 
-            {/* Section 2 */}
+            {/* Contact Information Section */}
             <div className="space-y-8 pt-6">
-              <h3 className="text-sm font-bold text-amari-500 uppercase tracking-widest border-b border-amari-100 pb-4">Contact Details</h3>
+              <h3 className="text-sm font-bold text-amari-500 uppercase tracking-widest border-b border-amari-100 pb-4">Contact Info</h3>
               
+              <div className="space-y-2 group">
+                <label className="text-sm font-bold text-amari-900 group-focus-within:text-amari-600 transition-colors">Contact Person Name (required)</label>
+                <input 
+                  required
+                  type="text" 
+                  name="contactPersonName"
+                  value={formData.contactPersonName}
+                  onChange={handleChange}
+                  className="w-full bg-amari-50 border-0 rounded-xl px-4 py-4 text-amari-900 ring-1 ring-inset ring-amari-200 focus:ring-2 focus:ring-amari-500 transition-all placeholder:text-amari-300 focus:bg-white"
+                  placeholder="e.g. John Smith"
+                />
+              </div>
+
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                 <div className="space-y-2 group">
-                  <label className="text-sm font-bold text-amari-900 group-focus-within:text-amari-600 transition-colors">Email Address</label>
+                  <label className="text-sm font-bold text-amari-900 group-focus-within:text-amari-600 transition-colors">Email (required)</label>
                   <div className="relative">
                     <Mail className="absolute left-4 top-4 text-amari-400 group-focus-within:text-amari-500 transition-colors" size={20} />
                     <input 
                       required
                       type="email" 
-                      name="contactEmail"
-                      value={formData.contactEmail}
+                      name="email"
+                      value={formData.email}
                       onChange={handleChange}
                       className="w-full bg-amari-50 border-0 rounded-xl pl-12 pr-4 py-4 text-amari-900 ring-1 ring-inset ring-amari-200 focus:ring-2 focus:ring-amari-500 transition-all placeholder:text-amari-300 focus:bg-white"
                       placeholder="name@business.com"
@@ -258,19 +344,54 @@ const VendorOnboarding: React.FC = () => {
                   </div>
                 </div>
                 <div className="space-y-2 group">
-                  <label className="text-sm font-bold text-amari-900 group-focus-within:text-amari-600 transition-colors">Phone Number</label>
+                  <label className="text-sm font-bold text-amari-900 group-focus-within:text-amari-600 transition-colors">Phone / WhatsApp (required)</label>
                   <div className="relative">
                     <Phone className="absolute left-4 top-4 text-amari-400 group-focus-within:text-amari-500 transition-colors" size={20} />
                     <input 
                       required
                       type="tel" 
-                      name="contactPhone"
-                      value={formData.contactPhone}
+                      name="phone"
+                      value={formData.phone}
                       onChange={handleChange}
                       className="w-full bg-amari-50 border-0 rounded-xl pl-12 pr-4 py-4 text-amari-900 ring-1 ring-inset ring-amari-200 focus:ring-2 focus:ring-amari-500 transition-all placeholder:text-amari-300 focus:bg-white"
-                      placeholder="+254 7..."
+                      placeholder="+254 712 345 678"
                     />
                   </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Portfolio Section */}
+            <div className="space-y-8 pt-6">
+              <h3 className="text-sm font-bold text-amari-500 uppercase tracking-widest border-b border-amari-100 pb-4">Portfolio (Optional for initial onboarding)</h3>
+              
+              <div className="space-y-2 group">
+                <label className="text-sm font-bold text-amari-900 group-focus-within:text-amari-600 transition-colors">Upload 1–3 Photos</label>
+                <div className="relative">
+                  <input 
+                    type="file" 
+                    name="portfolioPhotos"
+                    onChange={handleFileChange}
+                    accept="image/*"
+                    multiple
+                    className="w-full bg-amari-50 border-0 rounded-xl px-4 py-4 text-amari-900 ring-1 ring-inset ring-amari-200 focus:ring-2 focus:ring-amari-500 transition-all file:mr-4 file:rounded-xl file:border-0 file:bg-amari-300 file:px-4 file:py-2 file:font-bold file:text-amari-900 hover:file:bg-amari-200 focus:bg-white"
+                  />
+                </div>
+                {formData.portfolioPhotos.length > 0 && (
+                  <div className="mt-4 space-y-2">
+                    <p className="text-sm text-amari-600 font-medium">Selected photos:</p>
+                    <div className="grid grid-cols-3 gap-2">
+                      {formData.portfolioPhotos.map((file, index) => (
+                        <div key={index} className="text-xs text-amari-600 bg-amari-50 rounded-lg p-2 text-center">
+                          {file.name}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+                <div className="flex gap-2 text-xs text-amari-400 items-center mt-1">
+                  <Info size={14} />
+                  <span>Upload up to 3 photos showcasing your work. Accepted formats: JPG, PNG. Max file size: 5MB each</span>
                 </div>
               </div>
             </div>
