@@ -6,7 +6,7 @@ const DianiHistory: React.FC = () => {
       <div className="relative overflow-hidden rounded-[2.5rem] border border-amari-100 bg-white shadow-xl mb-12">
         <div className="absolute inset-0">
           <img
-            src="/beach.jpeg"
+            src="https://images.unsplash.com/photo-1470770903676-69b98201ea1c?q=80&w=2400&auto=format&fit=crop"
             alt="Diani beach and ocean"
             className="w-full h-full object-cover"
           />
