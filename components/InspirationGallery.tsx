@@ -4,13 +4,19 @@ import { InspirationPost } from '../types';
 const STORAGE_KEY = 'amari_inspiration_posts_v1';
 
 const IMAGES = [
-  'https://picsum.photos/id/1015/600/400',
-  'https://picsum.photos/id/1016/400/600',
-  'https://picsum.photos/id/1025/400/400',
-  'https://picsum.photos/id/1036/600/400',
-  'https://picsum.photos/id/301/400/600',
-  'https://picsum.photos/id/306/400/400',
-  'https://picsum.photos/id/319/600/400',
+  '/whatsapp-1.jpeg',
+  '/whatsapp-2.jpeg',
+  '/whatsapp-3.jpeg',
+  '/whatsapp-4.jpeg',
+  '/whatsapp-5.jpeg',
+  '/whatsapp-6.jpeg',
+  '/whatsapp-7.jpeg',
+  '/whatsapp-8.jpeg',
+  '/whatsapp-9.jpeg',
+  '/whatsapp-10.jpeg',
+  '/whatsapp-11.jpeg',
+  '/whatsapp-12.jpeg',
+  '/whatsapp-13.jpeg',
 ];
 
 const InspirationGallery: React.FC = () => {
