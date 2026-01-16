@@ -2,6 +2,7 @@ import React from 'react';
 import { HashRouter as Router, Routes, Route, Link } from 'react-router-dom';
 import Layout from './components/Layout';
 import VendorDirectory from './components/VendorDirectory';
+import VendorProfile from './components/VendorProfile';
 import PlanningTools from './components/PlanningTools';
 import AirlineBooking from './components/AirlineBooking';
 import InspirationGallery from './components/InspirationGallery';
@@ -275,6 +276,7 @@ const App: React.FC = () => {
           <Route path="/couples" element={<CouplesLanding />} />
           <Route path="/partner" element={<VendorOnboarding />} />
           <Route path="/vendors" element={<VendorDirectory />} />
+          <Route path="/vendor/:id" element={<VendorProfile />} />
           <Route path="/tools" element={<PlanningTools />} />
           <Route path="/flights" element={<AirlineBooking />} />
           <Route path="/gallery" element={<InspirationGallery />} />

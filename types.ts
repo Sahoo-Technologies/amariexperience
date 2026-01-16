@@ -42,12 +42,13 @@ export interface ChatMessage {
 export interface VendorApplication {
   id: string;
   businessName: string;
-  category: VendorCategory;
-  description: string;
-  priceRange: '$$' | '$$$' | '$$$$';
+  vendorType: string;
   location: string;
-  contactEmail: string;
-  contactPhone: string;
+  businessRegistration: File | null;
+  contactPersonName: string;
+  email: string;
+  phone: string;
+  portfolioPhotos: File[];
   submittedAt: number;
   status: 'Pending' | 'Approved' | 'Rejected';
 }

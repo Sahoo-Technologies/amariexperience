@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
 import { MOCK_VENDORS } from '../constants';
 import { VendorCategory } from '../types';
 import { MapPin, Star, MessageSquare, Heart } from 'lucide-react';
@@ -64,9 +65,6 @@ const VendorDirectory: React.FC = () => {
               <img src={vendor.imageUrl} alt={vendor.name} className="w-full h-full object-cover group-hover:scale-105 transition duration-700 ease-out" />
               <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
               
-              <div className="absolute top-4 right-4 bg-white/95 backdrop-blur-sm px-3 py-1 rounded-full text-xs font-bold text-amari-900 shadow-sm">
-                {vendor.priceRange}
-              </div>
               <div className="absolute top-4 left-4">
                  <button className="bg-white/95 p-2 rounded-full text-stone-400 hover:text-amari-terracotta transition shadow-sm">
                     <Heart size={16} />
@@ -93,7 +91,12 @@ const VendorDirectory: React.FC = () => {
               <p className="text-stone-500 text-sm mb-6 line-clamp-2 leading-relaxed flex-grow">{vendor.description}</p>
               
               <div className="pt-6 border-t border-amari-50 flex gap-3 mt-auto">
-                <button className="flex-1 bg-amari-900 text-white py-3 rounded-xl text-sm font-bold hover:bg-amari-600 transition shadow-lg">View Profile</button>
+                <Link 
+                  to={`/vendor/${vendor.id}`}
+                  className="flex-1 bg-amari-900 text-white py-3 rounded-xl text-sm font-bold hover:bg-amari-600 transition shadow-lg text-center"
+                >
+                  View Profile
+                </Link>
                 <button className="flex items-center justify-center w-12 bg-amari-50 text-amari-600 rounded-xl hover:bg-amari-100 border border-amari-100 transition">
                   <MessageSquare size={18} />
                 </button>

@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { VendorCategory } from '../types';
 import { submitApplication } from '../services/vendorService';
+import { testConnection, initializeDatabase } from '../lib/db';
 import { CheckCircle, Store, MapPin, Phone, Mail, ArrowRight, Upload, Info, Globe, Target, Eye, Waves } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
@@ -104,11 +105,16 @@ const VendorOnboarding: React.FC = () => {
     }
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    submitApplication(formData);
-    setSubmitted(true);
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    try {
+      await submitApplication(formData);
+      setSubmitted(true);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    } catch (error) {
+      console.error('Failed to submit application:', error);
+      alert('Failed to submit application. Please try again.');
+    }
   };
 
   if (submitted) {
@@ -121,7 +127,7 @@ const VendorOnboarding: React.FC = () => {
           </div>
           <h2 className="text-3xl font-serif font-bold text-amari-900 mb-4">Application Received</h2>
           <p className="text-stone-600 mb-10 leading-relaxed">
-            Our concierge team will review your application and reach out to {formData.contactEmail} within 24-48 hours.
+            Our concierge team will review your application and reach out to {formData.email} within 24-48 hours.
           </p>
           <div className="space-y-4">
             <Link to="/couples" className="block w-full bg-white text-stone-600 border border-amari-200 px-6 py-4 rounded-xl font-bold hover:bg-amari-50 transition">
@@ -270,6 +276,7 @@ const VendorOnboarding: React.FC = () => {
                     <option value="Transport and Logistics">Transport and Logistics</option>
                     <option value="Stationery and Print">Stationery and Print</option>
                     <option value="Legal and Admin">Legal and Admin</option>
+                    <option value="Event Planning Supplies">Event Planning Supplies</option>
                     <option value="Extras and Unique Experiences">Extras and Unique Experiences</option>
                   </select>
                   <div className="absolute right-4 top-4 pointer-events-none text-amari-400">
