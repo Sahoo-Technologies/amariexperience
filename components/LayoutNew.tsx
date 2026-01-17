@@ -12,7 +12,7 @@ const LayoutNew: React.FC<LayoutProps> = ({ children }) => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const location = useLocation();
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, user } = useAuth();
 
   const isCouplesRoute = location.pathname === '/' || location.pathname === '/couples';
 
@@ -117,26 +117,25 @@ const LayoutNew: React.FC<LayoutProps> = ({ children }) => {
                 <NavLink to="/activities" className={navLinkClass}>Activities</NavLink>
                 <NavLink to="/history" className={navLinkClass}>Diani History</NavLink>
                 <div className="relative">
-                  <button
-                    onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-                    className="flex items-center gap-2 text-stone-400 hover:text-stone-600 px-4 py-3 rounded-xl text-sm font-medium transition-colors"
-                  >
+                  <div className="flex items-center gap-2 text-stone-400 hover:text-stone-600 px-4 py-3 rounded-xl text-sm font-medium transition-colors">
                     <User size={18} />
                     {isAuthenticated ? (
                       <>
-                        <span>Account</span>
+                        <span className="text-stone-700">Welcome, {user.firstName}!</span>
                         <div className="absolute top-full left-0 mt-2 w-48 bg-white rounded-xl shadow-lg border border-stone-200 py-2 z-50">
                           <Link
                             to="/dashboard"
                             className="block px-4 py-2 text-stone-700 hover:bg-stone-50 transition-colors"
                           >
-                            Dashboard
+                            <div className="font-medium text-stone-900">Dashboard</div>
+                            <div className="text-sm text-stone-600">Manage your wedding planning tools</div>
                           </Link>
                           <Link
                             to="/profile"
                             className="block px-4 py-2 text-stone-700 hover:bg-stone-50 transition-colors"
                           >
-                            Profile
+                            <div className="font-medium text-stone-900">Profile</div>
+                            <div className="text-sm text-stone-600">View and manage your profile</div>
                           </Link>
                           <button
                             onClick={() => {
