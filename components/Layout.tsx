@@ -118,6 +118,9 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                 <Link to="/admin" className="text-stone-400 hover:text-stone-600 text-xs font-medium transition-colors">
                   Admin
                 </Link>
+                <Link to="/login" className="text-stone-400 hover:text-stone-600 px-4 py-3 rounded-xl text-sm font-medium transition-colors">
+                  Login
+                </Link>
               </div>
               <Link to="/partner" className={`bg-amari-600 text-white px-6 py-3 rounded-xl text-sm font-medium hover:bg-amari-900 transition shadow-lg hover:shadow-xl flex items-center gap-2 ${location.pathname === '/partner' ? 'ring-2 ring-offset-2 ring-amari-600' : ''}`}>
                 Partner with Us

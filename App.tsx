@@ -9,6 +9,8 @@ import InspirationGallery from './components/InspirationGallery';
 import GeminiPlanner from './components/GeminiPlanner';
 import VendorOnboarding from './components/VendorOnboarding';
 import AdminDashboard from './components/AdminDashboard';
+import Login from './components/Login';
+import UserDashboard from './components/UserDashboard';
 import AboutUs from './components/AboutUs';
 import Community from './components/Community';
 import Activities from './components/Activities';
@@ -18,6 +20,7 @@ import ContactUs from './components/ContactUs';
 import PrivacyPolicy from './components/PrivacyPolicy';
 import TermsOfService from './components/TermsOfService';
 import ScrollToTop from './components/ScrollToTop';
+import { AuthProvider } from './contexts/AuthContext';
 import { ArrowRight, Check, Star, Heart, Sun, MapPin } from 'lucide-react';
 import { MOCK_VENDORS } from './constants';
 
@@ -268,32 +271,35 @@ const ConciergePage = () => (
 
 const App: React.FC = () => {
   return (
-    <Router>
-      <ScrollToTop />
-      <Layout>
-        <Routes>
-          <Route path="/" element={<CouplesLanding />} />
-          <Route path="/couples" element={<CouplesLanding />} />
-          <Route path="/partner" element={<VendorOnboarding />} />
-          <Route path="/vendors" element={<VendorDirectory />} />
-          <Route path="/vendor/:id" element={<VendorProfile />} />
-          <Route path="/tools" element={<PlanningTools />} />
-          <Route path="/flights" element={<AirlineBooking />} />
-          <Route path="/gallery" element={<InspirationGallery />} />
-          <Route path="/about" element={<AboutUs />} />
-                    <Route path="/community" element={<Community />} />
-          <Route path="/activities" element={<Activities />} />
-          <Route path="/history" element={<DianiHistory />} />
-          <Route path="/faq" element={<FAQ />} />
-          <Route path="/contact" element={<ContactUs />} />
-          <Route path="/privacy" element={<PrivacyPolicy />} />
-          <Route path="/terms" element={<TermsOfService />} />
-          <Route path="/concierge" element={<ConciergePage />} />
-          <Route path="/admin" element={<AdminDashboard />} />
-        </Routes>
-      </Layout>
-      <GeminiPlanner />
-    </Router>
+    <AuthProvider>
+      <Router>
+        <ScrollToTop />
+        <Layout>
+          <Routes>
+            <Route path="/" element={<CouplesLanding />} />
+            <Route path="/couples" element={<CouplesLanding />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/dashboard" element={<UserDashboard />} />
+            <Route path="/partner" element={<VendorOnboarding />} />
+            <Route path="/vendors" element={<VendorDirectory />} />
+            <Route path="/vendor/:id" element={<VendorProfile />} />
+            <Route path="/tools" element={<PlanningTools />} />
+            <Route path="/flights" element={<AirlineBooking />} />
+            <Route path="/gallery" element={<InspirationGallery />} />
+            <Route path="/about" element={<AboutUs />} />
+                        <Route path="/community" element={<Community />} />
+            <Route path="/activities" element={<Activities />} />
+            <Route path="/history" element={<DianiHistory />} />
+            <Route path="/faq" element={<FAQ />} />
+            <Route path="/contact" element={<ContactUs />} />
+            <Route path="/privacy" element={<PrivacyPolicy />} />
+            <Route path="/terms" element={<TermsOfService />} />
+            <Route path="/concierge" element={<ConciergePage />} />
+            <Route path="/admin" element={<AdminDashboard />} />
+          </Routes>
+        </Layout>
+      </Router>
+    </AuthProvider>
   );
 };
 

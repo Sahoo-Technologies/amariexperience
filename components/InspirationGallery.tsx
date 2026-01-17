@@ -1,5 +1,7 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { InspirationPost } from '../types';
+import { useAuth } from '../contexts/AuthContext';
+import { Upload, Heart, MessageSquare, User } from 'lucide-react';
 
 const STORAGE_KEY = 'amari_inspiration_posts_v1';
 
@@ -20,9 +22,10 @@ const IMAGES = [
 ];
 
 const InspirationGallery: React.FC = () => {
+  const { user, isAuthenticated } = useAuth();
   const [posts, setPosts] = useState<InspirationPost[]>([]);
-  const [authorType, setAuthorType] = useState<InspirationPost['authorType']>('Guest');
-  const [authorName, setAuthorName] = useState('');
+  const [authorType, setAuthorType] = useState<InspirationPost['authorType']>(isAuthenticated ? 'User' : 'Guest');
+  const [authorName, setAuthorName] = useState(isAuthenticated ? `${user?.firstName} ${user?.lastName}` : '');
   const [title, setTitle] = useState('');
   const [imageDataUrl, setImageDataUrl] = useState<string | null>(null);
   const [story, setStory] = useState('');
@@ -83,6 +86,12 @@ const InspirationGallery: React.FC = () => {
 
   const submitPost = () => {
     setError(null);
+
+    // Check if user is authenticated
+    if (!isAuthenticated) {
+      setError('Please log in to share your inspiration.');
+      return;
+    }
 
     const trimmedTitle = title.trim();
     const trimmedStory = story.trim();
