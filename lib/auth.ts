@@ -1,4 +1,5 @@
 // Authentication and User Management System
+import { executeQuery } from './db';
 
 // User types
 export interface User {
@@ -37,8 +38,7 @@ export interface RegisterData {
   userType: 'couple' | 'vendor';
 }
 
-// Mock user database (in production, this would be in your database)
-let users: User[] = [];
+// Session management
 let sessions: { [key: string]: { userId: string; expires: number } } = {};
 
 // Password hashing (simple implementation - use bcrypt in production)
