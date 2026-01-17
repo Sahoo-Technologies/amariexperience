@@ -115,6 +115,9 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                 <NavLink to="/activities" className={navLinkClass}>Activities</NavLink>
                 <NavLink to="/history" className={navLinkClass}>Diani History</NavLink>
                 <NavLink to="/faq" className={navLinkClass}>FAQ</NavLink>
+                <Link to="/admin" className="text-stone-400 hover:text-stone-600 text-xs font-medium transition-colors">
+                  Admin
+                </Link>
               </div>
               <Link to="/partner" className={`bg-amari-600 text-white px-6 py-3 rounded-xl text-sm font-medium hover:bg-amari-900 transition shadow-lg hover:shadow-xl flex items-center gap-2 ${location.pathname === '/partner' ? 'ring-2 ring-offset-2 ring-amari-600' : ''}`}>
                 Partner with Us
