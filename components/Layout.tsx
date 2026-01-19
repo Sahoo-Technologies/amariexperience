@@ -12,6 +12,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const location = useLocation();
+  const { user, logout, isAuthenticated } = useAuth();
 
   const isCouplesRoute = location.pathname === '/' || location.pathname === '/couples';
 
@@ -139,11 +140,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                             Profile
                           </Link>
                           <button
-                            onClick={() => {
-                              // This will be handled by the auth context
-                              const logoutEvent = new CustomEvent('logout');
-                              window.dispatchEvent(logoutEvent);
-                            }}
+                            onClick={logout}
                             className="block w-full text-left px-4 py-2 text-stone-700 hover:bg-stone-50 transition-colors"
                           >
                             Logout
@@ -181,7 +178,58 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
         {isMobileMenuOpen && (
           <div id="mobile-menu" className="md:hidden bg-white border-t border-amari-100 shadow-xl absolute w-full">
             <div className="px-4 pt-4 pb-6 space-y-2">
-              <Link to="/partner" className="block w-full text-center bg-amari-600 text-white px-4 py-3 rounded-xl font-bold hover:bg-amari-900 mb-6 shadow-md">
+              {/* Authentication Section */}
+              {isAuthenticated ? (
+                <div className="bg-amari-50 rounded-xl p-4 mb-4">
+                  <div className="flex items-center gap-3 mb-3">
+                    <div className="w-10 h-10 bg-amari-600 rounded-full flex items-center justify-center">
+                      <User size={20} className="text-white" />
+                    </div>
+                    <div>
+                      <div className="font-medium text-amari-900">Welcome, {user?.firstName}!</div>
+                      <div className="text-sm text-stone-600">{user?.email}</div>
+                    </div>
+                  </div>
+                  <div className="space-y-2">
+                    <Link
+                      to="/dashboard"
+                      className="block w-full text-left px-4 py-2 text-stone-700 hover:bg-amari-100 rounded-lg transition-colors"
+                    >
+                      Dashboard
+                    </Link>
+                    <Link
+                      to="/profile"
+                      className="block w-full text-left px-4 py-2 text-stone-700 hover:bg-amari-100 rounded-lg transition-colors"
+                    >
+                      Profile
+                    </Link>
+                    <button
+                      onClick={logout}
+                      className="block w-full text-left px-4 py-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                    >
+                      Logout
+                    </button>
+                  </div>
+                </div>
+              ) : (
+                <div className="bg-stone-50 rounded-xl p-4 mb-4">
+                  <div className="text-center">
+                    <div className="w-16 h-16 bg-stone-200 rounded-full flex items-center justify-center mx-auto mb-3">
+                      <User size={32} className="text-stone-400" />
+                    </div>
+                    <div className="font-medium text-stone-900 mb-2">Sign In Required</div>
+                    <div className="text-sm text-stone-600 mb-3">Access your dashboard and profile</div>
+                    <Link
+                      to="/login"
+                      className="block w-full bg-amari-600 text-white px-4 py-3 rounded-xl font-bold hover:bg-amari-700 transition-colors text-center"
+                    >
+                      Sign In / Register
+                    </Link>
+                  </div>
+                </div>
+              )}
+
+              <Link to="/partner" className="block w-full text-center bg-amari-600 text-white px-4 py-3 rounded-xl font-bold hover:bg-amari-900 mb-4 shadow-md">
                 Partner with Us
               </Link>
               <Link
