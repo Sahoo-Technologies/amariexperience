@@ -1,27 +1,39 @@
 // Database connection configuration
-const connectionString = 'postgresql://neondb_owner:npg_COWH0y3qtwUa@ep-misty-bush-ah51gttt-pooler.c-3.us-east-1.aws.neon.tech/neondb?sslmode=require';
+const NEON_URL = 'https://ep-misty-bush-ah51gttt-pooler.c-3.us-east-1.aws.neon.tech';
+const NEON_TOKEN = 'npg_COWH0y3qtwUa';
 
 // Real Neon database connection using fetch API
 export const executeQuery = async (query: string, params: any[] = []) => {
   try {
-    const response = await fetch('https://ep-misty-bush-ah51gttt-pooler.c-3.us-east-1.aws.neon.tech/sql', {
+    console.log('Executing database query:', query);
+    console.log('With params:', params);
+    
+    const response = await fetch(`${NEON_URL}/sql`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer npg_COWH0y3qtwUa`
+        'Authorization': `Bearer ${NEON_TOKEN}`,
+        'Accept': 'application/json'
       },
       body: JSON.stringify({ query, params })
     });
     
+    console.log('Database response status:', response.status);
+    console.log('Database response headers:', Object.fromEntries(response.headers.entries()));
+    
     if (!response.ok) {
-      throw new Error(`Database query failed: ${response.statusText}`);
+      const errorText = await response.text();
+      console.error('Database error response:', errorText);
+      throw new Error(`Database query failed: ${response.status} ${response.statusText} - ${errorText}`);
     }
     
     const result = await response.json();
+    console.log('Database query result:', result);
     return result;
   } catch (error) {
     console.error('Database query failed:', error);
     // Fallback to mock storage for development
+    console.log('Falling back to mock storage');
     return await executeQueryFallback(query, params);
   }
 };
