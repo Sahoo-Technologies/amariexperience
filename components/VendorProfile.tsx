@@ -390,81 +390,51 @@ const VendorProfile: React.FC = () => {
             <div className="bg-white rounded-2xl shadow-sm border border-amari-100 p-8">
               <h2 className="text-2xl font-serif font-bold text-amari-900 mb-6">Get in Touch</h2>
               
-              <div className="grid md:grid-cols-2 gap-8">
+              <div className="grid md:grid-cols-1 gap-8">
                 <div className="space-y-6">
                   <div>
-                    <h3 className="font-bold text-amari-900 mb-4">Contact Information</h3>
-                    <div className="space-y-4">
+                    <h3 className="font-semibold text-amari-900 mb-4">Contact Information</h3>
+                    <div className="space-y-3">
                       <div className="flex items-center gap-3">
-                        <Mail size={20} className="text-amari-400" />
+                        <Mail className="text-amari-600" size={20} />
                         <div>
-                          <p className="text-sm text-stone-500">Email</p>
-                          <p className="font-medium text-amari-900">{vendorDetails.contact.email}</p>
+                          <div className="font-medium text-stone-900">Email</div>
+                          <div className="text-sm text-stone-600">{vendorDetails.contact.email}</div>
                         </div>
                       </div>
                       <div className="flex items-center gap-3">
-                        <Phone size={20} className="text-amari-400" />
+                        <Phone className="text-amari-600" size={20} />
                         <div>
-                          <p className="text-sm text-stone-500">Phone</p>
-                          <p className="font-medium text-amari-900">{vendorDetails.contact.phone}</p>
+                          <div className="font-medium text-stone-900">Phone</div>
+                          <div className="text-sm text-stone-600">{vendorDetails.contact.phone}</div>
                         </div>
                       </div>
                       <div className="flex items-center gap-3">
-                        <MapPin size={20} className="text-amari-400" />
+                        <MapPin className="text-amari-600" size={20} />
                         <div>
-                          <p className="text-sm text-stone-500">Address</p>
-                          <p className="font-medium text-amari-900">{vendorDetails.contact.address}</p>
-                        </div>
-                      </div>
-                      <div className="flex items-center gap-3">
-                        <Globe size={20} className="text-amari-400" />
-                        <div>
-                          <p className="text-sm text-stone-500">Website</p>
-                          <p className="font-medium text-amari-900">{vendorDetails.socialMedia.website}</p>
+                          <div className="font-medium text-stone-900">Address</div>
+                          <div className="text-sm text-stone-600">{vendorDetails.contact.address}</div>
                         </div>
                       </div>
                     </div>
                   </div>
                   
                   <div>
-                    <h3 className="font-bold text-amari-900 mb-4">Social Media</h3>
+                    <h3 className="font-semibold text-amari-900 mb-4">Business Hours</h3>
                     <div className="space-y-2">
-                      <div className="flex items-center gap-2">
-                        <span className="text-sm text-stone-600">Instagram:</span>
-                        <span className="font-medium text-amari-900">{vendorDetails.socialMedia.instagram}</span>
+                      <div className="flex justify-between">
+                        <span className="text-stone-600">Monday - Friday</span>
+                        <span className="text-stone-900">9:00 AM - 6:00 PM</span>
                       </div>
-                      <div className="flex items-center gap-2">
-                        <span className="text-sm text-stone-600">Facebook:</span>
-                        <span className="font-medium text-amari-900">{vendorDetails.socialMedia.facebook}</span>
+                      <div className="flex justify-between">
+                        <span className="text-stone-600">Saturday</span>
+                        <span className="text-stone-900">10:00 AM - 4:00 PM</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-stone-600">Sunday</span>
+                        <span className="text-stone-900">Closed</span>
                       </div>
                     </div>
-                  </div>
-                </div>
-                
-                <div className="space-y-6">
-                  <div>
-                    <h3 className="font-bold text-amari-900 mb-4">Send a Message</h3>
-                    <form className="space-y-4">
-                      <div>
-                        <label className="block text-sm font-medium text-stone-700 mb-1">Your Name</label>
-                        <input type="text" className="w-full px-4 py-2 border border-amari-200 rounded-lg focus:ring-2 focus:ring-amari-500 focus:border-amari-500" />
-                      </div>
-                      <div>
-                        <label className="block text-sm font-medium text-stone-700 mb-1">Email</label>
-                        <input type="email" className="w-full px-4 py-2 border border-amari-200 rounded-lg focus:ring-2 focus:ring-amari-500 focus:border-amari-500" />
-                      </div>
-                      <div>
-                        <label className="block text-sm font-medium text-stone-700 mb-1">Wedding Date</label>
-                        <input type="date" className="w-full px-4 py-2 border border-amari-200 rounded-lg focus:ring-2 focus:ring-amari-500 focus:border-amari-500" />
-                      </div>
-                      <div>
-                        <label className="block text-sm font-medium text-stone-700 mb-1">Message</label>
-                        <textarea rows={4} className="w-full px-4 py-2 border border-amari-200 rounded-lg focus:ring-2 focus:ring-amari-500 focus:border-amari-500" />
-                      </div>
-                      <button type="submit" className="w-full bg-amari-600 text-white py-3 rounded-xl font-bold hover:bg-amari-700 transition">
-                        Send Message
-                      </button>
-                    </form>
                   </div>
                 </div>
               </div>
