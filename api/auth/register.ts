@@ -58,7 +58,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     const inserted = await sql`
       INSERT INTO users (email, first_name, last_name, phone, user_type, password_hash)
       VALUES (${email}, ${firstName}, ${lastName}, ${phone || null}, ${userType}, ${passwordHash})
-      RETURNING id, email, first_name, last_name, phone, user_type, created_at, email_verified, is_active;
+      RETURNING id, email, first_name, last_name, phone, user_type, created_at, email_verified,
+                is_active, profile_image, last_login;
     `;
 
     const user = inserted[0];
@@ -72,7 +73,9 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         lastName: user.last_name,
         phone: user.phone,
         userType: user.user_type,
+        profileImage: user.profile_image,
         createdAt: user.created_at,
+        lastLogin: user.last_login,
         isActive: user.is_active,
         emailVerified: user.email_verified
       }

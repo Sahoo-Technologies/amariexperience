@@ -4,9 +4,9 @@ import { getSql } from './_lib/db';
 export default async function handler(_req: VercelRequest, res: VercelResponse) {
   try {
     const sql = getSql();
-    const rows = await sql`SELECT 1 AS ok;`;
-    res.status(200).json({ ok: true, db: rows?.[0]?.ok === 1 });
+    const rows = await sql`SELECT * FROM posts;`;
+    res.status(200).json({ rows });
   } catch (error: any) {
-    res.status(500).json({ ok: false, error: error?.message || 'DB connection failed' });
+    res.status(500).json({ error: error?.message || 'Query failed' });
   }
 }

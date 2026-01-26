@@ -12,7 +12,7 @@ interface AuthContextType extends AuthState {
 type AuthAction =
   | { type: 'SET_LOADING'; payload: boolean }
   | { type: 'SET_ERROR'; payload: string | null }
-  | { type: 'SET_USER'; payload: { user: User; token: string } }
+  | { type: 'SET_USER'; payload: { user: User; token?: string | null } }
   | { type: 'CLEAR_AUTH' }
   | { type: 'UPDATE_USER'; payload: Partial<User> };
 
@@ -34,7 +34,7 @@ const neonAuthReducer = (state: AuthState, action: AuthAction): AuthState => {
       return {
         ...state,
         user: action.payload.user,
-        token: action.payload.token,
+        token: action.payload.token ?? null,
         isAuthenticated: true,
         isLoading: false,
         error: null,
@@ -75,17 +75,24 @@ interface AuthProviderProps {
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [state, dispatch] = useReducer(neonAuthReducer, initialState);
 
-  // Initialize neonAuth on mount
+  // Initialize auth on mount
   useEffect(() => {
-    neonAuth.initializeAuth();
-    const currentUser = neonAuth.getCurrentUser();
-    if (currentUser) {
-      const token = localStorage.getItem('neonAuthToken');
+    let isMounted = true;
+
+    const initialize = async () => {
+      const user = await neonAuth.initializeAuth();
+      if (!isMounted || !user) return;
       dispatch({
         type: 'SET_USER',
-        payload: { user: currentUser, token: token || '' },
+        payload: { user, token: null },
       });
-    }
+    };
+
+    initialize();
+
+    return () => {
+      isMounted = false;
+    };
   }, []);
 
   const login = async (credentials: LoginCredentials) => {
@@ -94,12 +101,10 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
     try {
       const result = await neonAuth.login(credentials);
-      if (result.success && result.user && result.token) {
-        localStorage.setItem('neonAuthToken', result.token);
-        localStorage.setItem('currentUser', JSON.stringify(result.user));
+      if (result.success && result.user) {
         dispatch({
           type: 'SET_USER',
-          payload: { user: result.user, token: result.token },
+          payload: { user: result.user, token: null },
         });
       } else {
         dispatch({ type: 'SET_ERROR', payload: result.error || 'Login failed' });
@@ -117,19 +122,17 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
     try {
       const result = await neonAuth.register(data);
-      if (result.success) {
-        // Auto-login after successful registration
-        const loginResult = await neonAuth.login({
-          email: data.email,
-          password: data.password,
+      if (result.success && result.user) {
+        dispatch({
+          type: 'SET_USER',
+          payload: { user: result.user, token: null },
         });
-        
-        if (loginResult.success && loginResult.user && loginResult.token) {
-          localStorage.setItem('neonAuthToken', loginResult.token);
-          localStorage.setItem('currentUser', JSON.stringify(loginResult.user));
+      } else if (result.success) {
+        const currentUser = neonAuth.getCurrentUser();
+        if (currentUser) {
           dispatch({
             type: 'SET_USER',
-            payload: { user: loginResult.user, token: loginResult.token },
+            payload: { user: currentUser, token: null },
           });
         } else {
           dispatch({ type: 'SET_ERROR', payload: 'Registration successful but login failed' });
@@ -156,13 +159,13 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     dispatch({ type: 'SET_ERROR', payload: null });
 
     try {
-      const result = await neonAuth.updateProfile(state.user.id, updates);
+      const result = await neonAuth.updateProfile(updates);
       if (result.success) {
-        // Update localStorage with the changes
-        const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
-        const updatedUser = { ...currentUser, ...updates };
-        localStorage.setItem('currentUser', JSON.stringify(updatedUser));
-        dispatch({ type: 'UPDATE_USER', payload: updates });
+        if (result.user) {
+          dispatch({ type: 'SET_USER', payload: { user: result.user, token: null } });
+        } else {
+          dispatch({ type: 'UPDATE_USER', payload: updates });
+        }
       } else {
         dispatch({ type: 'SET_ERROR', payload: result.error || 'Profile update failed' });
       }
@@ -180,7 +183,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     dispatch({ type: 'SET_ERROR', payload: null });
 
     try {
-      const result = await neonAuth.changePassword(state.user.id, currentPassword, newPassword);
+      const result = await neonAuth.changePassword(currentPassword, newPassword);
       if (result.success) {
         // Password changed successfully
         dispatch({ type: 'SET_ERROR', payload: null });

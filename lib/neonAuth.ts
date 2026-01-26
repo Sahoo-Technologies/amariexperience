@@ -1,10 +1,7 @@
-// Neon Auth Integration
-import { executeQuery } from './db';
-
-// Neon Auth configuration
+// Auth Integration (serverless API backed)
 const authEnv = (import.meta as any).env || {};
-const NEON_AUTH_URL = authEnv.VITE_NEON_AUTH_URL || 'https://ep-misty-bush-ah51gttt-pooler.c-3.us-east-1.aws.neon.tech';
-const NEON_AUTH_TOKEN = authEnv.VITE_NEON_AUTH_TOKEN || 'npg_COWH0y3qtwUa';
+const API_BASE = authEnv.VITE_API_BASE || '';
+const AUTH_BASE_URL = `${API_BASE}/api/auth`;
 
 // User types
 export interface User {
@@ -43,213 +40,75 @@ export interface RegisterData {
   userType: 'couple' | 'vendor';
 }
 
-// Neon Auth client
 class NeonAuth {
-  private baseUrl: string;
-  private token: string;
+  private async request<T>(path: string, options: RequestInit = {}) {
+    const response = await fetch(`${AUTH_BASE_URL}${path}`, {
+      credentials: 'include',
+      ...options
+    });
 
-  constructor() {
-    this.baseUrl = NEON_AUTH_URL.replace('/neondb', '/auth');
-    this.token = NEON_AUTH_TOKEN;
-  }
+    const contentType = response.headers.get('content-type') || '';
+    const payload = contentType.includes('application/json')
+      ? await response.json()
+      : await response.text();
 
-  // Initialize Neon Auth
-  async initialize() {
-    try {
-      // Check if auth tables exist, create if not
-      await this.ensureAuthTables();
-    } catch (error) {
-      console.error('Neon Auth initialization error:', error);
+    if (!response.ok) {
+      return { ok: false, error: payload?.error || payload || response.statusText };
     }
-  }
 
-  // Ensure auth tables exist
-  private async ensureAuthTables() {
-    await executeQuery('CREATE EXTENSION IF NOT EXISTS pgcrypto;');
-
-    const createUsersTable = `
-      CREATE TABLE IF NOT EXISTS users (
-        id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-        email VARCHAR(255) UNIQUE NOT NULL,
-        first_name VARCHAR(100) NOT NULL,
-        last_name VARCHAR(100) NOT NULL,
-        phone VARCHAR(20),
-        user_type VARCHAR(20) NOT NULL DEFAULT 'couple',
-        profile_image TEXT,
-        email_verified BOOLEAN DEFAULT FALSE,
-        is_active BOOLEAN DEFAULT TRUE,
-        created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-        last_login TIMESTAMP WITH TIME ZONE,
-        password_hash VARCHAR(255) NOT NULL
-      );
-    `;
-
-    const createSessionsTable = `
-      CREATE TABLE IF NOT EXISTS sessions (
-        id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-        user_id UUID REFERENCES users(id) ON DELETE CASCADE,
-        token_hash VARCHAR(255) NOT NULL,
-        expires_at TIMESTAMP WITH TIME ZONE NOT NULL,
-        created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-        ip_address INET,
-        user_agent TEXT
-      );
-    `;
-
-    const createPasswordResetsTable = `
-      CREATE TABLE IF NOT EXISTS password_resets (
-        id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-        user_id UUID REFERENCES users(id) ON DELETE CASCADE,
-        token_hash VARCHAR(255) NOT NULL,
-        expires_at TIMESTAMP WITH TIME ZONE NOT NULL,
-        created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-        used BOOLEAN DEFAULT FALSE
-      );
-    `;
-
-    await executeQuery(createUsersTable);
-    await executeQuery(createSessionsTable);
-    await executeQuery(createPasswordResetsTable);
-  }
-
-  // Password hashing using Web Crypto API
-  private async hashPassword(password: string): Promise<string> {
-    const encoder = new TextEncoder();
-    const data = encoder.encode(password);
-    const hashBuffer = await crypto.subtle.digest('SHA-256', data);
-    const hashArray = Array.from(new Uint8Array(hashBuffer));
-    return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
-  }
-
-  // Password verification
-  private async verifyPassword(password: string, hashedPassword: string): Promise<boolean> {
-    const encoder = new TextEncoder();
-    const data = encoder.encode(password);
-    const hashBuffer = await crypto.subtle.digest('SHA-256', data);
-    const hashArray = Array.from(new Uint8Array(hashBuffer));
-    const hash = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
-    return hash === hashedPassword;
-  }
-
-  // Generate secure token
-  private generateToken(): string {
-    const array = new Uint8Array(32);
-    crypto.getRandomValues(array);
-    return Array.from(array, b => b.toString(16).padStart(2, '0')).join('');
+    return { ok: true, data: payload as T };
   }
 
   // Register new user
-  async register(data: RegisterData): Promise<{ success: boolean; error?: string }> {
+  async register(data: RegisterData): Promise<{ success: boolean; user?: User; error?: string }> {
     try {
-      const hashedPassword = await this.hashPassword(data.password);
-      
-      const result = await executeQuery(`
-        INSERT INTO users (
-          email, first_name, last_name, phone, user_type, 
-          password_hash, email_verified, is_active
-        ) VALUES (
-          $1, $2, $3, $4, $5, $6, $7, $8
-        )
-        RETURNING id, email, first_name, last_name, phone, user_type, 
-                  email_verified, is_active, created_at
-      `, [
-        data.email,
-        data.firstName,
-        data.lastName,
-        data.phone || null,
-        data.userType,
-        hashedPassword,
-        false, // email_verified
-        true   // is_active
-      ]);
+      const result = await this.request<{ user: User }>('/register', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
+        },
+        body: JSON.stringify(data)
+      });
 
-      if (result.length === 0) {
-        return { success: false, error: 'Registration failed' };
+      if (!result.ok) {
+        return { success: false, error: result.error || 'Registration failed' };
       }
 
-      return { success: true };
-    } catch (error: any) {
+      const user = result.data?.user;
+      if (user) {
+        localStorage.setItem('currentUser', JSON.stringify(user));
+      }
+
+      return { success: true, user };
+    } catch (error) {
       console.error('Registration error:', error);
-      if (error.message?.includes('duplicate key')) {
-        return { success: false, error: 'Email already exists' };
-      }
       return { success: false, error: 'Registration failed' };
     }
   }
 
   // Login user
-  async login(credentials: LoginCredentials): Promise<{ success: boolean; user?: User; token?: string; error?: string }> {
+  async login(credentials: LoginCredentials): Promise<{ success: boolean; user?: User; error?: string }> {
     try {
-      // Get user from database
-      const result = await executeQuery(`
-        SELECT id, email, first_name, last_name, phone, user_type, 
-               password_hash, email_verified, is_active, created_at
-        FROM users 
-        WHERE email = $1 AND is_active = true
-      `, [credentials.email]);
-
-      if (result.length === 0) {
-        return { success: false, error: 'Invalid email or password' };
-      }
-
-      const user = result[0];
-      const isValidPassword = await this.verifyPassword(credentials.password, user.password_hash);
-      
-      if (!isValidPassword) {
-        return { success: false, error: 'Invalid email or password' };
-      }
-
-      // Generate session token
-      const token = this.generateToken();
-      const tokenHash = await this.hashPassword(token);
-      const expires = new Date(Date.now() + (24 * 60 * 60 * 1000)); // 24 hours
-
-      // Store session in database
-      await executeQuery(`
-        INSERT INTO sessions (user_id, token_hash, expires_at)
-        VALUES ($1, $2, $3)
-      `, [user.id, tokenHash, expires.toISOString()]);
-
-      // Update last login
-      await executeQuery(`
-        UPDATE users 
-        SET last_login = NOW()
-        WHERE id = $1
-      `, [user.id]);
-
-      // Store session in localStorage for quick access
-      localStorage.setItem('neonAuthToken', token);
-      localStorage.setItem('currentUser', JSON.stringify({
-        id: user.id,
-        email: user.email,
-        firstName: user.first_name,
-        lastName: user.last_name,
-        phone: user.phone,
-        userType: user.user_type,
-        profileImage: user.profile_image,
-        createdAt: user.created_at,
-        lastLogin: user.last_login,
-        isActive: user.is_active,
-        emailVerified: user.email_verified
-      }));
-
-      return { 
-        success: true, 
-        user: {
-          id: user.id,
-          email: user.email,
-          firstName: user.first_name,
-          lastName: user.last_name,
-          phone: user.phone,
-          userType: user.user_type,
-          profileImage: user.profile_image,
-          createdAt: user.created_at,
-          lastLogin: user.last_login,
-          isActive: user.is_active,
-          emailVerified: user.email_verified
+      const result = await this.request<{ user: User }>('/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
         },
-        token 
-      };
+        body: JSON.stringify(credentials)
+      });
+
+      if (!result.ok) {
+        return { success: false, error: result.error || 'Login failed' };
+      }
+
+      const user = result.data?.user;
+      if (user) {
+        localStorage.setItem('currentUser', JSON.stringify(user));
+      }
+
+      return { success: true, user };
     } catch (error) {
       console.error('Login error:', error);
       return { success: false, error: 'Login failed' };
@@ -259,19 +118,14 @@ class NeonAuth {
   // Logout user
   async logout(): Promise<void> {
     try {
-      const token = localStorage.getItem('neonAuthToken');
-      if (token) {
-        const tokenHash = await this.hashPassword(token);
-        
-        // Remove session from database
-        await executeQuery('DELETE FROM sessions WHERE token_hash = $1', [tokenHash]);
-      }
-      
-      // Clear localStorage
-      localStorage.removeItem('neonAuthToken');
-      localStorage.removeItem('currentUser');
+      await this.request('/logout', {
+        method: 'POST',
+        headers: { 'Accept': 'application/json' }
+      });
     } catch (error) {
       console.error('Logout error:', error);
+    } finally {
+      localStorage.removeItem('currentUser');
     }
   }
 
@@ -289,41 +143,22 @@ class NeonAuth {
   // Verify session
   async verifySession(): Promise<User | null> {
     try {
-      const token = localStorage.getItem('neonAuthToken');
-      if (!token) {
-        return null;
-      }
+      const result = await this.request<{ user: User }>('/me', {
+        method: 'GET',
+        headers: { 'Accept': 'application/json' }
+      });
 
-      const tokenHash = await this.hashPassword(token);
-      
-      const result = await executeQuery(`
-        SELECT s.user_id, s.expires_at, u.*
-        FROM sessions s
-        JOIN users u ON s.user_id = u.id
-        WHERE s.token_hash = $1 AND s.expires_at > NOW() AND u.is_active = true
-      `, [tokenHash]);
-
-      if (result.length === 0) {
-        // Session expired or invalid
-        localStorage.removeItem('neonAuthToken');
+      if (!result.ok) {
         localStorage.removeItem('currentUser');
         return null;
       }
 
-      const user = result[0];
-      return {
-        id: user.id,
-        email: user.email,
-        firstName: user.first_name,
-        lastName: user.last_name,
-        phone: user.phone,
-        userType: user.user_type,
-        profileImage: user.profile_image,
-        createdAt: user.created_at,
-        lastLogin: user.last_login,
-        isActive: user.is_active,
-        emailVerified: user.email_verified
-      };
+      const user = result.data?.user || null;
+      if (user) {
+        localStorage.setItem('currentUser', JSON.stringify(user));
+      }
+
+      return user;
     } catch (error) {
       console.error('Session verification error:', error);
       return null;
@@ -331,31 +166,27 @@ class NeonAuth {
   }
 
   // Update user profile
-  async updateProfile(userId: string, updates: Partial<User>): Promise<{ success: boolean; error?: string }> {
+  async updateProfile(updates: Partial<User>): Promise<{ success: boolean; user?: User; error?: string }> {
     try {
-      const setClause = Object.keys(updates)
-        .map((key, index) => {
-          const dbKey = key.replace(/([A-Z])/g, '_$1').toLowerCase();
-          return `${dbKey} = $${index + 1}`;
-        })
-        .join(', ');
+      const result = await this.request<{ user: User }>('/me', {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
+        },
+        body: JSON.stringify({ updates })
+      });
 
-      const values = [...Object.values(updates), userId];
-      
-      await executeQuery(`
-        UPDATE users 
-        SET ${setClause}
-        WHERE id = $${values.length}
-      `, values);
-
-      // Update localStorage
-      const currentUser = this.getCurrentUser();
-      if (currentUser && currentUser.id === userId) {
-        const updatedUser = { ...currentUser, ...updates };
-        localStorage.setItem('currentUser', JSON.stringify(updatedUser));
+      if (!result.ok) {
+        return { success: false, error: result.error || 'Failed to update profile' };
       }
 
-      return { success: true };
+      const user = result.data?.user;
+      if (user) {
+        localStorage.setItem('currentUser', JSON.stringify(user));
+      }
+
+      return { success: true, user };
     } catch (error) {
       console.error('Profile update error:', error);
       return { success: false, error: 'Failed to update profile' };
@@ -363,39 +194,20 @@ class NeonAuth {
   }
 
   // Change password
-  async changePassword(userId: string, currentPassword: string, newPassword: string): Promise<{ success: boolean; error?: string }> {
+  async changePassword(currentPassword: string, newPassword: string): Promise<{ success: boolean; error?: string }> {
     try {
-      // Get user from database
-      const result = await executeQuery(`
-        SELECT password_hash FROM users WHERE id = $1
-      `, [userId]);
+      const result = await this.request('/password', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
+        },
+        body: JSON.stringify({ currentPassword, newPassword })
+      });
 
-      if (result.length === 0) {
-        return { success: false, error: 'User not found' };
+      if (!result.ok) {
+        return { success: false, error: result.error || 'Failed to change password' };
       }
-
-      const storedPassword = result[0].password_hash;
-      
-      const isValidCurrentPassword = await this.verifyPassword(currentPassword, storedPassword);
-      if (!isValidCurrentPassword) {
-        return { success: false, error: 'Current password is incorrect' };
-      }
-
-      if (newPassword.length < 8) {
-        return { success: false, error: 'New password must be at least 8 characters long' };
-      }
-
-      const hashedNewPassword = await this.hashPassword(newPassword);
-      
-      // Update password in database
-      await executeQuery(`
-        UPDATE users 
-        SET password_hash = $1
-        WHERE id = $2
-      `, [hashedNewPassword, userId]);
-
-      // Invalidate all sessions for this user
-      await executeQuery('DELETE FROM sessions WHERE user_id = $1', [userId]);
 
       return { success: true };
     } catch (error) {
@@ -405,16 +217,16 @@ class NeonAuth {
   }
 
   // Initialize auth state
-  async initializeAuth(): Promise<void> {
+  async initializeAuth(): Promise<User | null> {
     try {
-      await this.initialize();
       const user = await this.verifySession();
       if (!user) {
-        localStorage.removeItem('neonAuthToken');
         localStorage.removeItem('currentUser');
       }
+      return user;
     } catch (error) {
       console.error('Auth initialization error:', error);
+      return null;
     }
   }
 }

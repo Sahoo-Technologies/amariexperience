@@ -20,7 +20,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
     const rows = await sql`
       SELECT id, email, first_name, last_name, phone, user_type, password_hash,
-             created_at, email_verified, is_active
+             created_at, email_verified, is_active, profile_image, last_login
       FROM users
       WHERE email = ${email} AND is_active = true
       LIMIT 1;
@@ -50,7 +50,9 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         lastName: user.last_name,
         phone: user.phone,
         userType: user.user_type,
+        profileImage: user.profile_image,
         createdAt: user.created_at,
+        lastLogin: user.last_login,
         isActive: user.is_active,
         emailVerified: user.email_verified
       }
