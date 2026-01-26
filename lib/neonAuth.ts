@@ -64,6 +64,8 @@ class NeonAuth {
 
   // Ensure auth tables exist
   private async ensureAuthTables() {
+    await executeQuery('CREATE EXTENSION IF NOT EXISTS pgcrypto;');
+
     const createUsersTable = `
       CREATE TABLE IF NOT EXISTS users (
         id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -215,7 +217,7 @@ class NeonAuth {
       `, [user.id]);
 
       // Store session in localStorage for quick access
-      localStorage.setItem('authToken', token);
+      localStorage.setItem('neonAuthToken', token);
       localStorage.setItem('currentUser', JSON.stringify({
         id: user.id,
         email: user.email,
@@ -256,7 +258,7 @@ class NeonAuth {
   // Logout user
   async logout(): Promise<void> {
     try {
-      const token = localStorage.getItem('authToken');
+      const token = localStorage.getItem('neonAuthToken');
       if (token) {
         const tokenHash = await this.hashPassword(token);
         
@@ -265,7 +267,7 @@ class NeonAuth {
       }
       
       // Clear localStorage
-      localStorage.removeItem('authToken');
+      localStorage.removeItem('neonAuthToken');
       localStorage.removeItem('currentUser');
     } catch (error) {
       console.error('Logout error:', error);
@@ -286,7 +288,7 @@ class NeonAuth {
   // Verify session
   async verifySession(): Promise<User | null> {
     try {
-      const token = localStorage.getItem('authToken');
+      const token = localStorage.getItem('neonAuthToken');
       if (!token) {
         return null;
       }
@@ -302,7 +304,7 @@ class NeonAuth {
 
       if (result.length === 0) {
         // Session expired or invalid
-        localStorage.removeItem('authToken');
+        localStorage.removeItem('neonAuthToken');
         localStorage.removeItem('currentUser');
         return null;
       }
@@ -407,7 +409,7 @@ class NeonAuth {
       await this.initialize();
       const user = await this.verifySession();
       if (!user) {
-        localStorage.removeItem('authToken');
+        localStorage.removeItem('neonAuthToken');
         localStorage.removeItem('currentUser');
       }
     } catch (error) {
@@ -418,4 +420,4 @@ class NeonAuth {
 
 // Export singleton instance
 export const neonAuth = new NeonAuth();
-export type { User, AuthState, LoginCredentials, RegisterData };
+
