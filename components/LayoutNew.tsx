@@ -12,7 +12,7 @@ const LayoutNew: React.FC<LayoutProps> = ({ children }) => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const location = useLocation();
-  const { isAuthenticated, user } = useAuth();
+  const { isAuthenticated, user, logout } = useAuth();
 
   const isCouplesRoute = location.pathname === '/' || location.pathname === '/couples';
 
@@ -141,11 +141,7 @@ const LayoutNew: React.FC<LayoutProps> = ({ children }) => {
                             <div className="text-sm text-stone-600">View and manage your profile</div>
                           </Link>
                           <button
-                            onClick={() => {
-                              // This will be handled by the auth context
-                              const logoutEvent = new CustomEvent('logout');
-                              window.dispatchEvent(logoutEvent);
-                            }}
+                            onClick={logout}
                             className="block w-full text-left px-4 py-2 text-stone-700 hover:bg-stone-50 transition-colors"
                           >
                             Logout
@@ -216,8 +212,8 @@ const LayoutNew: React.FC<LayoutProps> = ({ children }) => {
                       </Link>
                       <button
                         onClick={() => {
-                          const logoutEvent = new CustomEvent('logout');
-                          window.dispatchEvent(logoutEvent);
+                          logout();
+                          setIsMobileMenuOpen(false);
                         }}
                         className="block w-full text-left px-4 py-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
                       >
