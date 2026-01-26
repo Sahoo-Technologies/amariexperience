@@ -2,8 +2,9 @@
 import { executeQuery } from './db';
 
 // Neon Auth configuration
-const NEON_AUTH_URL = process.env.VITE_NEON_AUTH_URL || 'https://ep-misty-bush-ah51gttt-pooler.c-3.us-east-1.aws.neon.tech';
-const NEON_AUTH_TOKEN = process.env.VITE_NEON_AUTH_TOKEN || 'npg_COWH0y3qtwUa';
+const authEnv = (import.meta as any).env || {};
+const NEON_AUTH_URL = authEnv.VITE_NEON_AUTH_URL || 'https://ep-misty-bush-ah51gttt-pooler.c-3.us-east-1.aws.neon.tech';
+const NEON_AUTH_TOKEN = authEnv.VITE_NEON_AUTH_TOKEN || 'npg_COWH0y3qtwUa';
 
 // User types
 export interface User {
