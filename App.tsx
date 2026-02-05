@@ -225,6 +225,29 @@ const CouplesLanding = () => (
   </>
 );
 
+const NotFound: React.FC = () => (
+  <div className="min-h-screen bg-amari-50 flex items-center justify-center px-4">
+    <div className="max-w-lg w-full bg-white border border-stone-200 rounded-2xl shadow-sm p-8 text-center">
+      <h2 className="text-3xl font-serif font-bold text-amari-900">Page not found</h2>
+      <p className="mt-3 text-stone-600">The page you tried to open doesn’t exist.</p>
+      <div className="mt-6 flex flex-col sm:flex-row gap-3 justify-center">
+        <Link
+          to="/"
+          className="bg-amari-600 text-white px-6 py-3 rounded-xl font-bold hover:bg-amari-700 transition"
+        >
+          Go Home
+        </Link>
+        <Link
+          to="/login"
+          className="bg-white border border-stone-200 text-stone-700 px-6 py-3 rounded-xl font-bold hover:bg-stone-50 transition"
+        >
+          Login
+        </Link>
+      </div>
+    </div>
+  </div>
+);
+
 const ConciergePage = () => (
   <div className="max-w-7xl mx-auto py-20 px-4">
     <div className="bg-amari-900 text-white rounded-[2rem] p-8 md:p-20 overflow-hidden relative shadow-2xl">
@@ -283,6 +306,7 @@ const App: React.FC = () => {
             <Route path="/couples" element={<CouplesLanding />} />
             <Route path="/login" element={<Login />} />
             <Route path="/dashboard" element={<UserDashboard />} />
+            <Route path="/profile" element={<UserDashboard />} />
             <Route path="/partner" element={<VendorOnboarding />} />
             <Route path="/vendors" element={<VendorDirectory />} />
             <Route path="/vendor/:id" element={<VendorProfile />} />
@@ -302,6 +326,7 @@ const App: React.FC = () => {
             <Route path="/concierge" element={<ConciergePage />} />
             <Route path="/admin" element={<AdminDashboard />} />
             <Route path="/admin/vendor-verification" element={<AdminVendorVerification />} />
+            <Route path="*" element={<NotFound />} />
           </Routes>
         </Layout>
       </Router>
