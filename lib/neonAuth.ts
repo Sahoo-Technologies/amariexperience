@@ -53,7 +53,12 @@ class NeonAuth {
       : await response.text();
 
     if (!response.ok) {
-      return { ok: false, error: payload?.error || payload || response.statusText };
+      const errMsg = typeof payload?.error === 'string'
+        ? payload.error
+        : typeof payload === 'string'
+          ? payload
+          : payload?.message || response.statusText || 'Request failed';
+      return { ok: false, error: errMsg };
     }
 
     return { ok: true, data: payload as T };

@@ -72,11 +72,6 @@ const VendorOnboarding: React.FC = () => {
       return;
     }
 
-    if (user?.userType && user.userType !== 'vendor') {
-      navigate('/dashboard');
-      return;
-    }
-
     if (user) {
       setFormData((prev) => ({
         ...prev,

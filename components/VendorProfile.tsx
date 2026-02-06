@@ -136,7 +136,24 @@ const VendorProfile: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [heroIdx, setHeroIdx] = useState(0);
   const [saved, setSaved] = useState(false);
+  const [showServices, setShowServices] = useState(false);
   const reviewsRef = useRef<HTMLDivElement>(null);
+  const aboutRef = useRef<HTMLDivElement>(null);
+
+  const handleShare = async () => {
+    const url = window.location.href;
+    const title = vendor?.name || 'Amari Experience Vendor';
+    if (navigator.share) {
+      try { await navigator.share({ title, url }); } catch {}
+    } else {
+      await navigator.clipboard.writeText(url);
+      alert('Link copied to clipboard!');
+    }
+  };
+
+  const openWhatsApp = (msg: string) => {
+    window.open(`https://wa.me/254796535120?text=${encodeURIComponent(msg)}`, '_blank');
+  };
 
   useEffect(() => {
     let mounted = true;
@@ -207,7 +224,7 @@ const VendorProfile: React.FC = () => {
         </div>
 
         <div className="absolute bottom-4 right-4 flex gap-2">
-          <button className="bg-white/90 backdrop-blur-sm rounded-full p-2.5 shadow-sm hover:bg-white transition">
+          <button onClick={handleShare} className="bg-white/90 backdrop-blur-sm rounded-full p-2.5 shadow-sm hover:bg-white transition">
             <Share2 size={16} className="text-stone-700" />
           </button>
           <button
@@ -292,10 +309,23 @@ const VendorProfile: React.FC = () => {
               <h3 className="font-semibold text-stone-900 text-[15px]">All-inclusive venue</h3>
               <p className="text-stone-500 text-sm mt-0.5 leading-relaxed">
                 The venue takes care of it all — food and beverage, rentals, the works!{' '}
-                <button className="underline text-stone-700 font-medium">See services included</button>
+                <button onClick={() => setShowServices(!showServices)} className="underline text-stone-700 font-medium">See services included</button>
               </p>
             </div>
           </div>
+
+          {showServices && vd && (
+            <div className="ml-14 mt-2 mb-3 bg-stone-50 rounded-xl p-4">
+              <ul className="space-y-1.5">
+                {vd.services.map((s, i) => (
+                  <li key={i} className="flex items-center gap-2 text-sm text-stone-600">
+                    <Check size={14} className="text-green-600 flex-shrink-0" />
+                    {s}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
 
           {/* Pricing */}
           <div className="flex gap-4">
@@ -382,7 +412,10 @@ const VendorProfile: React.FC = () => {
           {/* Review header */}
           <div className="flex items-center justify-between mb-6">
             <h2 className="text-xl font-bold text-stone-900">Reviews</h2>
-            <button className="px-5 py-2.5 border border-stone-900 rounded-full text-sm font-bold text-stone-900 hover:bg-stone-900 hover:text-white transition">
+            <button
+              onClick={() => openWhatsApp(`Hi! I'd like to leave a review for ${vendor.name} on Amari Experience.`)}
+              className="px-5 py-2.5 border border-stone-900 rounded-full text-sm font-bold text-stone-900 hover:bg-stone-900 hover:text-white transition"
+            >
               Write a review
             </button>
           </div>
@@ -452,7 +485,10 @@ const VendorProfile: React.FC = () => {
               <Heart size={15} className={saved ? 'text-red-500 fill-red-500' : ''} />
               Save
             </button>
-            <button className="flex items-center gap-1.5 bg-stone-900 text-white px-5 py-2.5 rounded-full text-sm font-bold hover:bg-stone-800 transition">
+            <button
+              onClick={() => openWhatsApp(`Hi! I'm interested in ${vendor.name} for my wedding. Could you share more details?`)}
+              className="flex items-center gap-1.5 bg-stone-900 text-white px-5 py-2.5 rounded-full text-sm font-bold hover:bg-stone-800 transition"
+            >
               <Send size={15} />
               Contact Vendor
             </button>

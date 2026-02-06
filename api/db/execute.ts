@@ -41,9 +41,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
     const values = Array.isArray(params) ? params : [];
 
-    // NOTE: neon(sql) tagged templates are preferred, but this endpoint intentionally supports
-    // parameter arrays to avoid rewriting the whole frontend query layer.
-    const result = await (sql as any).unsafe(query, values);
+    // neon() requires .query() for conventional parameterized calls
+    const result = await sql.query(query, values);
 
     res.status(200).json({ rows: result });
   } catch (e: any) {

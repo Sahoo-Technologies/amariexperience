@@ -196,7 +196,7 @@ const CouplesLanding = () => (
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {MOCK_VENDORS.slice(0, 3).map((vendor) => (
-            <div key={vendor.id} className="bg-white rounded-3xl shadow-sm hover:shadow-xl transition overflow-hidden border border-amari-100/60">
+            <Link key={vendor.id} to={`/vendor/${vendor.id}`} className="bg-white rounded-3xl shadow-sm hover:shadow-xl transition overflow-hidden border border-amari-100/60 block">
               <div className="relative h-56 overflow-hidden">
                 <img src={vendor.imageUrl} alt={vendor.name} className="w-full h-full object-cover hover:scale-105 transition duration-700 ease-out" />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent"></div>
@@ -218,7 +218,7 @@ const CouplesLanding = () => (
                 </div>
                 <p className="text-stone-600 text-sm leading-relaxed line-clamp-2">{vendor.description}</p>
               </div>
-            </div>
+            </Link>
           ))}
         </div>
       </div>
@@ -266,9 +266,9 @@ const ConciergePage = () => (
               Let us handle the details while you enjoy the journey. Our concierge service offers end-to-end planning assistance, exclusive vendor rates, and on-site coordination for a stress-free experience.
             </p>
             
-            <button className="bg-amari-300 text-amari-900 px-10 py-4 rounded-xl font-bold hover:bg-white hover:text-amari-600 transition shadow-lg text-lg">
+            <Link to="/partner" className="inline-block bg-amari-300 text-amari-900 px-10 py-4 rounded-xl font-bold hover:bg-white hover:text-amari-600 transition shadow-lg text-lg">
               Partner with Amari
-            </button>
+            </Link>
         </div>
         
         <div className="bg-white/5 backdrop-blur-lg rounded-2xl p-8 border border-white/10">

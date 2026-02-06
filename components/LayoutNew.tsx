@@ -11,6 +11,7 @@ interface LayoutProps {
 const LayoutNew: React.FC<LayoutProps> = ({ children }) => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
+  const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
   const location = useLocation();
   const { isAuthenticated, user, logout } = useAuth();
 
@@ -114,43 +115,54 @@ const LayoutNew: React.FC<LayoutProps> = ({ children }) => {
                 <NavLink to="/community" className={navLinkClass}>Community</NavLink>
                 <NavLink to="/history" className={navLinkClass}>Diani History</NavLink>
                 <div className="relative">
-                  <button
-                    onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-                    className="flex items-center gap-2 text-stone-400 hover:text-stone-600 px-4 py-3 rounded-xl text-sm font-medium transition-colors"
-                  >
-                    <User size={18} />
-                    {isAuthenticated ? (
-                      <>
-                        <span className="text-stone-700">Welcome, {user.firstName}!</span>
-                        <div className="absolute top-full left-0 mt-2 w-48 bg-white rounded-xl shadow-lg border border-stone-200 py-2 z-50">
-                          <Link
-                            to="/dashboard"
-                            className="block px-4 py-2 text-stone-700 hover:bg-stone-50 transition-colors"
-                          >
-                            <div className="font-medium text-stone-900">Dashboard</div>
-                            <div className="text-sm text-stone-600">Manage your wedding planning tools</div>
-                          </Link>
-                          <Link
-                            to="/profile"
-                            className="block px-4 py-2 text-stone-700 hover:bg-stone-50 transition-colors"
-                          >
-                            <div className="font-medium text-stone-900">Profile</div>
-                            <div className="text-sm text-stone-600">View and manage your profile</div>
-                          </Link>
-                          <button
-                            onClick={logout}
-                            className="block w-full text-left px-4 py-2 text-stone-700 hover:bg-stone-50 transition-colors"
-                          >
-                            Logout
-                          </button>
+                  {isAuthenticated ? (
+                    <>
+                      <button
+                        onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
+                        className="flex items-center gap-2 text-stone-500 hover:text-stone-700 px-4 py-3 rounded-xl text-sm font-medium transition-colors"
+                      >
+                        <div className="w-8 h-8 rounded-full bg-amari-100 flex items-center justify-center">
+                          <User size={16} className="text-amari-600" />
                         </div>
-                      </>
-                    ) : (
-                      <Link to="/login" className="block">
-                        Login
-                      </Link>
-                    )}
-                  </button>
+                        <span className="text-stone-700">{user?.firstName}</span>
+                      </button>
+                      {isUserMenuOpen && (
+                        <>
+                          <div className="fixed inset-0 z-40" onClick={() => setIsUserMenuOpen(false)} />
+                          <div className="absolute top-full right-0 mt-2 w-56 bg-white rounded-xl shadow-lg border border-stone-200 py-2 z-50">
+                            <Link
+                              to="/dashboard"
+                              onClick={() => setIsUserMenuOpen(false)}
+                              className="block px-4 py-2.5 text-stone-700 hover:bg-stone-50 transition-colors"
+                            >
+                              <div className="font-medium text-stone-900">Dashboard</div>
+                              <div className="text-xs text-stone-500">Manage your wedding planning</div>
+                            </Link>
+                            <Link
+                              to="/profile"
+                              onClick={() => setIsUserMenuOpen(false)}
+                              className="block px-4 py-2.5 text-stone-700 hover:bg-stone-50 transition-colors"
+                            >
+                              <div className="font-medium text-stone-900">Profile</div>
+                              <div className="text-xs text-stone-500">View and edit your profile</div>
+                            </Link>
+                            <div className="border-t border-stone-100 my-1" />
+                            <button
+                              onClick={() => { logout(); setIsUserMenuOpen(false); }}
+                              className="block w-full text-left px-4 py-2.5 text-red-600 hover:bg-red-50 transition-colors"
+                            >
+                              Logout
+                            </button>
+                          </div>
+                        </>
+                      )}
+                    </>
+                  ) : (
+                    <Link to="/login" className="flex items-center gap-2 text-stone-500 hover:text-stone-700 px-4 py-3 rounded-xl text-sm font-medium transition-colors">
+                      <User size={18} />
+                      Login
+                    </Link>
+                  )}
                 </div>
               </div>
               <Link to="/admin" className="text-stone-400 hover:text-stone-600 text-xs font-medium transition-colors">

@@ -66,7 +66,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         .join(', ');
       const values = entries.map(([, value]) => value);
 
-      const updated = await (sql as any).unsafe(
+      const updated = await sql.query(
         `UPDATE users SET ${setClause} WHERE id = $${values.length + 1} RETURNING ${USER_FIELDS};`,
         [...values, session.sub]
       );
@@ -81,7 +81,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       return;
     }
 
-    const rows = await (sql as any).unsafe(
+    const rows = await sql.query(
       `SELECT ${USER_FIELDS} FROM users WHERE id = $1 LIMIT 1;`,
       [session.sub]
     );

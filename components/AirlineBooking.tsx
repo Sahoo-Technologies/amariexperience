@@ -79,9 +79,14 @@ const AirlineBooking: React.FC = () => {
                     <p className="text-xs text-stone-400 font-medium uppercase">{flight.stops}</p>
                     <p className="text-xl font-bold text-amari-600">{flight.price}</p>
                 </div>
-                <button className="px-6 py-2 border border-amari-500 text-amari-600 rounded-full hover:bg-amari-50 transition text-sm font-medium">
+                <a
+                    href={`https://wa.me/254796535120?text=${encodeURIComponent(`Hi Amari! I'd like to book a ${flight.airline} flight (${flight.time}) to Diani at ${flight.price}. Can you help?`)}`}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="px-6 py-2 border border-amari-500 text-amari-600 rounded-full hover:bg-amari-50 transition text-sm font-medium"
+                >
                     Select
-                </button>
+                </a>
             </div>
           </div>
         ))}

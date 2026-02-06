@@ -7,6 +7,15 @@ const VendorDirectory: React.FC = () => {
   const [selectedCategory, setSelectedCategory] = useState<string | 'All'>('All');
   const [vendors, setVendors] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
+  const [savedVendors, setSavedVendors] = useState<Set<string>>(new Set());
+
+  const toggleSave = (vendorId: string) => {
+    setSavedVendors(prev => {
+      const next = new Set(prev);
+      if (next.has(vendorId)) next.delete(vendorId); else next.add(vendorId);
+      return next;
+    });
+  };
 
   useEffect(() => {
     let mounted = true;
@@ -96,8 +105,11 @@ const VendorDirectory: React.FC = () => {
               <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
               
               <div className="absolute top-4 left-4">
-                <button className="bg-white/95 p-2 rounded-full text-stone-400 hover:text-amari-terracotta transition shadow-sm">
-                  <Heart size={16} />
+                <button
+                  onClick={(e) => { e.preventDefault(); toggleSave(vendor.id); }}
+                  className="bg-white/95 p-2 rounded-full transition shadow-sm"
+                >
+                  <Heart size={16} className={savedVendors.has(vendor.id) ? 'text-red-500 fill-red-500' : 'text-stone-400 hover:text-amari-terracotta'} />
                 </button>
               </div>
             </div>
@@ -127,9 +139,14 @@ const VendorDirectory: React.FC = () => {
                 >
                   View Profile
                 </Link>
-                <button className="flex items-center justify-center w-12 bg-amari-50 text-amari-600 rounded-xl hover:bg-amari-100 border border-amari-100 transition">
+                <a
+                  href={`https://wa.me/254796535120?text=${encodeURIComponent(`Hi! I'm interested in ${vendor.name} for my wedding. Could you help me connect?`)}`}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="flex items-center justify-center w-12 bg-amari-50 text-amari-600 rounded-xl hover:bg-amari-100 border border-amari-100 transition"
+                >
                   <MessageSquare size={18} />
-                </button>
+                </a>
               </div>
             </div>
           </div>

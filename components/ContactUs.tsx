@@ -52,18 +52,52 @@ const ContactUs: React.FC = () => {
 
       <section className="bg-white rounded-3xl shadow-sm border border-amari-100 p-8">
         <h3 className="text-2xl font-serif font-bold text-amari-500 mb-4">How to Reach Amari</h3>
-        <ul className="list-disc pl-6 space-y-2 text-stone-600 leading-relaxed">
-          <li>
-            For quick guidance, use the in-app AI concierge on the site.
-          </li>
-          <li>
-            For partnerships, go to the “Partner with Us” flow.
-          </li>
-        </ul>
-        <p className="text-stone-600 leading-relaxed mt-5">
-          If you’d like a direct email address or phone number shown here, tell me what contact details you want to use
-          and I’ll add them.
-        </p>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+          <div className="flex items-start gap-3">
+            <div className="w-10 h-10 rounded-lg bg-amari-50 flex items-center justify-center flex-shrink-0">
+              <span className="text-amari-500 text-lg">📧</span>
+            </div>
+            <div>
+              <p className="text-sm font-bold text-stone-900">Email</p>
+              <a href="mailto:hello@amariexperience.com" className="text-amari-500 text-sm hover:underline">hello@amariexperience.com</a>
+            </div>
+          </div>
+          <div className="flex items-start gap-3">
+            <div className="w-10 h-10 rounded-lg bg-amari-50 flex items-center justify-center flex-shrink-0">
+              <span className="text-amari-500 text-lg">📱</span>
+            </div>
+            <div>
+              <p className="text-sm font-bold text-stone-900">WhatsApp / Phone</p>
+              <a href="https://wa.me/254796535120" target="_blank" rel="noreferrer" className="text-amari-500 text-sm hover:underline">+254 796 535 120</a>
+            </div>
+          </div>
+          <div className="flex items-start gap-3">
+            <div className="w-10 h-10 rounded-lg bg-amari-50 flex items-center justify-center flex-shrink-0">
+              <span className="text-amari-500 text-lg">📍</span>
+            </div>
+            <div>
+              <p className="text-sm font-bold text-stone-900">Location</p>
+              <p className="text-stone-600 text-sm">Diani Beach, Kwale County, Kenya</p>
+            </div>
+          </div>
+          <div className="flex items-start gap-3">
+            <div className="w-10 h-10 rounded-lg bg-amari-50 flex items-center justify-center flex-shrink-0">
+              <span className="text-amari-500 text-lg">⏰</span>
+            </div>
+            <div>
+              <p className="text-sm font-bold text-stone-900">Hours</p>
+              <p className="text-stone-600 text-sm">Mon–Sat: 8 AM – 6 PM EAT</p>
+            </div>
+          </div>
+        </div>
+        <a
+          href="https://wa.me/254796535120?text=Hi%20Amari!%20I%20have%20a%20question."
+          target="_blank"
+          rel="noreferrer"
+          className="inline-block bg-amari-600 text-white px-6 py-3 rounded-xl font-bold hover:bg-amari-900 transition shadow-lg"
+        >
+          Chat with Us on WhatsApp
+        </a>
       </section>
     </div>
   );
