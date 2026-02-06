@@ -1,16 +1,31 @@
 export enum VendorCategory {
-  Venue = 'Venue',
-  Planner = 'Planner',
-  Photographer = 'Photographer',
-  Caterer = 'Caterer',
-  Stylist = 'Stylist',
-  Transport = 'Transport'
+  Venue = 'Venues',
+  Planner = 'Planning & Coordination',
+  Photographer = 'Photography, Videography & Content',
+  Caterer = 'Catering & Bar Services',
+  Stylist = 'Décor, Styling & Rentals',
+  Transport = 'Transport & Travel',
+  Cakes = 'Cakes & Desserts',
+  Beauty = 'Beauty & Grooming',
+  Fashion = 'Fashion & Attire',
+  Entertainment = 'Entertainment & Sound',
+  Accommodation = 'Accommodation & Guest Services',
+  Experiences = 'Experiences & Activities',
+  Tents = 'Tents, Structures & Event Infrastructure',
+  Stationery = 'Stationery, Signage & Personalisation',
+  Lighting = 'Lighting, AV & Special Effects',
+  Gifts = 'Gifts, Favors & Extras',
+  Legal = 'Legal & Ceremonial Services',
+  Security = 'Security, Safety & Operations',
+  Cleanup = 'Cleanup & Post-Event Services',
+  Tech = 'Tech & Digital Services',
+  Misc = 'Miscellaneous Services'
 }
 
 export interface Vendor {
   id: string;
   name: string;
-  category: VendorCategory;
+  category: VendorCategory | WeddingVendorCategory | string;
   rating: number;
   priceRange: '$$' | '$$$' | '$$$$';
   description: string;

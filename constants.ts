@@ -95,7 +95,7 @@ export const MOCK_VENDORS: Vendor[] = [
     rating: 4.9,
     priceRange: '$$$$',
     description: 'Luxurious beachfront venue with pristine white sands and ocean views for unforgettable ceremonies.',
-    imageUrl: '/beach.jpeg',
+    imageUrl: 'https://images.unsplash.com/photo-1519167758481-83f550bb49b3?w=600&auto=format',
     location: 'Diani Beach Road'
   },
   {
@@ -105,7 +105,7 @@ export const MOCK_VENDORS: Vendor[] = [
     rating: 4.8,
     priceRange: '$$$',
     description: 'Expert destination wedding planning team specializing in Diani Coast celebrations.',
-    imageUrl: '/coastalweddingdreams.jpeg',
+    imageUrl: 'https://images.unsplash.com/photo-1511795409834-ef04bbd61622?w=600&auto=format',
     location: 'Diani Beach'
   },
   {
@@ -115,7 +115,7 @@ export const MOCK_VENDORS: Vendor[] = [
     rating: 4.7,
     priceRange: '$$',
     description: 'Authentic coastal cuisine blending traditional Swahili flavors with modern culinary excellence.',
-    imageUrl: '/swahili-cuisine.jpg',
+    imageUrl: 'https://images.unsplash.com/photo-1555244162-803834f70033?w=600&auto=format',
     location: 'Diani Coast'
   },
   {
@@ -125,7 +125,7 @@ export const MOCK_VENDORS: Vendor[] = [
     rating: 5.0,
     priceRange: '$$$',
     description: 'Professional photography and film services capturing the magic of destination weddings.',
-    imageUrl: 'https://picsum.photos/id/250/400/300',
+    imageUrl: 'https://images.unsplash.com/photo-1537633552985-df8429e8048b?w=600&auto=format',
     location: 'Diani Beach'
   },
   {
@@ -134,18 +134,108 @@ export const MOCK_VENDORS: Vendor[] = [
     category: VendorCategory.Transport,
     rating: 4.6,
     priceRange: '$$',
-    description: 'Reliable transport services and guest experiences throughout the Diani Coast.',
-    imageUrl: '/DianiGuestTravels.jpeg',
+    description: 'Reliable luxury transport services and guest shuttles throughout the Diani Coast.',
+    imageUrl: 'https://images.unsplash.com/photo-1549317661-bd32c8ce0db2?w=600&auto=format',
     location: 'Ukunda Airstrip'
   },
   {
     id: '6',
     name: 'Paradise Beach Resort',
-    category: VendorCategory.Venue,
+    category: VendorCategory.Accommodation,
     rating: 4.8,
     priceRange: '$$$$',
-    description: 'Exclusive beachfront resort with tropical gardens and private beach access.',
-    imageUrl: '/beachdianiresort.jpeg',
+    description: 'Exclusive beachfront resort with tropical gardens, private beach access, and concierge services.',
+    imageUrl: 'https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?w=600&auto=format',
+    location: 'Diani Beach'
+  },
+  {
+    id: '7',
+    name: 'Diani Bloom Florals',
+    category: VendorCategory.Stylist,
+    rating: 4.9,
+    priceRange: '$$$',
+    description: 'Tropical floral design, arches, backdrops, and full event styling for dream beach weddings.',
+    imageUrl: 'https://images.unsplash.com/photo-1519225421980-715cb0215aed?w=600&auto=format',
+    location: 'Diani Beach'
+  },
+  {
+    id: '8',
+    name: 'Sweet Coast Cakes',
+    category: VendorCategory.Cakes,
+    rating: 4.7,
+    priceRange: '$$',
+    description: 'Custom wedding cakes, dessert tables, and pastry creations with a coastal twist.',
+    imageUrl: 'https://images.unsplash.com/photo-1535254973040-607b474cb50d?w=600&auto=format',
+    location: 'Ukunda'
+  },
+  {
+    id: '9',
+    name: 'Coastal Glow Beauty',
+    category: VendorCategory.Beauty,
+    rating: 4.8,
+    priceRange: '$$$',
+    description: 'Bridal hair, makeup, and grooming services for the perfect beach-ready look.',
+    imageUrl: 'https://images.unsplash.com/photo-1487412947147-5cebf100ffc2?w=600&auto=format',
+    location: 'Diani Beach'
+  },
+  {
+    id: '10',
+    name: 'Diani Beats Entertainment',
+    category: VendorCategory.Entertainment,
+    rating: 4.9,
+    priceRange: '$$$',
+    description: 'Live bands, DJs, saxophonists, and cultural performers for unforgettable celebrations.',
+    imageUrl: 'https://images.unsplash.com/photo-1470225620780-dba8ba36b745?w=600&auto=format',
+    location: 'Diani Beach'
+  },
+  {
+    id: '11',
+    name: 'Safari & Sea Experiences',
+    category: VendorCategory.Experiences,
+    rating: 4.7,
+    priceRange: '$$',
+    description: 'Tour operators offering boat trips, snorkeling, safaris, and cultural excursions for wedding guests.',
+    imageUrl: 'https://images.unsplash.com/photo-1516426122078-c23e76319801?w=600&auto=format',
+    location: 'South Coast'
+  },
+  {
+    id: '12',
+    name: 'Marquee Masters Kenya',
+    category: VendorCategory.Tents,
+    rating: 4.6,
+    priceRange: '$$$',
+    description: 'Premium tents, marquees, staging, and event infrastructure for outdoor celebrations.',
+    imageUrl: 'https://images.unsplash.com/photo-1464366400600-7168b8af9bc3?w=600&auto=format',
+    location: 'Diani Coast'
+  },
+  {
+    id: '13',
+    name: 'Bridal Couture Diani',
+    category: VendorCategory.Fashion,
+    rating: 4.8,
+    priceRange: '$$$$',
+    description: 'Bridal gowns, suits, traditional attire, and bridesmaid dresses for your perfect day.',
+    imageUrl: 'https://images.unsplash.com/photo-1594552072238-b8a33785b261?w=600&auto=format',
+    location: 'Diani Beach'
+  },
+  {
+    id: '14',
+    name: 'Spark & Glow Events',
+    category: VendorCategory.Lighting,
+    rating: 4.7,
+    priceRange: '$$$',
+    description: 'Event lighting, AV systems, projection mapping, and special effects for magical nights.',
+    imageUrl: 'https://images.unsplash.com/photo-1470229722913-7c0e2dbbafd3?w=600&auto=format',
+    location: 'Diani Coast'
+  },
+  {
+    id: '15',
+    name: 'Coastal Calligraphy & Print',
+    category: VendorCategory.Stationery,
+    rating: 4.9,
+    priceRange: '$$',
+    description: 'Custom wedding invitations, signage, seating charts, and personalised stationery.',
+    imageUrl: 'https://images.unsplash.com/photo-1530103862676-de8c9debad1d?w=600&auto=format',
     location: 'Diani Beach'
   }
 ];
