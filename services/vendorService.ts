@@ -1,7 +1,10 @@
 import { VendorApplication } from '../types';
 import { executeQuery } from '../lib/db';
 
-// Submit vendor application to database
+const env = (import.meta as any).env || {};
+const API_BASE = env.VITE_API_BASE || '';
+
+// Submit vendor application to database via public API endpoint
 export const submitApplication = async (
   app: Omit<VendorApplication, 'id' | 'submittedAt' | 'status'>,
   userId?: string
@@ -9,7 +12,6 @@ export const submitApplication = async (
   try {
     const id = crypto.randomUUID();
     const submittedAt = new Date().toISOString();
-    const termsAcceptedAt = app.termsAccepted ? new Date().toISOString() : null;
 
     const verificationDocumentUrl = app.verificationDocument
       ? (typeof app.verificationDocument === 'string' ? app.verificationDocument : app.verificationDocument.name)
@@ -32,102 +34,50 @@ export const submitApplication = async (
       status: 'Pending'
     };
 
-    // Insert into database
-    await executeQuery(`
-      INSERT INTO vendor_applications (
-        id, user_id,
-        business_name,
-        vendor_category,
-        vendor_subcategories,
-        business_description,
-        primary_location,
-        areas_served,
-        contact_phone,
-        contact_email,
-        website,
-        social_links,
-        real_work_images,
-        starting_price,
-        pricing_model,
-        starting_price_includes,
-        minimum_booking_requirement,
-        advance_booking_notice,
-        setup_time_required,
-        breakdown_time_required,
-        outdoor_experience,
-        destination_wedding_experience,
-        special_requirements,
-        category_specific,
-        verification_document_type,
-        verification_document_url,
-        terms_accepted,
-        terms_accepted_at,
-        submitted_at,
-        status
-      ) VALUES (
-        $1, $2,
-        $3,
-        $4,
-        $5,
-        $6,
-        $7,
-        $8,
-        $9,
-        $10,
-        $11,
-        $12,
-        $13,
-        $14,
-        $15,
-        $16,
-        $17,
-        $18,
-        $19,
-        $20,
-        $21,
-        $22,
-        $23,
-        $24,
-        $25,
-        $26,
-        $27,
-        $28,
-        $29,
-        $30,
-        $31
-      )
-    `, [
-      id,
-      userId || null,
-      app.businessName,
-      app.vendorCategory || null,
-      vendorSubcategories,
-      app.businessDescription || null,
-      app.primaryLocation || null,
-      app.areasServed || null,
-      app.contactPhone || null,
-      app.contactEmail || null,
-      app.website || null,
-      app.socialLinks || null,
-      realWorkImages,
-      app.startingPrice || null,
-      app.pricingModel || null,
-      app.startingPriceIncludes || null,
-      app.minimumBookingRequirement || null,
-      app.advanceBookingNotice || null,
-      app.setupTimeRequired || null,
-      app.breakdownTimeRequired || null,
-      app.outdoorExperience || null,
-      app.destinationWeddingExperience || null,
-      app.specialRequirements || null,
-      app.categorySpecific || null,
-      app.verificationDocumentType || null,
-      verificationDocumentUrl,
-      !!app.termsAccepted,
-      termsAcceptedAt,
-      submittedAt,
-      'Pending'
-    ]);
+    // POST to the dedicated public vendor application endpoint
+    const response = await fetch(`${API_BASE}/api/vendors/apply`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json'
+      },
+      credentials: 'include',
+      body: JSON.stringify({
+        id,
+        userId: userId || null,
+        businessName: app.businessName,
+        vendorCategory: app.vendorCategory || null,
+        vendorSubcategories,
+        businessDescription: app.businessDescription || null,
+        primaryLocation: app.primaryLocation || null,
+        areasServed: app.areasServed || null,
+        contactPhone: app.contactPhone || null,
+        contactEmail: app.contactEmail || null,
+        website: app.website || null,
+        socialLinks: app.socialLinks || null,
+        realWorkImages,
+        startingPrice: app.startingPrice || null,
+        pricingModel: app.pricingModel || null,
+        startingPriceIncludes: app.startingPriceIncludes || null,
+        minimumBookingRequirement: app.minimumBookingRequirement || null,
+        advanceBookingNotice: app.advanceBookingNotice || null,
+        setupTimeRequired: app.setupTimeRequired || null,
+        breakdownTimeRequired: app.breakdownTimeRequired || null,
+        outdoorExperience: app.outdoorExperience || null,
+        destinationWeddingExperience: app.destinationWeddingExperience || null,
+        specialRequirements: app.specialRequirements || null,
+        categorySpecific: app.categorySpecific || null,
+        verificationDocumentType: app.verificationDocumentType || null,
+        verificationDocumentUrl,
+        termsAccepted: !!app.termsAccepted,
+        submittedAt
+      })
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({ error: 'Submission failed' }));
+      throw new Error(errorData.error || 'Failed to submit vendor application');
+    }
 
     console.log('Application submitted successfully:', newApp);
     return newApp;
@@ -355,25 +305,22 @@ export const updateApplicationStatus = async (id: string, status: 'Approved' | '
   }
 };
 
-// Get approved vendors for directory
+// Get approved vendors for directory via public API endpoint
 export const getApprovedVendors = async () => {
   try {
-    const result = await executeQuery(`
-      SELECT * FROM vendors 
-      WHERE approved_at IS NOT NULL
-      ORDER BY approved_at DESC
-    `);
-    
-    return (result || []).map((row: any) => ({
-      id: row.id,
-      name: row.name,
-      category: row.category,
-      rating: parseFloat(row.rating),
-      priceRange: row.price_range || '$$$',
-      description: row.description || '',
-      imageUrl: row.image_url || '/beach.jpeg',
-      location: row.location
-    }));
+    const response = await fetch(`${API_BASE}/api/vendors/approved`, {
+      method: 'GET',
+      headers: { 'Accept': 'application/json' },
+      credentials: 'include'
+    });
+
+    if (!response.ok) {
+      console.error('Failed to fetch approved vendors:', response.status);
+      return [];
+    }
+
+    const data = await response.json();
+    return data.vendors || [];
   } catch (error) {
     console.error('Failed to get approved vendors:', error);
     return [];
@@ -382,25 +329,16 @@ export const getApprovedVendors = async () => {
 
 export const getApprovedVendorById = async (id: string) => {
   try {
-    const result = await executeQuery(`
-      SELECT * FROM vendors
-      WHERE id = $1 AND approved_at IS NOT NULL
-      LIMIT 1
-    `, [id]);
+    const response = await fetch(`${API_BASE}/api/vendors/approved?id=${encodeURIComponent(id)}`, {
+      method: 'GET',
+      headers: { 'Accept': 'application/json' },
+      credentials: 'include'
+    });
 
-    const row = Array.isArray(result) && result.length > 0 ? result[0] : null;
-    if (!row) return null;
+    if (!response.ok) return null;
 
-    return {
-      id: row.id,
-      name: row.name,
-      category: row.category,
-      rating: parseFloat(row.rating),
-      priceRange: row.price_range || '$$$',
-      description: row.description || '',
-      imageUrl: row.image_url || '/beach.jpeg',
-      location: row.location
-    };
+    const data = await response.json();
+    return data.vendor || null;
   } catch (error) {
     console.error('Failed to get approved vendor:', error);
     return null;

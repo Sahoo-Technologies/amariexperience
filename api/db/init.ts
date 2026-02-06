@@ -13,6 +13,23 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     await sql`CREATE EXTENSION IF NOT EXISTS pgcrypto;`;
 
     await sql`
+      CREATE TABLE IF NOT EXISTS users (
+        id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+        email VARCHAR(255) UNIQUE NOT NULL,
+        first_name VARCHAR(255) NOT NULL,
+        last_name VARCHAR(255) NOT NULL,
+        phone VARCHAR(50),
+        user_type VARCHAR(20) NOT NULL DEFAULT 'couple',
+        password_hash TEXT NOT NULL,
+        profile_image TEXT,
+        email_verified BOOLEAN DEFAULT false,
+        is_active BOOLEAN DEFAULT true,
+        last_login TIMESTAMP WITH TIME ZONE,
+        created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+      );
+    `;
+
+    await sql`
       CREATE TABLE IF NOT EXISTS vendor_applications (
         id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
         user_id UUID,

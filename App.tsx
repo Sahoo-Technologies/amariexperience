@@ -12,6 +12,7 @@ import AdminDashboard from './components/AdminDashboard';
 import VendorCategories from './components/VendorCategories';
 import VendorTerms from './components/VendorTerms';
 import AdminVendorVerification from './components/AdminVendorVerification';
+import AdminGuard from './components/AdminGuard';
 import Login from './components/Login';
 import UserDashboard from './components/UserDashboard';
 import AboutUs from './components/AboutUs';
@@ -324,8 +325,8 @@ const App: React.FC = () => {
             <Route path="/privacy" element={<PrivacyPolicy />} />
             <Route path="/terms" element={<TermsOfService />} />
             <Route path="/concierge" element={<ConciergePage />} />
-            <Route path="/admin" element={<AdminDashboard />} />
-            <Route path="/admin/vendor-verification" element={<AdminVendorVerification />} />
+            <Route path="/admin" element={<AdminGuard><AdminDashboard /></AdminGuard>} />
+            <Route path="/admin/vendor-verification" element={<AdminGuard><AdminVendorVerification /></AdminGuard>} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </Layout>
