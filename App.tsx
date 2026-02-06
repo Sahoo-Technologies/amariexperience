@@ -31,7 +31,7 @@ import { MOCK_VENDORS } from './constants';
 const CouplesLanding = () => (
   <>
     {/* ─── HERO ────────────────────────────────────────────────── */}
-    <div className="relative min-h-[90vh] flex items-center overflow-hidden">
+    <div className="relative min-h-[80vh] sm:min-h-[90vh] flex items-center overflow-hidden">
       <div className="absolute inset-0">
         <img
           src="https://parkside.pewa.ke/wp-content/uploads/2025/12/WhatsApp-Image-2025-12-29-at-8.44.09-PM.jpeg"
@@ -44,34 +44,34 @@ const CouplesLanding = () => (
         <div className="absolute inset-0 bg-gradient-to-t from-amari-950/60 via-transparent to-transparent" />
       </div>
 
-      <div className="relative z-10 max-w-7xl mx-auto px-6 py-32 lg:py-40 w-full">
+      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 py-20 sm:py-32 lg:py-40 w-full">
         <div className="max-w-2xl">
           <div className="inline-flex items-center gap-2 glass-dark rounded-full px-4 py-2 mb-8 animate-in slide-in-from-bottom-4 duration-700">
             <Sparkles size={14} className="text-amari-gold" />
             <span className="text-white/80 text-xs font-bold uppercase tracking-[0.2em]">Kenya's Premier Wedding Platform</span>
           </div>
 
-          <h1 className="text-5xl sm:text-6xl lg:text-7xl font-serif font-bold text-white leading-[1.05] mb-6 animate-in slide-in-from-bottom-6 duration-1000 delay-100">
+          <h1 className="text-3xl sm:text-5xl md:text-6xl lg:text-7xl font-serif font-bold text-white leading-[1.05] mb-6 animate-in slide-in-from-bottom-6 duration-1000 delay-100">
             Your Dream <br />
             <span className="text-gradient italic">Coastal Wedding</span><br />
             Starts Here
           </h1>
 
-          <p className="text-lg sm:text-xl text-white/70 mb-10 max-w-lg leading-relaxed font-light animate-in slide-in-from-bottom-5 duration-1000 delay-200">
+          <p className="text-sm sm:text-base md:text-lg text-white/70 mb-8 sm:mb-10 max-w-lg leading-relaxed font-light animate-in slide-in-from-bottom-5 duration-1000 delay-200">
             Curated vendors, intelligent planning tools, and dedicated local expertise for your perfect Diani celebration.
           </p>
 
-          <div className="flex flex-col sm:flex-row gap-4 animate-in zoom-in duration-700 delay-300">
-            <Link to="/vendors" className="bg-white text-amari-900 px-8 py-4 rounded-full font-bold hover:shadow-2xl hover:shadow-white/20 hover:-translate-y-0.5 transition-all duration-300 flex items-center justify-center gap-2 text-sm">
+          <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 animate-in zoom-in duration-700 delay-300">
+            <Link to="/vendors" className="bg-white text-amari-900 px-6 sm:px-8 py-3 sm:py-4 rounded-full font-bold hover:shadow-2xl hover:shadow-white/20 hover:-translate-y-0.5 transition-all duration-300 flex items-center justify-center gap-2 text-sm">
               <Star size={16} /> Explore Vendors
             </Link>
-            <Link to="/concierge" className="glass-dark border border-white/20 text-white px-8 py-4 rounded-full font-bold hover:bg-white/20 transition-all duration-300 flex items-center justify-center gap-2 text-sm">
+            <Link to="/concierge" className="glass-dark border border-white/20 text-white px-6 sm:px-8 py-3 sm:py-4 rounded-full font-bold hover:bg-white/20 transition-all duration-300 flex items-center justify-center gap-2 text-sm">
               <Play size={14} /> Amari Concierge
             </Link>
           </div>
 
           {/* Trust badges */}
-          <div className="mt-12 flex items-center gap-6 animate-in fade-in duration-1000 delay-500">
+          <div className="mt-8 sm:mt-12 flex items-center gap-4 sm:gap-6 animate-in fade-in duration-1000 delay-500">
             <div className="flex -space-x-2">
               {['https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=80', 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=80', 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=80', 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=80'].map((src, i) => (
                 <div key={i} className="w-9 h-9 rounded-full border-2 border-amari-900 overflow-hidden">
@@ -94,12 +94,12 @@ const CouplesLanding = () => (
     </div>
 
     {/* ─── FEATURES ──────────────────────────────────────────── */}
-    <section className="py-28 bg-white relative overflow-hidden">
+    <section className="py-16 sm:py-28 bg-white relative overflow-hidden">
       <div className="absolute -top-40 -right-40 w-[500px] h-[500px] bg-amari-300/5 rounded-full blur-[100px] pointer-events-none" />
       <div className="max-w-7xl mx-auto px-6">
-        <div className="text-center mb-20">
+        <div className="text-center mb-12 sm:mb-20">
           <span className="text-amari-500 text-xs font-bold uppercase tracking-[0.3em] mb-3 block">Why Amari</span>
-          <h2 className="text-4xl md:text-5xl font-serif font-bold text-amari-900 mb-5">Everything You Need</h2>
+          <h2 className="text-3xl sm:text-4xl md:text-5xl font-serif font-bold text-amari-900 mb-5">Everything You Need</h2>
           <p className="text-stone-500 max-w-xl mx-auto text-lg">The essential elements for a seamless destination wedding experience.</p>
         </div>
 
@@ -125,13 +125,13 @@ const CouplesLanding = () => (
     </section>
 
     {/* ─── HOW IT WORKS ──────────────────────────────────────── */}
-    <section className="py-28 bg-amari-900 relative overflow-hidden">
+    <section className="py-16 sm:py-28 bg-amari-900 relative overflow-hidden">
       <div className="absolute inset-0 animate-shimmer opacity-30" />
       <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-amari-500/10 rounded-full blur-[120px] pointer-events-none" />
       <div className="relative max-w-7xl mx-auto px-6">
-        <div className="text-center mb-20">
+        <div className="text-center mb-12 sm:mb-20">
           <span className="text-amari-300 text-xs font-bold uppercase tracking-[0.3em] mb-3 block">How It Works</span>
-          <h2 className="text-4xl md:text-5xl font-serif font-bold text-white mb-5">Three Simple Steps</h2>
+          <h2 className="text-3xl sm:text-4xl md:text-5xl font-serif font-bold text-white mb-5">Three Simple Steps</h2>
           <p className="text-white/50 max-w-xl mx-auto text-lg">From dreaming to booked — without losing the magic.</p>
         </div>
 
@@ -157,12 +157,12 @@ const CouplesLanding = () => (
     </section>
 
     {/* ─── FEATURED VENDORS ──────────────────────────────────── */}
-    <section className="py-28 bg-stone-50">
+    <section className="py-16 sm:py-28 bg-stone-50">
       <div className="max-w-7xl mx-auto px-6">
         <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-6 mb-14">
           <div>
             <span className="text-amari-500 font-bold uppercase tracking-[0.3em] text-xs mb-3 block">Featured</span>
-            <h2 className="text-4xl md:text-5xl font-serif font-bold text-amari-900">Coastal Favorites</h2>
+            <h2 className="text-3xl sm:text-4xl md:text-5xl font-serif font-bold text-amari-900">Coastal Favorites</h2>
             <p className="mt-4 text-stone-500 max-w-lg text-lg">A preview of our curated directory — find your perfect match.</p>
           </div>
           <Link to="/vendors" className="bg-amari-900 text-white px-7 py-3.5 rounded-full font-bold hover:bg-amari-800 hover:shadow-lg transition-all duration-300 flex items-center gap-2 self-start md:self-auto text-sm">
@@ -204,7 +204,7 @@ const CouplesLanding = () => (
         <div className="flex justify-center gap-1 mb-6">
           {[...Array(5)].map((_, i) => <Star key={i} size={18} className="text-amari-gold fill-amari-gold" />)}
         </div>
-        <blockquote className="text-2xl md:text-3xl font-serif font-bold text-amari-900 italic leading-snug mb-8">
+        <blockquote className="text-xl sm:text-2xl md:text-3xl font-serif font-bold text-amari-900 italic leading-snug mb-8">
           "Amari made our Diani wedding absolutely magical. From finding the perfect beach venue to coordinating every detail — we couldn't have done it without them."
         </blockquote>
         <div className="flex items-center justify-center gap-3">

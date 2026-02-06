@@ -1,14 +1,43 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { getApplications, updateApplicationStatus, updateApplicationVerification } from '../services/vendorService';
-import { VendorApplication } from '../types';
-import { Check, X, Clock, Eye, Sliders, FileText, Camera, Save } from 'lucide-react';
+import { VendorApplication, GalleryComment, VendorReview } from '../types';
+import { Check, X, Clock, Eye, Sliders, FileText, Camera, Save, MessageSquare, Star, Trash2 } from 'lucide-react';
+
+const COMMENTS_KEY = 'amari_gallery_comments_v1';
+const REVIEWS_KEY = 'amari_vendor_reviews_v1';
 
 const AdminDashboard: React.FC = () => {
   const [applications, setApplications] = useState<VendorApplication[]>([]);
   const [selectedApp, setSelectedApp] = useState<VendorApplication | null>(null);
   const [loading, setLoading] = useState(false);
   const [verificationSaving, setVerificationSaving] = useState(false);
+  const [activeTab, setActiveTab] = useState<'applications' | 'reviews'>('applications');
+  const [galleryComments, setGalleryComments] = useState<GalleryComment[]>([]);
+  const [vendorReviews, setVendorReviews] = useState<VendorReview[]>([]);
+
+  useEffect(() => {
+    try {
+      const raw = localStorage.getItem(COMMENTS_KEY);
+      if (raw) { const p = JSON.parse(raw); if (Array.isArray(p)) setGalleryComments(p); }
+    } catch {}
+    try {
+      const raw = localStorage.getItem(REVIEWS_KEY);
+      if (raw) { const p = JSON.parse(raw); if (Array.isArray(p)) setVendorReviews(p); }
+    } catch {}
+  }, [activeTab]);
+
+  const deleteComment = (id: string) => {
+    const updated = galleryComments.filter(c => c.id !== id);
+    setGalleryComments(updated);
+    try { localStorage.setItem(COMMENTS_KEY, JSON.stringify(updated)); } catch {}
+  };
+
+  const deleteReview = (id: string) => {
+    const updated = vendorReviews.filter(r => r.id !== id);
+    setVendorReviews(updated);
+    try { localStorage.setItem(REVIEWS_KEY, JSON.stringify(updated)); } catch {}
+  };
 
   const refreshData = async () => {
     setLoading(true);
@@ -76,12 +105,12 @@ const AdminDashboard: React.FC = () => {
 
   return (
     <div className="max-w-7xl mx-auto py-12 px-4 min-h-screen">
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
         <div>
-          <h2 className="text-3xl font-serif font-bold text-amari-500">Vendor Applications</h2>
-          <p className="text-stone-600">Review and manage incoming vendor applications.</p>
+          <h2 className="text-3xl font-serif font-bold text-amari-500">Admin Dashboard</h2>
+          <p className="text-stone-600">Manage vendor applications and monitor user activity.</p>
         </div>
-        <div className="flex gap-3">
+        <div className="flex gap-3 flex-wrap">
           <Link
             to="/admin/vendor-verification"
             className="bg-white border border-stone-200 shadow-sm px-4 py-2 rounded-lg text-sm font-bold text-stone-700 hover:bg-stone-50 transition"
@@ -92,13 +121,101 @@ const AdminDashboard: React.FC = () => {
             <div className="w-2 h-2 bg-yellow-400 rounded-full"></div>
             {applications.filter(a => a.status === 'Pending').length} Pending
           </div>
-          <div className="bg-white border border-stone-200 shadow-sm px-4 py-2 rounded-lg text-sm font-medium text-stone-600 flex items-center gap-2">
-            <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-            {applications.filter(a => a.status === 'Approved').length} Approved
-          </div>
         </div>
       </div>
 
+      {/* Tab switcher */}
+      <div className="flex gap-1 mb-6 bg-stone-100 rounded-xl p-1 w-fit">
+        <button onClick={() => setActiveTab('applications')} className={`px-5 py-2 rounded-lg text-sm font-bold transition ${activeTab === 'applications' ? 'bg-white text-stone-900 shadow-sm' : 'text-stone-500 hover:text-stone-700'}`}>
+          Applications
+        </button>
+        <button onClick={() => setActiveTab('reviews')} className={`px-5 py-2 rounded-lg text-sm font-bold transition flex items-center gap-2 ${activeTab === 'reviews' ? 'bg-white text-stone-900 shadow-sm' : 'text-stone-500 hover:text-stone-700'}`}>
+          <MessageSquare size={14} /> Reviews & Comments
+          {(galleryComments.length + vendorReviews.length) > 0 && (
+            <span className="bg-amari-500 text-white text-[10px] font-bold rounded-full w-5 h-5 flex items-center justify-center">{galleryComments.length + vendorReviews.length}</span>
+          )}
+        </button>
+      </div>
+
+      {/* ─── REVIEWS TAB ─────────────────────────────────────── */}
+      {activeTab === 'reviews' && (
+        <div className="space-y-6">
+          {/* Gallery Comments */}
+          <div className="bg-white rounded-2xl shadow-sm border border-stone-200 overflow-hidden">
+            <div className="p-5 border-b border-stone-100 flex items-center justify-between">
+              <div>
+                <h3 className="font-bold text-stone-900">Gallery Comments</h3>
+                <p className="text-xs text-stone-400 mt-0.5">Comments left on Inspiration Board photos</p>
+              </div>
+              <span className="bg-amari-50 text-amari-600 text-xs font-bold px-3 py-1 rounded-full">{galleryComments.length} comments</span>
+            </div>
+            <div className="divide-y divide-stone-50">
+              {galleryComments.length === 0 ? (
+                <div className="p-8 text-center text-stone-400 text-sm">No gallery comments yet.</div>
+              ) : (
+                [...galleryComments].sort((a, b) => b.createdAt - a.createdAt).map(c => (
+                  <div key={c.id} className="p-4 flex items-start gap-3 hover:bg-stone-50 transition">
+                    <div className="w-8 h-8 rounded-full bg-gradient-to-br from-amari-300 to-amari-500 flex items-center justify-center text-white text-xs font-bold flex-shrink-0">
+                      {c.authorName.charAt(0)}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <span className="text-sm font-bold text-stone-800">{c.authorName}</span>
+                        <span className="text-[10px] text-stone-400">on Photo #{c.imageIndex + 1}</span>
+                        <span className="text-[10px] text-stone-300">{new Date(c.createdAt).toLocaleString()}</span>
+                      </div>
+                      <p className="text-stone-600 text-sm mt-1">{c.text}</p>
+                    </div>
+                    <button onClick={() => deleteComment(c.id)} className="text-stone-300 hover:text-red-500 transition p-1 flex-shrink-0" title="Delete comment">
+                      <Trash2 size={14} />
+                    </button>
+                  </div>
+                ))
+              )}
+            </div>
+          </div>
+
+          {/* Vendor Reviews */}
+          <div className="bg-white rounded-2xl shadow-sm border border-stone-200 overflow-hidden">
+            <div className="p-5 border-b border-stone-100 flex items-center justify-between">
+              <div>
+                <h3 className="font-bold text-stone-900">Vendor Reviews</h3>
+                <p className="text-xs text-stone-400 mt-0.5">Reviews submitted for vendor profiles</p>
+              </div>
+              <span className="bg-amari-50 text-amari-600 text-xs font-bold px-3 py-1 rounded-full">{vendorReviews.length} reviews</span>
+            </div>
+            <div className="divide-y divide-stone-50">
+              {vendorReviews.length === 0 ? (
+                <div className="p-8 text-center text-stone-400 text-sm">No vendor reviews yet. Reviews will appear here when users submit them.</div>
+              ) : (
+                [...vendorReviews].sort((a, b) => b.createdAt - a.createdAt).map(r => (
+                  <div key={r.id} className="p-4 flex items-start gap-3 hover:bg-stone-50 transition">
+                    <div className="w-8 h-8 rounded-full bg-gradient-to-br from-amari-300 to-amari-500 flex items-center justify-center text-white text-xs font-bold flex-shrink-0">
+                      {r.authorName.charAt(0)}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <span className="text-sm font-bold text-stone-800">{r.authorName}</span>
+                        <span className="text-[10px] text-stone-400">on {r.vendorName}</span>
+                        <div className="flex">{[...Array(5)].map((_, i) => <Star key={i} size={10} className={i < r.rating ? 'text-amari-gold fill-amari-gold' : 'text-stone-200'} />)}</div>
+                        <span className="text-[10px] text-stone-300">{new Date(r.createdAt).toLocaleString()}</span>
+                      </div>
+                      {r.title && <p className="text-stone-800 text-sm font-bold mt-1">{r.title}</p>}
+                      <p className="text-stone-600 text-sm mt-0.5">{r.text}</p>
+                    </div>
+                    <button onClick={() => deleteReview(r.id)} className="text-stone-300 hover:text-red-500 transition p-1 flex-shrink-0" title="Delete review">
+                      <Trash2 size={14} />
+                    </button>
+                  </div>
+                ))
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ─── APPLICATIONS TAB ────────────────────────────────── */}
+      {activeTab === 'applications' && (
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 h-[700px]">
         {/* List View */}
         <div className="lg:col-span-4 bg-white rounded-2xl shadow-sm border border-stone-200 overflow-hidden flex flex-col">
@@ -367,6 +484,7 @@ const AdminDashboard: React.FC = () => {
           )}
         </div>
       </div>
+      )}
     </div>
   );
 };

@@ -127,6 +127,25 @@ export interface InspirationPost {
   createdAt: number;
 }
 
+export interface GalleryComment {
+  id: string;
+  imageIndex: number;
+  authorName: string;
+  text: string;
+  createdAt: number;
+}
+
+export interface VendorReview {
+  id: string;
+  vendorId: string;
+  vendorName: string;
+  authorName: string;
+  rating: number;
+  title: string;
+  text: string;
+  createdAt: number;
+}
+
 export interface ItineraryItem {
   id: string;
   day: string;

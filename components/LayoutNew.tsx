@@ -47,7 +47,7 @@ const LayoutNew: React.FC<LayoutProps> = ({ children }) => {
   const navClass = ({ isActive }: { isActive: boolean }) => isActive ? nlActive : nlInactive;
 
   return (
-    <div className="min-h-screen flex flex-col bg-stone-50">
+    <div className="min-h-screen flex flex-col bg-stone-50 overflow-x-hidden">
       <a
         href="#main-content"
         className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-[60] bg-white text-amari-900 px-4 py-2 rounded-xl shadow-lg border border-amari-100"
