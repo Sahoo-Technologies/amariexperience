@@ -1,5 +1,5 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
-import { getSql } from '../_lib/db';
+import { runQuery } from '../_lib/db';
 import { getSession } from '../_lib/auth';
 
 const USER_FIELDS = `
@@ -36,8 +36,6 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   }
 
   try {
-    const sql = getSql();
-
     if (req.method === 'PATCH') {
       const updates = (req.body || {}).updates || {};
       if (!updates || typeof updates !== 'object') {
@@ -66,7 +64,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         .join(', ');
       const values = entries.map(([, value]) => value);
 
-      const updated = await sql.query(
+      const updated = await runQuery(
         `UPDATE users SET ${setClause} WHERE id = $${values.length + 1} RETURNING ${USER_FIELDS};`,
         [...values, session.sub]
       );
@@ -81,7 +79,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       return;
     }
 
-    const rows = await sql.query(
+    const rows = await runQuery(
       `SELECT ${USER_FIELDS} FROM users WHERE id = $1 LIMIT 1;`,
       [session.sub]
     );

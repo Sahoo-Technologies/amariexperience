@@ -1,5 +1,5 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
-import { getSql } from '../_lib/db';
+import { runQuery } from '../_lib/db';
 import { getSession } from '../_lib/auth';
 
 function isQueryAllowed(query: string) {
@@ -37,12 +37,9 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   }
 
   try {
-    const sql = getSql();
-
     const values = Array.isArray(params) ? params : [];
 
-    // neon() requires .query() for conventional parameterized calls
-    const result = await sql.query(query, values);
+    const result = await runQuery(query, values);
 
     res.status(200).json({ rows: result });
   } catch (e: any) {

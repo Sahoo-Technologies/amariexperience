@@ -51,6 +51,13 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     await sql`ALTER TABLE vendor_applications ADD COLUMN IF NOT EXISTS user_id UUID;`;
     await sql`ALTER TABLE vendor_applications ADD COLUMN IF NOT EXISTS approved_at TIMESTAMP;`;
 
+    // Make old NOT NULL columns nullable (apply.ts uses the new column names instead)
+    await sql`ALTER TABLE vendor_applications ALTER COLUMN vendor_type DROP NOT NULL;`;
+    await sql`ALTER TABLE vendor_applications ALTER COLUMN location DROP NOT NULL;`;
+    await sql`ALTER TABLE vendor_applications ALTER COLUMN contact_person_name DROP NOT NULL;`;
+    await sql`ALTER TABLE vendor_applications ALTER COLUMN email DROP NOT NULL;`;
+    await sql`ALTER TABLE vendor_applications ALTER COLUMN phone DROP NOT NULL;`;
+
     await sql`ALTER TABLE vendor_applications ADD COLUMN IF NOT EXISTS vendor_category VARCHAR(255);`;
     await sql`ALTER TABLE vendor_applications ADD COLUMN IF NOT EXISTS vendor_subcategories TEXT[];`;
     await sql`ALTER TABLE vendor_applications ADD COLUMN IF NOT EXISTS business_description TEXT;`;
