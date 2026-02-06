@@ -24,6 +24,7 @@ function mapUser(user: any) {
 }
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
+ try {
   if (req.method !== 'GET' && req.method !== 'PATCH') {
     res.status(405).json({ error: 'Method not allowed' });
     return;
@@ -91,6 +92,11 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
     res.status(200).json({ user: mapUser(rows[0]) });
   } catch (e: any) {
+    console.error('Me error:', e);
     res.status(500).json({ error: e?.message || 'Failed to load user' });
   }
+ } catch (fatal: any) {
+    console.error('Me fatal:', fatal);
+    res.status(500).json({ error: fatal?.message || 'Internal server error' });
+ }
 }

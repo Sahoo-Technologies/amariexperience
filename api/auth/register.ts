@@ -4,6 +4,7 @@ import { getSql } from '../_lib/db';
 import { setSessionCookie } from '../_lib/auth';
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
+ try {
   if (req.method !== 'POST') {
     res.status(405).json({ error: 'Method not allowed' });
     return;
@@ -68,10 +69,15 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       }
     });
   } catch (e: any) {
+    console.error('Register error:', e);
     if (e?.message?.includes('duplicate key') || e?.message?.includes('users_email_key')) {
       res.status(409).json({ error: 'An account with this email already exists' });
       return;
     }
     res.status(500).json({ error: e?.message || 'Registration failed' });
   }
+ } catch (fatal: any) {
+    console.error('Register fatal:', fatal);
+    res.status(500).json({ error: fatal?.message || 'Internal server error' });
+ }
 }
