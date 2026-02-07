@@ -2,10 +2,11 @@ import React, { useEffect, useState } from 'react';
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer, Legend } from 'recharts';
 import { INITIAL_BUDGET, INITIAL_GUESTS } from '../constants';
 import { BudgetItem, Guest, ItineraryItem } from '../types';
-import { Plus, Trash2, PieChart as PieIcon, Users, Calendar, MapPin, Edit3, Check, X, DollarSign, UserCheck, UserX, Clock } from 'lucide-react';
+import { Plus, Trash2, PieChart as PieIcon, Users, Calendar, MapPin, Edit3, Check, X, DollarSign, UserCheck, UserX, Clock, Target } from 'lucide-react';
 
 const ITINERARY_STORAGE_KEY = 'amari_guest_itinerary_v1';
 const BUDGET_STORAGE_KEY = 'amari_budget_v1';
+const TOTAL_BUDGET_KEY = 'amari_total_budget_v1';
 const GUESTS_STORAGE_KEY = 'amari_guests_v1';
 
 const COLORS = [
@@ -27,6 +28,10 @@ const PlanningTools: React.FC = () => {
   const [showAddBudget, setShowAddBudget] = useState(false);
   const [newBudgetCategory, setNewBudgetCategory] = useState('');
   const [newBudgetEstimated, setNewBudgetEstimated] = useState('');
+  const [totalBudgetInput, setTotalBudgetInput] = useState<string>(() => {
+    try { const v = localStorage.getItem(TOTAL_BUDGET_KEY); return v || ''; } catch { return ''; }
+  });
+  const [showBudgetSet, setShowBudgetSet] = useState(false);
 
   // Guest state – persisted
   const [guests, setGuests] = useState<Guest[]>(() => {
@@ -53,10 +58,37 @@ const PlanningTools: React.FC = () => {
   // Save itinerary
   useEffect(() => { try { localStorage.setItem(ITINERARY_STORAGE_KEY, JSON.stringify(itineraryItems)); } catch {} }, [itineraryItems]);
 
+  // Persist total budget
+  useEffect(() => { try { localStorage.setItem(TOTAL_BUDGET_KEY, totalBudgetInput); } catch {} }, [totalBudgetInput]);
+
   // Budget logic
   const totalEstimated = budgetItems.reduce((a, i) => a + i.estimated, 0);
   const totalActual = budgetItems.reduce((a, i) => a + i.actual, 0);
   const remaining = totalEstimated - totalActual;
+
+  // Default category weights for proportional distribution
+  const CATEGORY_WEIGHTS: Record<string, number> = {
+    'Venue': 0.38,
+    'Catering': 0.23,
+    'Photography': 0.11,
+    'Attire': 0.10,
+    'Decor': 0.10,
+    'Transport': 0.04,
+  };
+
+  const distributeBudget = () => {
+    const total = Number(totalBudgetInput) || 0;
+    if (total <= 0) return;
+    const totalWeight = budgetItems.reduce((sum, item) => {
+      return sum + (CATEGORY_WEIGHTS[item.category] || (1 / budgetItems.length));
+    }, 0);
+    setBudgetItems(prev => prev.map(item => {
+      const weight = CATEGORY_WEIGHTS[item.category] || (1 / prev.length);
+      const estimated = Math.round((weight / totalWeight) * total);
+      return { ...item, estimated };
+    }));
+    setShowBudgetSet(false);
+  };
 
   const startEditBudget = (item: BudgetItem) => {
     setEditingBudgetId(item.id);
@@ -166,6 +198,58 @@ const PlanningTools: React.FC = () => {
         {/* ─── BUDGET ─────────────────────────────────── */}
         {activeTab === 'budget' && (
           <div>
+            {/* Set Total Budget */}
+            <div className="mb-6">
+              {showBudgetSet ? (
+                <div className="bg-gradient-to-r from-amari-50 to-white p-4 sm:p-5 rounded-2xl border border-amari-200 shadow-sm animate-in slide-in-from-top-2 duration-300">
+                  <div className="flex items-center gap-2 mb-3">
+                    <Target size={16} className="text-amari-500" />
+                    <h3 className="text-sm font-bold text-amari-900">Set Your Total Wedding Budget</h3>
+                  </div>
+                  <p className="text-xs text-stone-500 mb-4 leading-relaxed">Enter your total budget and we'll intelligently distribute it across categories based on typical wedding cost breakdowns.</p>
+                  <div className="flex flex-col sm:flex-row gap-2">
+                    <div className="relative flex-1">
+                      <DollarSign size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-amari-400" />
+                      <input
+                        type="number"
+                        value={totalBudgetInput}
+                        onChange={(e) => setTotalBudgetInput(e.target.value)}
+                        onKeyDown={(e) => { if (e.key === 'Enter') distributeBudget(); }}
+                        placeholder="e.g. 15000"
+                        className="w-full pl-9 pr-4 py-3 bg-white border border-amari-200 rounded-xl text-sm font-medium outline-none focus:ring-2 focus:ring-amari-400 focus:border-amari-400"
+                        min="0"
+                      />
+                    </div>
+                    <button
+                      onClick={distributeBudget}
+                      disabled={!totalBudgetInput || Number(totalBudgetInput) <= 0}
+                      className="bg-amari-500 text-white px-5 py-3 rounded-xl text-sm font-bold hover:bg-amari-600 transition-all disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center gap-2 shadow-md"
+                    >
+                      <Target size={14} /> Distribute
+                    </button>
+                    <button
+                      onClick={() => setShowBudgetSet(false)}
+                      className="bg-stone-100 text-stone-500 px-4 py-3 rounded-xl text-sm font-bold hover:bg-stone-200 transition"
+                    >
+                      <X size={14} />
+                    </button>
+                  </div>
+                </div>
+              ) : (
+                <button
+                  onClick={() => setShowBudgetSet(true)}
+                  className="w-full py-3 bg-gradient-to-r from-amari-50 to-white border border-amari-200 rounded-2xl text-amari-600 text-sm font-bold hover:shadow-md hover:border-amari-300 transition-all flex items-center justify-center gap-2"
+                >
+                  <Target size={15} /> Set Total Budget Estimate
+                  {totalBudgetInput && Number(totalBudgetInput) > 0 && (
+                    <span className="bg-amari-100 text-amari-700 px-2 py-0.5 rounded-full text-xs ml-1">
+                      ${Number(totalBudgetInput).toLocaleString()}
+                    </span>
+                  )}
+                </button>
+              )}
+            </div>
+
             {/* Summary cards */}
             <div className="grid grid-cols-3 gap-3 sm:gap-4 mb-8">
               <div className="bg-amari-50 p-3 sm:p-5 rounded-2xl border border-amari-100 text-center">

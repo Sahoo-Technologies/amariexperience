@@ -98,7 +98,7 @@ const LayoutNew: React.FC<LayoutProps> = ({ children }) => {
           </span>
           <div className="flex items-center gap-5">
             <Link to="/admin" className="hover:text-white transition">Admin</Link>
-            <a href="mailto:hello@amariexperience.com" className="hover:text-white transition">hello@amariexperience.com</a>
+            <a href="mailto:fiona.kimingi@amariexperiences.com" className="hover:text-white transition">fiona.kimingi@amariexperiences.com</a>
             <a href="https://wa.me/254796535120" target="_blank" rel="noreferrer" className="hover:text-white transition">+254 796 535 120</a>
           </div>
         </div>
@@ -353,10 +353,10 @@ const LayoutNew: React.FC<LayoutProps> = ({ children }) => {
                 Bringing the magic of Diani's coastline to your special day. Curated vendors, smart tools, local expertise.
               </p>
               <div className="flex items-center gap-3">
-                <a href="#" className="w-9 h-9 rounded-full bg-white/5 hover:bg-amari-500 flex items-center justify-center transition-all duration-300 hover:scale-110"><Instagram size={16} className="text-white/60" /></a>
+                <a href="https://www.instagram.com/amariexperience?igsh=Zm5obXJoYmxieHN0" target="_blank" rel="noreferrer" className="w-9 h-9 rounded-full bg-white/5 hover:bg-amari-500 flex items-center justify-center transition-all duration-300 hover:scale-110"><Instagram size={16} className="text-white/60" /></a>
                 <a href="#" className="w-9 h-9 rounded-full bg-white/5 hover:bg-amari-500 flex items-center justify-center transition-all duration-300 hover:scale-110"><Facebook size={16} className="text-white/60" /></a>
                 <a href="#" className="w-9 h-9 rounded-full bg-white/5 hover:bg-amari-500 flex items-center justify-center transition-all duration-300 hover:scale-110"><Twitter size={16} className="text-white/60" /></a>
-                <a href="mailto:hello@amariexperience.com" className="w-9 h-9 rounded-full bg-white/5 hover:bg-amari-500 flex items-center justify-center transition-all duration-300 hover:scale-110"><Mail size={16} className="text-white/60" /></a>
+                <a href="mailto:fiona.kimingi@amariexperiences.com" className="w-9 h-9 rounded-full bg-white/5 hover:bg-amari-500 flex items-center justify-center transition-all duration-300 hover:scale-110"><Mail size={16} className="text-white/60" /></a>
               </div>
             </div>
 

@@ -144,6 +144,7 @@ const VendorProfile: React.FC = () => {
   const [userReviews, setUserReviews] = useState<VendorReview[]>([]);
   const [reviewForm, setReviewForm] = useState({ authorName: '', rating: 5, title: '', text: '' });
   const [reviewSubmitted, setReviewSubmitted] = useState(false);
+  const [lightboxIdx, setLightboxIdx] = useState<number | null>(null);
   const reviewsRef = useRef<HTMLDivElement>(null);
   const aboutRef = useRef<HTMLDivElement>(null);
 
@@ -258,7 +259,8 @@ const VendorProfile: React.FC = () => {
         <img
           src={gallery[heroIdx]}
           alt={`${vendor.name} photo ${heroIdx + 1}`}
-          className="w-full h-full object-cover transition-all duration-700"
+          className="w-full h-full object-cover transition-all duration-700 cursor-pointer"
+          onClick={() => setLightboxIdx(heroIdx)}
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-black/20" />
 
@@ -316,6 +318,67 @@ const VendorProfile: React.FC = () => {
           ))}
         </div>
       </div>
+
+      {/* ─── GALLERY THUMBNAILS ─────────────────────────────────── */}
+      <div className="max-w-3xl mx-auto px-4 sm:px-6 mt-3">
+        <div className="flex gap-2 overflow-x-auto no-scrollbar pb-2">
+          {gallery.map((img, i) => (
+            <button
+              key={i}
+              onClick={() => setLightboxIdx(i)}
+              className={`flex-shrink-0 w-16 h-16 sm:w-20 sm:h-20 rounded-xl overflow-hidden border-2 transition-all hover:scale-105 ${
+                i === heroIdx ? 'border-amari-500 ring-2 ring-amari-300' : 'border-stone-200 hover:border-amari-300'
+              }`}
+            >
+              <img src={img} alt={`Gallery ${i + 1}`} className="w-full h-full object-cover" />
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* ─── LIGHTBOX OVERLAY ──────────────────────────────────────── */}
+      {lightboxIdx !== null && (
+        <div
+          className="fixed inset-0 z-[70] bg-black/90 flex items-center justify-center animate-in fade-in duration-200"
+          onClick={() => setLightboxIdx(null)}
+        >
+          <button
+            onClick={() => setLightboxIdx(null)}
+            className="absolute top-4 right-4 z-[80] w-10 h-10 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center transition text-white"
+            aria-label="Close lightbox"
+          >
+            <X size={22} />
+          </button>
+
+          {gallery.length > 1 && (
+            <>
+              <button
+                onClick={(e) => { e.stopPropagation(); setLightboxIdx(lightboxIdx === 0 ? gallery.length - 1 : lightboxIdx - 1); }}
+                className="absolute left-3 sm:left-6 top-1/2 -translate-y-1/2 z-[80] w-11 h-11 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center transition text-white"
+                aria-label="Previous image"
+              >
+                <ChevronLeft size={24} />
+              </button>
+              <button
+                onClick={(e) => { e.stopPropagation(); setLightboxIdx(lightboxIdx === gallery.length - 1 ? 0 : lightboxIdx + 1); }}
+                className="absolute right-3 sm:right-6 top-1/2 -translate-y-1/2 z-[80] w-11 h-11 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center transition text-white"
+                aria-label="Next image"
+              >
+                <ChevronRight size={24} />
+              </button>
+            </>
+          )}
+
+          <div className="max-w-5xl max-h-[85vh] px-4" onClick={(e) => e.stopPropagation()}>
+            <img
+              src={gallery[lightboxIdx]}
+              alt={`${vendor.name} photo ${lightboxIdx + 1}`}
+              className="max-w-full max-h-[85vh] object-contain rounded-lg shadow-2xl"
+            />
+            <p className="text-center text-white/60 text-xs mt-3 font-medium">{lightboxIdx + 1} / {gallery.length}</p>
+          </div>
+        </div>
+      )}
 
       {/* ─── VENUE HEADER ───────────────────────────────────────── */}
       <div className="max-w-3xl mx-auto px-4 sm:px-6">

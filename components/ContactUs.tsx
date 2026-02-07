@@ -59,7 +59,7 @@ const ContactUs: React.FC = () => {
             </div>
             <div>
               <p className="text-sm font-bold text-stone-900">Email</p>
-              <a href="mailto:hello@amariexperience.com" className="text-amari-500 text-sm hover:underline">hello@amariexperience.com</a>
+              <a href="mailto:fiona.kimingi@amariexperiences.com" className="text-amari-500 text-sm hover:underline">fiona.kimingi@amariexperiences.com</a>
             </div>
           </div>
           <div className="flex items-start gap-3">

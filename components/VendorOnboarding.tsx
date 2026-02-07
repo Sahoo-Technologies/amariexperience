@@ -20,6 +20,7 @@ const VendorOnboarding: React.FC = () => {
   const [existingStatus, setExistingStatus] = useState<string | null>(null);
   const [selectedLocation, setSelectedLocation] = useState<{ lat: number; lng: number; address: string } | null>(null);
   const [mapCenter] = useState({ lat: -4.2767, lng: 39.5935 }); // Diani Beach coordinates
+  const [leafletReady, setLeafletReady] = useState(false);
   const mapRef = useRef<HTMLDivElement>(null);
 
   const [formData, setFormData] = useState({
@@ -93,9 +94,11 @@ const VendorOnboarding: React.FC = () => {
 
   useEffect(() => {
     // Load OpenStreetMap script
+    if (window.L) { setLeafletReady(true); return; }
     const script = document.createElement('script');
     script.src = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.js';
     script.async = true;
+    script.onload = () => setLeafletReady(true);
     document.body.appendChild(script);
 
     const link = document.createElement('link');
@@ -149,7 +152,7 @@ const VendorOnboarding: React.FC = () => {
         map.remove();
       };
     }
-  }, [mapCenter]);
+  }, [mapCenter, leafletReady]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;

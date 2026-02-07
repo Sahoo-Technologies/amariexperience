@@ -1,7 +1,9 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { Send, Sparkles, X } from 'lucide-react';
 import { getPlanningAdvice } from '../services/geminiService';
 import { ChatMessage } from '../types';
+
+const AI_POS_KEY = 'amari_ai_btn_pos';
 
 const QUICK_PROMPTS = [
   'What vendors do you have?',
@@ -24,6 +26,60 @@ const GeminiPlanner: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+
+  // Draggable trigger button state
+  const [btnPos, setBtnPos] = useState<{ x: number; y: number }>(() => {
+    try {
+      const saved = localStorage.getItem(AI_POS_KEY);
+      if (saved) return JSON.parse(saved);
+    } catch {}
+    return { x: window.innerWidth - 180, y: window.innerHeight - 72 };
+  });
+  const btnDragging = useRef(false);
+  const btnHasMoved = useRef(false);
+  const btnOffset = useRef({ x: 0, y: 0 });
+  const btnElRef = useRef<HTMLDivElement>(null);
+
+  const clampBtn = useCallback((x: number, y: number) => {
+    const w = btnElRef.current?.offsetWidth || 56;
+    const h = btnElRef.current?.offsetHeight || 48;
+    return {
+      x: Math.max(0, Math.min(window.innerWidth - w, x)),
+      y: Math.max(0, Math.min(window.innerHeight - h, y)),
+    };
+  }, []);
+
+  const onBtnPointerDown = useCallback((e: React.PointerEvent) => {
+    btnDragging.current = true;
+    btnHasMoved.current = false;
+    btnOffset.current = { x: e.clientX - btnPos.x, y: e.clientY - btnPos.y };
+    (e.target as HTMLElement).setPointerCapture(e.pointerId);
+    e.preventDefault();
+  }, [btnPos]);
+
+  const onBtnPointerMove = useCallback((e: React.PointerEvent) => {
+    if (!btnDragging.current) return;
+    btnHasMoved.current = true;
+    const next = clampBtn(e.clientX - btnOffset.current.x, e.clientY - btnOffset.current.y);
+    setBtnPos(next);
+  }, [clampBtn]);
+
+  const onBtnPointerUp = useCallback((e: React.PointerEvent) => {
+    if (!btnDragging.current) return;
+    btnDragging.current = false;
+    const final = clampBtn(e.clientX - btnOffset.current.x, e.clientY - btnOffset.current.y);
+    setBtnPos(final);
+    try { localStorage.setItem(AI_POS_KEY, JSON.stringify(final)); } catch {}
+    if (!btnHasMoved.current) {
+      setIsOpen(true);
+    }
+  }, [clampBtn]);
+
+  useEffect(() => {
+    const onResize = () => setBtnPos(p => clampBtn(p.x, p.y));
+    window.addEventListener('resize', onResize);
+    return () => window.removeEventListener('resize', onResize);
+  }, [clampBtn]);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -78,16 +134,23 @@ const GeminiPlanner: React.FC = () => {
 
   return (
     <>
-      {/* Trigger Button — bottom-right, above WhatsApp (which is bottom-left) */}
+      {/* Trigger Button — draggable */}
       {!isOpen && (
-        <button
-          onClick={() => setIsOpen(true)}
+        <div
+          ref={btnElRef}
+          onPointerDown={onBtnPointerDown}
+          onPointerMove={onBtnPointerMove}
+          onPointerUp={onBtnPointerUp}
+          role="button"
+          tabIndex={0}
+          onKeyDown={(e) => { if (e.key === 'Enter') setIsOpen(true); }}
           aria-label="Open Amari AI Assistant"
-          className="fixed bottom-6 right-4 sm:right-6 z-40 bg-gradient-to-r from-amari-600 to-amari-500 text-white px-4 sm:px-5 py-3 rounded-full shadow-xl hover:shadow-2xl hover:shadow-amari-500/25 transition-all duration-300 hover:scale-105 flex items-center gap-2 animate-pulse-glow"
+          className="fixed z-40 bg-gradient-to-r from-amari-600 to-amari-500 text-white px-4 sm:px-5 py-3 rounded-full shadow-xl hover:shadow-2xl hover:shadow-amari-500/25 transition-colors flex items-center gap-2 animate-pulse-glow cursor-grab active:cursor-grabbing select-none touch-none"
+          style={{ left: btnPos.x, top: btnPos.y }}
         >
-          <Sparkles size={20} />
-          <span className="font-bold text-sm hidden sm:inline">Ask Amari AI</span>
-        </button>
+          <Sparkles size={20} className="pointer-events-none" />
+          <span className="font-bold text-sm hidden sm:inline pointer-events-none">Ask Amari AI</span>
+        </div>
       )}
 
       {/* Chat Window — full screen on mobile, floating panel on desktop */}
