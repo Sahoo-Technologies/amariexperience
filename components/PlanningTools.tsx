@@ -124,26 +124,27 @@ const PlanningTools: React.FC = () => {
       </div>
       
       {/* Custom Tab Navigation */}
-      <div className="flex justify-center mb-12">
-        <div className="bg-white p-1.5 rounded-2xl shadow-sm border border-amari-100 inline-flex">
+      <div className="flex justify-center mb-8 sm:mb-12">
+        <div className="bg-white p-1.5 rounded-2xl shadow-sm border border-amari-100 flex overflow-x-auto max-w-full no-scrollbar">
             {tabs.map((tab) => (
                 <button 
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id as any)}
-                className={`px-6 py-3 rounded-xl font-medium text-sm transition-all flex items-center gap-2 ${
+                className={`px-3 sm:px-6 py-2.5 sm:py-3 rounded-xl font-medium text-xs sm:text-sm transition-all flex items-center gap-1.5 sm:gap-2 whitespace-nowrap flex-shrink-0 ${
                     activeTab === tab.id 
                     ? 'bg-amari-500 text-white shadow-md' 
                     : 'text-stone-500 hover:text-amari-600 hover:bg-amari-50'
                 }`}
                 >
                 <tab.icon size={16} />
-                {tab.label}
+                <span className="hidden sm:inline">{tab.label}</span>
+                <span className="sm:hidden">{tab.label.split(' ')[0]}</span>
                 </button>
             ))}
         </div>
       </div>
 
-      <div className="bg-white rounded-3xl shadow-xl min-h-[500px] p-8 md:p-12 border border-amari-100">
+      <div className="bg-white rounded-2xl sm:rounded-3xl shadow-xl min-h-[400px] sm:min-h-[500px] p-4 sm:p-8 md:p-12 border border-amari-100">
         
         {/* BUDGET TOOL */}
         {activeTab === 'budget' && (
@@ -179,32 +180,32 @@ const PlanningTools: React.FC = () => {
             </div>
             
             <div className="space-y-8">
-              <div className="grid grid-cols-2 gap-4">
-                  <div className="bg-amari-50 p-6 rounded-2xl border border-amari-100">
-                    <p className="text-xs text-stone-500 uppercase tracking-wider font-bold mb-1">Estimated</p>
-                    <p className="text-3xl font-serif font-bold text-amari-600">${totalEstimated.toLocaleString()}</p>
+              <div className="grid grid-cols-2 gap-3 sm:gap-4">
+                  <div className="bg-amari-50 p-4 sm:p-6 rounded-2xl border border-amari-100">
+                    <p className="text-[10px] sm:text-xs text-stone-500 uppercase tracking-wider font-bold mb-1">Estimated</p>
+                    <p className="text-xl sm:text-3xl font-serif font-bold text-amari-600">${totalEstimated.toLocaleString()}</p>
                   </div>
-                  <div className="bg-amari-50 p-6 rounded-2xl border border-amari-100">
-                    <p className="text-xs text-stone-500 uppercase tracking-wider font-bold mb-1">Actual</p>
-                    <p className={`text-3xl font-serif font-bold ${totalActual > totalEstimated ? 'text-amari-terracotta' : 'text-amari-500'}`}>${totalActual.toLocaleString()}</p>
+                  <div className="bg-amari-50 p-4 sm:p-6 rounded-2xl border border-amari-100">
+                    <p className="text-[10px] sm:text-xs text-stone-500 uppercase tracking-wider font-bold mb-1">Actual</p>
+                    <p className={`text-xl sm:text-3xl font-serif font-bold ${totalActual > totalEstimated ? 'text-amari-terracotta' : 'text-amari-500'}`}>${totalActual.toLocaleString()}</p>
                   </div>
               </div>
 
               <div className="overflow-hidden rounded-2xl border border-amari-100">
                 <table className="w-full text-sm text-left">
-                  <thead className="bg-amari-100/50 text-amari-900 uppercase text-xs font-bold">
+                  <thead className="bg-amari-100/50 text-amari-900 uppercase text-[10px] sm:text-xs font-bold">
                     <tr>
-                      <th className="px-6 py-4">Category</th>
-                      <th className="px-6 py-4 text-right">Est ($)</th>
-                      <th className="px-6 py-4 text-right">Act ($)</th>
+                      <th className="px-3 sm:px-6 py-3 sm:py-4">Category</th>
+                      <th className="px-3 sm:px-6 py-3 sm:py-4 text-right">Est ($)</th>
+                      <th className="px-3 sm:px-6 py-3 sm:py-4 text-right">Act ($)</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-amari-100">
                     {budgetItems.map(item => (
                       <tr key={item.id} className="hover:bg-amari-50 transition-colors">
-                        <td className="px-6 py-4 font-medium text-stone-700">{item.category}</td>
-                        <td className="px-6 py-4 text-right text-stone-500">{item.estimated}</td>
-                        <td className="px-6 py-4 text-right font-medium text-amari-600">{item.actual}</td>
+                        <td className="px-3 sm:px-6 py-3 sm:py-4 font-medium text-stone-700 text-xs sm:text-sm">{item.category}</td>
+                        <td className="px-3 sm:px-6 py-3 sm:py-4 text-right text-stone-500 text-xs sm:text-sm">{item.estimated}</td>
+                        <td className="px-3 sm:px-6 py-3 sm:py-4 text-right font-medium text-amari-600 text-xs sm:text-sm">{item.actual}</td>
                       </tr>
                     ))}
                   </tbody>

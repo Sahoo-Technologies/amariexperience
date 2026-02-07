@@ -246,7 +246,7 @@ const NotFound: React.FC = () => (
 
 const ConciergePage = () => (
   <div className="max-w-7xl mx-auto py-20 px-4">
-    <div className="bg-amari-900 text-white rounded-[2rem] p-8 md:p-20 overflow-hidden relative shadow-2xl">
+    <div className="bg-amari-900 text-white rounded-2xl sm:rounded-[2rem] p-6 sm:p-8 md:p-20 overflow-hidden relative shadow-2xl">
       {/* Decorative Circles */}
       <div className="absolute top-0 right-0 w-96 h-96 bg-amari-500 rounded-full blur-[128px] opacity-20 -mr-20 -mt-20"></div>
       <div className="absolute bottom-0 left-0 w-80 h-80 bg-amari-gold rounded-full blur-[100px] opacity-10 -ml-20 -mb-20"></div>
@@ -254,10 +254,10 @@ const ConciergePage = () => (
       <div className="relative z-10 grid md:grid-cols-2 gap-16 items-center">
         <div>
             <span className="text-amari-300 font-bold tracking-[0.3em] text-xs uppercase mb-4 block">Premium Service</span>
-            <h2 className="text-5xl md:text-6xl font-serif font-bold mb-8 leading-tight">
+            <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-serif font-bold mb-6 sm:mb-8 leading-tight">
               Amari <span className="text-amari-300 italic">Concierge</span>
             </h2>
-            <p className="text-amari-100/80 text-lg mb-10 leading-relaxed">
+            <p className="text-amari-100/80 text-base sm:text-lg mb-8 sm:mb-10 leading-relaxed">
               Let us handle the details while you enjoy the journey. Our concierge service offers end-to-end planning assistance, exclusive vendor rates, and on-site coordination for a stress-free experience.
             </p>
             
