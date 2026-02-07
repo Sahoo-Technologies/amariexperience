@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { HashRouter as Router, Routes, Route, Link } from 'react-router-dom';
+import { SpeedInsights } from '@vercel/speed-insights/react';
 import Layout from './components/LayoutNew';
 import VendorDirectory from './components/VendorDirectory';
 import VendorProfile from './components/VendorProfile';
@@ -341,6 +342,7 @@ const App: React.FC = () => {
             <Route path="*" element={<NotFound />} />
           </Routes>
         </Layout>
+        <SpeedInsights />
       </Router>
     </AuthProvider>
   );
