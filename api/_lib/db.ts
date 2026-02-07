@@ -13,10 +13,11 @@ export function getSql() {
 
 /**
  * Run a parameterized query string (not a tagged template).
- * The neon() driver supports sql(queryString, params) at runtime
- * but the TypeScript types only declare the tagged-template overload.
+ * Uses sql.query("SELECT $1", [value]) for conventional function calls
+ * as required by @neondatabase/serverless.
  */
-export function runQuery(query: string, params: unknown[] = []): Promise<any[]> {
+export async function runQuery(query: string, params: unknown[] = []): Promise<any[]> {
   const sql = getSql() as any;
-  return sql(query, params);
+  const result = await sql.query(query, params);
+  return result.rows ?? result;
 }
