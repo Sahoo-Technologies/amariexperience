@@ -173,7 +173,7 @@ const LayoutNew: React.FC<LayoutProps> = ({ children }) => {
         {isMobileMenuOpen && (
           <>
             <div className="fixed inset-0 bg-black/30 z-40 lg:hidden" onClick={() => setIsMobileMenuOpen(false)} />
-            <div id="mobile-menu" className="fixed inset-y-0 right-0 w-[85%] max-w-sm bg-white z-50 lg:hidden shadow-2xl animate-in slide-in-from-left-2 duration-300 overflow-y-auto">
+            <div id="mobile-menu" className="fixed inset-y-0 right-0 w-[85%] max-w-sm bg-white z-50 lg:hidden shadow-2xl animate-in fade-in duration-300 overflow-y-auto">
               <div className="flex items-center justify-between p-5 border-b border-stone-100">
                 <Link to="/" className="flex items-center gap-2">
                   <div className="w-9 h-9 rounded-xl overflow-hidden">

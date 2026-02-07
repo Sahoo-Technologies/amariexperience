@@ -215,10 +215,10 @@ const InspirationGallery: React.FC = () => {
       {/* ─── LIGHTBOX MODAL ────────────────────────────────────── */}
       {lightboxIdx !== null && (
         <div className="fixed inset-0 z-[100] bg-black/90 flex items-center justify-center" onClick={() => setLightboxIdx(null)}>
-          <div className="relative w-full max-w-5xl mx-4 flex flex-col lg:flex-row bg-white rounded-2xl overflow-hidden max-h-[90vh] shadow-2xl" onClick={(e) => e.stopPropagation()}>
+          <div className="relative w-full h-full sm:h-auto sm:max-w-5xl sm:mx-4 flex flex-col lg:flex-row bg-white sm:rounded-2xl overflow-hidden sm:max-h-[90vh] shadow-2xl" onClick={(e) => e.stopPropagation()}>
             {/* Image side */}
-            <div className="relative lg:w-3/5 bg-stone-900 flex items-center justify-center min-h-[300px] lg:min-h-0">
-              <img src={IMAGES[lightboxIdx].src.replace('w=800', 'w=1200')} alt={IMAGES[lightboxIdx].tag} className="w-full h-full object-contain max-h-[50vh] lg:max-h-[90vh]" />
+            <div className="relative lg:w-3/5 bg-stone-900 flex items-center justify-center min-h-[200px] sm:min-h-[300px] lg:min-h-0 flex-shrink-0">
+              <img src={IMAGES[lightboxIdx].src.replace('w=800', 'w=1200')} alt={IMAGES[lightboxIdx].tag} className="w-full h-full object-contain max-h-[40vh] sm:max-h-[50vh] lg:max-h-[90vh]" />
               {/* Nav arrows */}
               <button onClick={() => setLightboxIdx(lightboxIdx === 0 ? IMAGES.length - 1 : lightboxIdx - 1)} className="absolute left-2 top-1/2 -translate-y-1/2 glass rounded-full p-2 hover:scale-110 transition">
                 <ChevronLeft size={20} className="text-stone-700" />
@@ -232,7 +232,7 @@ const InspirationGallery: React.FC = () => {
             </div>
 
             {/* Info + Comments side */}
-            <div className="lg:w-2/5 flex flex-col max-h-[40vh] lg:max-h-[90vh]">
+            <div className="lg:w-2/5 flex flex-col flex-1 min-h-0 lg:max-h-[90vh]">
               <div className="p-5 border-b border-stone-100">
                 <div className="flex items-center justify-between mb-3">
                   <span className="bg-amari-50 text-amari-600 text-[10px] font-bold uppercase tracking-wider rounded-full px-3 py-1">{IMAGES[lightboxIdx].tag}</span>

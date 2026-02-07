@@ -200,7 +200,7 @@ const VendorProfile: React.FC = () => {
   const scrollToReviews = () => reviewsRef.current?.scrollIntoView({ behavior: 'smooth' });
 
   return (
-    <div className="min-h-screen bg-stone-50 pb-24">
+    <div className="min-h-screen bg-stone-50 pb-28">
 
       {/* ─── HERO IMAGE GALLERY ─────────────────────────────────── */}
       <div className="relative w-full aspect-[16/7] max-h-[560px] overflow-hidden bg-stone-200">
@@ -430,7 +430,7 @@ const VendorProfile: React.FC = () => {
       </div>
 
       {/* ─── STICKY BOTTOM BAR ────────────────────────────────────── */}
-      <div className="fixed bottom-0 inset-x-0 glass border-t border-white/60 z-50 shadow-[0_-4px_20px_rgba(0,0,0,0.06)]">
+      <div className="fixed bottom-0 inset-x-0 glass border-t border-white/60 z-30 shadow-[0_-4px_20px_rgba(0,0,0,0.06)] safe-bottom">
         <div className="max-w-3xl mx-auto px-4 sm:px-6 py-3 flex items-center justify-between gap-4">
           <div className="min-w-0">
             <p className="font-bold text-stone-900 text-sm truncate">From {vd.offPeakPrice}</p>

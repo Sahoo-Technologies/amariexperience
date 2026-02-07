@@ -216,7 +216,7 @@ const AdminDashboard: React.FC = () => {
 
       {/* ─── APPLICATIONS TAB ────────────────────────────────── */}
       {activeTab === 'applications' && (
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 h-[700px]">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:h-[700px]">
         {/* List View */}
         <div className="lg:col-span-4 bg-white rounded-2xl shadow-sm border border-stone-200 overflow-hidden flex flex-col">
           <div className="p-4 bg-stone-50 border-b border-stone-100 flex justify-between items-center">
@@ -356,7 +356,7 @@ const AdminDashboard: React.FC = () => {
                             <Camera size={16} className="text-stone-400" />
                             <p className="text-sm font-medium text-stone-900">Real work images ({selectedApp.realWorkImages.length})</p>
                           </div>
-                          <div className="grid grid-cols-3 gap-2">
+                          <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
                             {selectedApp.realWorkImages.slice(0, 6).map((photo, index) => (
                               <div key={index} className="aspect-square bg-stone-200 rounded-lg flex items-center justify-center">
                                 <Camera size={12} className="text-stone-400" />

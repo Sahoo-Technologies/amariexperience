@@ -71,7 +71,7 @@ const VendorDirectory: React.FC = () => {
             <Sparkles size={13} className="text-amari-gold" />
             <span className="text-white/70 text-xs font-bold uppercase tracking-[0.2em]">The Best of Diani</span>
           </div>
-          <h1 className="text-4xl md:text-6xl font-serif font-bold text-white mb-5 animate-in slide-in-from-bottom-6 duration-1000 delay-100">
+          <h1 className="text-3xl sm:text-4xl md:text-6xl font-serif font-bold text-white mb-5 animate-in slide-in-from-bottom-6 duration-1000 delay-100">
             Vendor Directory
           </h1>
           <p className="text-white/50 max-w-xl mx-auto text-lg mb-10 animate-in slide-in-from-bottom-5 duration-1000 delay-200">
