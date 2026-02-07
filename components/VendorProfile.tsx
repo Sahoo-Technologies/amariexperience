@@ -1,12 +1,15 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { getApprovedVendorById } from '../services/vendorService';
+import { VendorReview } from '../types';
 import {
   MapPin, Star, ArrowLeft, Heart, Mail, Phone, Globe, Calendar,
   Users, Award, Check, Clock, DollarSign, Camera, ChevronLeft,
   ChevronRight, Share2, Building2, TreePine, Sun, Verified, Send,
-  MessageSquare, Image as ImageIcon
+  MessageSquare, Image as ImageIcon, X
 } from 'lucide-react';
+
+const REVIEWS_KEY = 'amari_vendor_reviews_v1';
 
 // ── Gallery images (fallbacks for demo) ────────────────────────────
 const GALLERY_FALLBACKS = [
@@ -137,6 +140,10 @@ const VendorProfile: React.FC = () => {
   const [heroIdx, setHeroIdx] = useState(0);
   const [saved, setSaved] = useState(false);
   const [showServices, setShowServices] = useState(false);
+  const [showReviewForm, setShowReviewForm] = useState(false);
+  const [userReviews, setUserReviews] = useState<VendorReview[]>([]);
+  const [reviewForm, setReviewForm] = useState({ authorName: '', rating: 5, title: '', text: '' });
+  const [reviewSubmitted, setReviewSubmitted] = useState(false);
   const reviewsRef = useRef<HTMLDivElement>(null);
   const aboutRef = useRef<HTMLDivElement>(null);
 
@@ -164,6 +171,50 @@ const VendorProfile: React.FC = () => {
       .finally(() => { if (mounted) setLoading(false); });
     return () => { mounted = false; };
   }, [id]);
+
+  // Load user-submitted reviews from localStorage
+  useEffect(() => {
+    try {
+      const raw = localStorage.getItem(REVIEWS_KEY);
+      if (raw) {
+        const all: VendorReview[] = JSON.parse(raw);
+        if (Array.isArray(all)) {
+          setUserReviews(all.filter(r => r.vendorId === id));
+        }
+      }
+    } catch {}
+  }, [id]);
+
+  const handleReviewSubmit = () => {
+    if (!reviewForm.authorName.trim() || !reviewForm.text.trim() || !vendor) return;
+
+    const newReview: VendorReview = {
+      id: crypto.randomUUID(),
+      vendorId: vendor.id || id || '',
+      vendorName: vendor.name,
+      authorName: reviewForm.authorName.trim(),
+      rating: reviewForm.rating,
+      title: reviewForm.title.trim(),
+      text: reviewForm.text.trim(),
+      createdAt: Date.now(),
+    };
+
+    // Save to localStorage (append to full list)
+    let allReviews: VendorReview[] = [];
+    try {
+      const raw = localStorage.getItem(REVIEWS_KEY);
+      if (raw) { const p = JSON.parse(raw); if (Array.isArray(p)) allReviews = p; }
+    } catch {}
+    allReviews.push(newReview);
+    localStorage.setItem(REVIEWS_KEY, JSON.stringify(allReviews));
+
+    // Update local state
+    setUserReviews(prev => [...prev, newReview]);
+    setReviewForm({ authorName: '', rating: 5, title: '', text: '' });
+    setShowReviewForm(false);
+    setReviewSubmitted(true);
+    setTimeout(() => setReviewSubmitted(false), 3000);
+  };
 
   // Build gallery from vendor image + fallbacks
   const gallery = vendor
@@ -394,18 +445,118 @@ const VendorProfile: React.FC = () => {
               <div className="flex items-center gap-2 mt-1">
                 <div className="flex">{[...Array(5)].map((_, i) => <Star key={i} size={14} className={i < Math.round(Number(avgRating)) ? 'text-amari-gold fill-amari-gold' : 'text-stone-200'} />)}</div>
                 <span className="text-sm font-bold text-stone-800">{avgRating}</span>
-                <span className="text-xs text-stone-400">({REVIEWS.length})</span>
+                <span className="text-xs text-stone-400">({REVIEWS.length + userReviews.length})</span>
               </div>
             </div>
             <button
-              onClick={() => openWhatsApp(`Hi! I'd like to leave a review for ${vendor.name} on Amari Experience.`)}
+              onClick={() => setShowReviewForm(!showReviewForm)}
               className="px-4 py-2 border border-amari-200 rounded-full text-xs font-bold text-amari-600 hover:bg-amari-50 transition"
             >
-              Write a review
+              {showReviewForm ? 'Cancel' : 'Write a review'}
             </button>
           </div>
 
+          {/* Success message */}
+          {reviewSubmitted && (
+            <div className="mb-5 p-3 bg-green-50 border border-green-200 rounded-xl flex items-center gap-2 animate-in slide-in-from-top-2 duration-300">
+              <Check size={16} className="text-green-600 flex-shrink-0" />
+              <p className="text-green-700 text-sm font-medium">Thank you! Your review has been submitted.</p>
+            </div>
+          )}
+
+          {/* Inline review form */}
+          {showReviewForm && (
+            <div className="mb-6 p-5 bg-amari-50/50 rounded-xl border border-amari-100 space-y-4 animate-in slide-in-from-top-3 duration-300">
+              <div className="flex items-center justify-between">
+                <h3 className="font-bold text-stone-900 text-sm">Share your experience</h3>
+                <button onClick={() => setShowReviewForm(false)} className="text-stone-400 hover:text-stone-600 transition">
+                  <X size={16} />
+                </button>
+              </div>
+
+              {/* Star rating picker */}
+              <div>
+                <label className="text-xs font-bold text-stone-500 uppercase tracking-wide mb-1.5 block">Rating</label>
+                <div className="flex gap-1">
+                  {[1, 2, 3, 4, 5].map((s) => (
+                    <button
+                      key={s}
+                      type="button"
+                      onClick={() => setReviewForm(prev => ({ ...prev, rating: s }))}
+                      className="p-1 transition-transform hover:scale-110"
+                    >
+                      <Star size={24} className={s <= reviewForm.rating ? 'text-amari-gold fill-amari-gold' : 'text-stone-200'} />
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <div>
+                <label className="text-xs font-bold text-stone-500 uppercase tracking-wide mb-1.5 block">Your Name</label>
+                <input
+                  type="text"
+                  value={reviewForm.authorName}
+                  onChange={(e) => setReviewForm(prev => ({ ...prev, authorName: e.target.value }))}
+                  placeholder="e.g. Sarah K."
+                  className="w-full border border-stone-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-amari-400 focus:border-amari-400 bg-white"
+                />
+              </div>
+
+              <div>
+                <label className="text-xs font-bold text-stone-500 uppercase tracking-wide mb-1.5 block">Review Title <span className="text-stone-400 normal-case">(optional)</span></label>
+                <input
+                  type="text"
+                  value={reviewForm.title}
+                  onChange={(e) => setReviewForm(prev => ({ ...prev, title: e.target.value }))}
+                  placeholder="e.g. Amazing wedding venue!"
+                  className="w-full border border-stone-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-amari-400 focus:border-amari-400 bg-white"
+                />
+              </div>
+
+              <div>
+                <label className="text-xs font-bold text-stone-500 uppercase tracking-wide mb-1.5 block">Your Review</label>
+                <textarea
+                  value={reviewForm.text}
+                  onChange={(e) => setReviewForm(prev => ({ ...prev, text: e.target.value }))}
+                  placeholder="Tell others about your experience..."
+                  rows={4}
+                  className="w-full border border-stone-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-amari-400 focus:border-amari-400 bg-white resize-none"
+                />
+              </div>
+
+              <button
+                onClick={handleReviewSubmit}
+                disabled={!reviewForm.authorName.trim() || !reviewForm.text.trim()}
+                className="w-full bg-amari-600 text-white py-3 rounded-xl font-bold text-sm hover:bg-amari-700 transition-all disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+              >
+                <Send size={14} /> Submit Review
+              </button>
+            </div>
+          )}
+
           <div className="space-y-5">
+            {/* User-submitted reviews (newest first) */}
+            {[...userReviews].sort((a, b) => b.createdAt - a.createdAt).map((r) => (
+              <div key={r.id} className="border-b border-stone-50 pb-5 last:border-0 last:pb-0">
+                <div className="flex items-center gap-3 mb-2">
+                  <div className="w-8 h-8 rounded-full bg-gradient-to-br from-amari-300 to-amari-500 flex items-center justify-center text-white text-xs font-bold">
+                    {r.authorName.charAt(0)}
+                  </div>
+                  <div>
+                    <div className="flex items-center gap-2">
+                      <span className="text-sm font-bold text-stone-900">{r.authorName}</span>
+                      <span className="text-[10px] bg-amari-50 text-amari-500 font-bold px-2 py-0.5 rounded-full">New</span>
+                    </div>
+                    <span className="text-[11px] text-stone-400">{new Date(r.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</span>
+                  </div>
+                </div>
+                <div className="flex mb-2">{[...Array(5)].map((_, i) => <Star key={i} size={12} className={i < r.rating ? 'text-amari-gold fill-amari-gold' : 'text-stone-200'} />)}</div>
+                {r.title && <h3 className="font-bold text-stone-800 text-sm mb-1">{r.title}</h3>}
+                <p className="text-stone-500 text-sm leading-relaxed">{r.text}</p>
+              </div>
+            ))}
+
+            {/* Hardcoded sample reviews */}
             {REVIEWS.map((r) => (
               <div key={r.id} className="border-b border-stone-50 pb-5 last:border-0 last:pb-0">
                 <div className="flex items-center gap-3 mb-2">

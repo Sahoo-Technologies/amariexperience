@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Link, NavLink, useLocation } from 'react-router-dom';
-import { Menu, X, User, ChevronDown, Sparkles, ArrowRight, Instagram, Facebook, Twitter, Mail } from 'lucide-react';
+import { Menu, X, User, ChevronDown, Sparkles, ArrowRight, Instagram, Facebook, Twitter, Mail, Shield, UserPlus, LogIn } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import WhatsAppChat from './WhatsAppChat';
 import GeminiPlanner from './GeminiPlanner';
@@ -132,6 +132,11 @@ const LayoutNew: React.FC<LayoutProps> = ({ children }) => {
                           <Link to="/profile" onClick={() => setIsUserMenuOpen(false)} className="flex items-center gap-3 px-4 py-2.5 text-stone-600 hover:bg-amari-50 hover:text-amari-600 transition-colors text-sm">
                             Profile
                           </Link>
+                          {user?.userType === 'admin' && (
+                            <Link to="/admin" onClick={() => setIsUserMenuOpen(false)} className="flex items-center gap-3 px-4 py-2.5 text-stone-600 hover:bg-amari-50 hover:text-amari-600 transition-colors text-sm">
+                              <Shield size={15} /> Admin Portal
+                            </Link>
+                          )}
                           <div className="border-t border-stone-100 my-1" />
                           <button onClick={() => { logout(); setIsUserMenuOpen(false); }} className="w-full text-left px-4 py-2.5 text-red-500 hover:bg-red-50 transition-colors text-sm">
                             Sign Out
@@ -141,10 +146,33 @@ const LayoutNew: React.FC<LayoutProps> = ({ children }) => {
                     )}
                   </>
                 ) : (
-                  <Link to="/login" className="flex items-center gap-2 text-stone-500 hover:text-amari-500 px-3 py-2 rounded-xl text-sm font-medium transition-colors">
-                    <User size={16} />
-                    Sign In
-                  </Link>
+                  <>
+                    <button
+                      onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
+                      className="flex items-center gap-2 text-stone-500 hover:text-amari-500 px-3 py-2 rounded-xl text-sm font-medium transition-colors"
+                    >
+                      <User size={16} />
+                      Account
+                      <ChevronDown size={14} className={`text-stone-400 transition-transform duration-200 ${isUserMenuOpen ? 'rotate-180' : ''}`} />
+                    </button>
+                    {isUserMenuOpen && (
+                      <>
+                        <div className="fixed inset-0 z-40" onClick={() => setIsUserMenuOpen(false)} />
+                        <div className="absolute top-full right-0 mt-3 w-56 glass rounded-2xl shadow-xl border border-white/60 py-2 z-50 animate-in fade-in slide-in-from-top-4 duration-300">
+                          <Link to="/login" onClick={() => setIsUserMenuOpen(false)} className="flex items-center gap-3 px-4 py-2.5 text-stone-600 hover:bg-amari-50 hover:text-amari-600 transition-colors text-sm">
+                            <LogIn size={15} /> Sign In
+                          </Link>
+                          <Link to="/login" onClick={() => setIsUserMenuOpen(false)} className="flex items-center gap-3 px-4 py-2.5 text-stone-600 hover:bg-amari-50 hover:text-amari-600 transition-colors text-sm">
+                            <UserPlus size={15} /> Create Account
+                          </Link>
+                          <div className="border-t border-stone-100 my-1" />
+                          <Link to="/admin" onClick={() => setIsUserMenuOpen(false)} className="flex items-center gap-3 px-4 py-2.5 text-stone-500 hover:bg-amari-50 hover:text-amari-600 transition-colors text-sm">
+                            <Shield size={15} /> Admin Portal
+                          </Link>
+                        </div>
+                      </>
+                    )}
+                  </>
                 )}
               </div>
 
@@ -201,13 +229,21 @@ const LayoutNew: React.FC<LayoutProps> = ({ children }) => {
                     </div>
                     <div className="flex gap-2">
                       <Link to="/dashboard" className="flex-1 text-center bg-amari-900 text-white py-2 rounded-xl text-xs font-bold hover:bg-amari-800 transition">Dashboard</Link>
+                      {user?.userType === 'admin' && (
+                        <Link to="/admin" className="flex-1 text-center bg-amari-50 text-amari-700 py-2 rounded-xl text-xs font-bold hover:bg-amari-100 transition border border-amari-200">Admin</Link>
+                      )}
                       <button onClick={() => { logout(); setIsMobileMenuOpen(false); }} className="px-4 py-2 rounded-xl text-xs font-bold text-red-500 bg-red-50 hover:bg-red-100 transition">Logout</button>
                     </div>
                   </div>
                 ) : (
-                  <Link to="/login" className="flex items-center justify-center gap-2 bg-amari-900 text-white py-3 rounded-2xl font-bold text-sm mb-5 hover:bg-amari-800 transition">
-                    <User size={16} /> Sign In / Register
-                  </Link>
+                  <div className="space-y-2 mb-5">
+                    <Link to="/login" className="flex items-center justify-center gap-2 bg-amari-900 text-white py-3 rounded-2xl font-bold text-sm hover:bg-amari-800 transition">
+                      <LogIn size={16} /> Sign In
+                    </Link>
+                    <Link to="/login" className="flex items-center justify-center gap-2 bg-amari-50 text-amari-700 py-3 rounded-2xl font-bold text-sm hover:bg-amari-100 transition border border-amari-200">
+                      <UserPlus size={16} /> Create Account
+                    </Link>
+                  </div>
                 )}
 
                 {/* Nav links */}
@@ -241,7 +277,9 @@ const LayoutNew: React.FC<LayoutProps> = ({ children }) => {
                     <Sparkles size={15} /> Partner with Us
                   </Link>
                 </div>
-                <Link to="/admin" className="block px-4 py-2 text-stone-400 text-xs mt-2 hover:text-stone-600 transition">Admin Portal</Link>
+                <Link to="/admin" className="flex items-center gap-2 px-4 py-3 rounded-xl text-sm font-medium text-stone-500 hover:bg-stone-50 hover:text-stone-700 transition mt-2">
+                  <Shield size={15} /> Admin Portal
+                </Link>
               </div>
             </div>
           </>
