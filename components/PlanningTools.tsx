@@ -8,6 +8,8 @@ const ITINERARY_STORAGE_KEY = 'amari_guest_itinerary_v1';
 const BUDGET_STORAGE_KEY = 'amari_budget_v1';
 const TOTAL_BUDGET_KEY = 'amari_total_budget_v1';
 const GUESTS_STORAGE_KEY = 'amari_guests_v1';
+const CURRENCY_STORAGE_KEY = 'amari_currency_v1';
+const USD_TO_KSH = 129;
 
 const COLORS = [
   '#8b6f47', '#b8956a', '#6b5436', '#d4b896', '#a3845c', '#e8d5bc',
@@ -32,6 +34,10 @@ const PlanningTools: React.FC = () => {
     try { const v = localStorage.getItem(TOTAL_BUDGET_KEY); return v || ''; } catch { return ''; }
   });
   const [showBudgetSet, setShowBudgetSet] = useState(false);
+  const [currency, setCurrency] = useState<'USD' | 'KSH'>(() => {
+    try { const v = localStorage.getItem(CURRENCY_STORAGE_KEY); if (v === 'KSH' || v === 'USD') return v; } catch {}
+    return 'USD';
+  });
 
   // Guest state – persisted
   const [guests, setGuests] = useState<Guest[]>(() => {
@@ -60,6 +66,14 @@ const PlanningTools: React.FC = () => {
 
   // Persist total budget
   useEffect(() => { try { localStorage.setItem(TOTAL_BUDGET_KEY, totalBudgetInput); } catch {} }, [totalBudgetInput]);
+  // Persist currency
+  useEffect(() => { try { localStorage.setItem(CURRENCY_STORAGE_KEY, currency); } catch {} }, [currency]);
+
+  const fmt = (amount: number) => {
+    if (currency === 'KSH') return `KSh ${Math.round(amount * USD_TO_KSH).toLocaleString()}`;
+    return `$${amount.toLocaleString()}`;
+  };
+  const currSymbol = currency === 'KSH' ? 'KSh' : '$';
 
   // Budget logic
   const totalEstimated = budgetItems.reduce((a, i) => a + i.estimated, 0);
@@ -243,26 +257,44 @@ const PlanningTools: React.FC = () => {
                   <Target size={15} /> Set Total Budget Estimate
                   {totalBudgetInput && Number(totalBudgetInput) > 0 && (
                     <span className="bg-amari-100 text-amari-700 px-2 py-0.5 rounded-full text-xs ml-1">
-                      ${Number(totalBudgetInput).toLocaleString()}
+                      {fmt(Number(totalBudgetInput))}
                     </span>
                   )}
                 </button>
               )}
             </div>
 
+            {/* Currency toggle */}
+            <div className="flex justify-end mb-3">
+              <div className="inline-flex bg-amari-50 rounded-xl border border-amari-100 p-0.5">
+                <button
+                  onClick={() => setCurrency('USD')}
+                  className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${currency === 'USD' ? 'bg-amari-500 text-white shadow-sm' : 'text-stone-500 hover:text-amari-600'}`}
+                >
+                  $ USD
+                </button>
+                <button
+                  onClick={() => setCurrency('KSH')}
+                  className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${currency === 'KSH' ? 'bg-amari-500 text-white shadow-sm' : 'text-stone-500 hover:text-amari-600'}`}
+                >
+                  KSh
+                </button>
+              </div>
+            </div>
+
             {/* Summary cards */}
             <div className="grid grid-cols-3 gap-3 sm:gap-4 mb-8">
               <div className="bg-amari-50 p-3 sm:p-5 rounded-2xl border border-amari-100 text-center">
                 <p className="text-[9px] sm:text-xs text-stone-500 uppercase tracking-wider font-bold mb-1">Estimated</p>
-                <p className="text-lg sm:text-2xl font-serif font-bold text-amari-600">${totalEstimated.toLocaleString()}</p>
+                <p className="text-lg sm:text-2xl font-serif font-bold text-amari-600">{fmt(totalEstimated)}</p>
               </div>
               <div className="bg-amari-50 p-3 sm:p-5 rounded-2xl border border-amari-100 text-center">
                 <p className="text-[9px] sm:text-xs text-stone-500 uppercase tracking-wider font-bold mb-1">Spent</p>
-                <p className={`text-lg sm:text-2xl font-serif font-bold ${totalActual > totalEstimated ? 'text-red-500' : 'text-amari-500'}`}>${totalActual.toLocaleString()}</p>
+                <p className={`text-lg sm:text-2xl font-serif font-bold ${totalActual > totalEstimated ? 'text-red-500' : 'text-amari-500'}`}>{fmt(totalActual)}</p>
               </div>
               <div className="bg-amari-50 p-3 sm:p-5 rounded-2xl border border-amari-100 text-center">
                 <p className="text-[9px] sm:text-xs text-stone-500 uppercase tracking-wider font-bold mb-1">Remaining</p>
-                <p className={`text-lg sm:text-2xl font-serif font-bold ${remaining < 0 ? 'text-red-500' : 'text-green-600'}`}>${remaining.toLocaleString()}</p>
+                <p className={`text-lg sm:text-2xl font-serif font-bold ${remaining < 0 ? 'text-red-500' : 'text-green-600'}`}>{fmt(remaining)}</p>
               </div>
             </div>
 
@@ -276,13 +308,13 @@ const PlanningTools: React.FC = () => {
                         <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                       ))}
                     </Pie>
-                    <Tooltip formatter={(value) => `$${Number(value).toLocaleString()}`} />
+                    <Tooltip formatter={(value) => fmt(Number(value))} />
                     <Legend verticalAlign="bottom" height={36} iconType="circle" />
                   </PieChart>
                 </ResponsiveContainer>
                 <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-center pointer-events-none -mt-4">
                   <DollarSign size={16} className="text-amari-300 mx-auto mb-1" />
-                  <p className="text-xl font-bold text-amari-900">${totalEstimated.toLocaleString()}</p>
+                  <p className="text-xl font-bold text-amari-900">{fmt(totalEstimated)}</p>
                 </div>
               </div>
 
@@ -322,8 +354,8 @@ const PlanningTools: React.FC = () => {
                           ) : (
                             <>
                               <td className="px-3 sm:px-5 py-3 font-medium text-stone-700 text-xs sm:text-sm">{item.category}</td>
-                              <td className="px-3 sm:px-5 py-3 text-right text-stone-500 text-xs sm:text-sm">${item.estimated.toLocaleString()}</td>
-                              <td className="px-3 sm:px-5 py-3 text-right font-medium text-amari-600 text-xs sm:text-sm">${item.actual.toLocaleString()}</td>
+                              <td className="px-3 sm:px-5 py-3 text-right text-stone-500 text-xs sm:text-sm">{fmt(item.estimated)}</td>
+                              <td className="px-3 sm:px-5 py-3 text-right font-medium text-amari-600 text-xs sm:text-sm">{fmt(item.actual)}</td>
                               <td className="px-2 py-3">
                                 <div className="flex gap-1">
                                   <button onClick={() => startEditBudget(item)} className="p-1 text-stone-300 hover:text-amari-500 transition"><Edit3 size={13} /></button>
@@ -342,7 +374,7 @@ const PlanningTools: React.FC = () => {
                 {showAddBudget ? (
                   <div className="mt-3 flex flex-col sm:flex-row gap-2 bg-amari-50 p-3 rounded-xl border border-amari-100">
                     <input value={newBudgetCategory} onChange={e => setNewBudgetCategory(e.target.value)} placeholder="Category name" className="flex-1 bg-white border border-amari-100 rounded-lg px-3 py-2 text-sm outline-none focus:ring-1 focus:ring-amari-400" />
-                    <input type="number" value={newBudgetEstimated} onChange={e => setNewBudgetEstimated(e.target.value)} placeholder="Estimated $" className="w-28 bg-white border border-amari-100 rounded-lg px-3 py-2 text-sm outline-none focus:ring-1 focus:ring-amari-400" />
+                    <input type="number" value={newBudgetEstimated} onChange={e => setNewBudgetEstimated(e.target.value)} placeholder={`Estimated ${currSymbol}`} className="w-28 bg-white border border-amari-100 rounded-lg px-3 py-2 text-sm outline-none focus:ring-1 focus:ring-amari-400" />
                     <div className="flex gap-2">
                       <button onClick={addBudgetItem} className="bg-amari-500 text-white px-4 py-2 rounded-lg text-xs font-bold hover:bg-amari-600 transition"><Check size={14} /></button>
                       <button onClick={() => setShowAddBudget(false)} className="bg-stone-100 text-stone-500 px-4 py-2 rounded-lg text-xs font-bold hover:bg-stone-200 transition"><X size={14} /></button>

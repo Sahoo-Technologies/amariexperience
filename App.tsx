@@ -220,15 +220,12 @@ const CouplesLanding = () => {
             {[...Array(5)].map((_, i) => <Star key={i} size={18} className="text-amari-gold fill-amari-gold" />)}
           </div>
           <blockquote className="text-xl sm:text-2xl md:text-3xl font-serif font-bold text-amari-900 italic leading-snug mb-8">
-            "Amari made our Diani wedding absolutely magical. From finding the perfect beach venue to coordinating every detail — we couldn't have done it without them."
+            "Like the drum that calls the people home, our love calls two families into one rythm. May our union be steady like the earth beneath our feet, patient like the seasons, and generous like the land that feeds us all."
           </blockquote>
           <div className="flex items-center justify-center gap-3">
-            <div className="w-10 h-10 rounded-full overflow-hidden">
-              <img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=80" alt="" className="w-full h-full object-cover" />
-            </div>
             <div className="text-left">
-              <p className="text-sm font-bold text-stone-900">Sarah & James</p>
-              <p className="text-xs text-stone-400">Diani Beach, Dec 2025</p>
+              <p className="text-sm font-bold text-stone-900">Fiona</p>
+              <p className="text-xs text-stone-400">Nairobi, Feb 2026</p>
             </div>
           </div>
         </div>

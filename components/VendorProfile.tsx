@@ -339,12 +339,12 @@ const VendorProfile: React.FC = () => {
       {/* ─── LIGHTBOX OVERLAY ──────────────────────────────────────── */}
       {lightboxIdx !== null && (
         <div
-          className="fixed inset-0 z-[70] bg-black/90 flex items-center justify-center animate-in fade-in duration-200"
+          className="fixed inset-0 z-[100] bg-black/90 flex items-center justify-center animate-in fade-in duration-200"
           onClick={() => setLightboxIdx(null)}
         >
           <button
             onClick={() => setLightboxIdx(null)}
-            className="absolute top-4 right-4 z-[80] w-10 h-10 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center transition text-white"
+            className="absolute top-4 right-4 z-[110] w-10 h-10 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center transition text-white"
             aria-label="Close lightbox"
           >
             <X size={22} />
@@ -354,14 +354,14 @@ const VendorProfile: React.FC = () => {
             <>
               <button
                 onClick={(e) => { e.stopPropagation(); setLightboxIdx(lightboxIdx === 0 ? gallery.length - 1 : lightboxIdx - 1); }}
-                className="absolute left-3 sm:left-6 top-1/2 -translate-y-1/2 z-[80] w-11 h-11 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center transition text-white"
+                className="absolute left-3 sm:left-6 top-1/2 -translate-y-1/2 z-[110] w-11 h-11 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center transition text-white"
                 aria-label="Previous image"
               >
                 <ChevronLeft size={24} />
               </button>
               <button
                 onClick={(e) => { e.stopPropagation(); setLightboxIdx(lightboxIdx === gallery.length - 1 ? 0 : lightboxIdx + 1); }}
-                className="absolute right-3 sm:right-6 top-1/2 -translate-y-1/2 z-[80] w-11 h-11 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center transition text-white"
+                className="absolute right-3 sm:right-6 top-1/2 -translate-y-1/2 z-[110] w-11 h-11 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center transition text-white"
                 aria-label="Next image"
               >
                 <ChevronRight size={24} />

@@ -354,7 +354,7 @@ const LayoutNew: React.FC<LayoutProps> = ({ children }) => {
               </p>
               <div className="flex items-center gap-3">
                 <a href="https://www.instagram.com/amariexperience?igsh=Zm5obXJoYmxieHN0" target="_blank" rel="noreferrer" className="w-9 h-9 rounded-full bg-white/5 hover:bg-amari-500 flex items-center justify-center transition-all duration-300 hover:scale-110"><Instagram size={16} className="text-white/60" /></a>
-                <a href="#" className="w-9 h-9 rounded-full bg-white/5 hover:bg-amari-500 flex items-center justify-center transition-all duration-300 hover:scale-110"><Facebook size={16} className="text-white/60" /></a>
+                <a href="https://www.facebook.com/share/18ENLE35Ah" target="_blank" rel="noreferrer" className="w-9 h-9 rounded-full bg-white/5 hover:bg-amari-500 flex items-center justify-center transition-all duration-300 hover:scale-110"><Facebook size={16} className="text-white/60" /></a>
                 <a href="#" className="w-9 h-9 rounded-full bg-white/5 hover:bg-amari-500 flex items-center justify-center transition-all duration-300 hover:scale-110"><Twitter size={16} className="text-white/60" /></a>
                 <a href="mailto:fiona.kimingi@amariexperiences.com" className="w-9 h-9 rounded-full bg-white/5 hover:bg-amari-500 flex items-center justify-center transition-all duration-300 hover:scale-110"><Mail size={16} className="text-white/60" /></a>
               </div>
