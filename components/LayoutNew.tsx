@@ -364,7 +364,7 @@ const LayoutNew: React.FC<LayoutProps> = ({ children }) => {
             <div className="lg:col-span-2">
               <h4 className="text-xs font-bold uppercase tracking-[0.2em] text-amari-300 mb-5">Explore</h4>
               <ul className="space-y-3">
-                {[['/', 'Home'], ['/vendors', 'Vendors'], ['/gallery', 'Inspiration'], ['/tools', 'Planning'], ['/activities', 'Activities']].map(([p, l]) => (
+                {[['/', 'Home'], ['/vendors', 'Vendors'], ['/gallery', 'Inspiration'], ['/tools', 'Planning'], ['/wishlist', 'Wishlist'], ['/activities', 'Activities']].map(([p, l]) => (
                   <li key={p}><Link to={p} className="text-sm text-white/50 hover:text-white hover:translate-x-1 transition-all duration-200 inline-block">{l}</Link></li>
                 ))}
               </ul>

@@ -105,11 +105,11 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       }
     });
   } catch (e: any) {
-    console.error('Vendor application submission failed:', e);
-    res.status(500).json({ error: e?.message || 'Failed to submit vendor application' });
+    console.error('Vendor application submission failed:', e?.message);
+    res.status(500).json({ error: 'Failed to submit vendor application' });
   }
  } catch (fatal: any) {
-    console.error('Apply fatal:', fatal);
-    res.status(500).json({ error: fatal?.message || 'Internal server error' });
+    console.error('Apply fatal:', fatal?.message);
+    res.status(500).json({ error: 'Internal server error' });
  }
 }

@@ -500,6 +500,71 @@ const VendorProfile: React.FC = () => {
           </div>
         </div>
 
+        {/* ─── CONNECT / SOCIAL LINKS ─────────────────────────────── */}
+        {(() => {
+          let socials: Record<string, string> = {};
+          try {
+            if (vendor.socialLinks) {
+              socials = typeof vendor.socialLinks === 'string' ? JSON.parse(vendor.socialLinks) : vendor.socialLinks;
+            }
+          } catch {}
+          const hasSocials = Object.values(socials).some(v => !!v);
+          const hasContact = vendor.contactEmail || vendor.contactPhone || vendor.website;
+          if (!hasSocials && !hasContact) return null;
+          return (
+            <div className="mt-6 bg-white rounded-2xl p-6 sm:p-8 border border-stone-100 shadow-sm">
+              <h2 className="text-lg font-bold text-stone-900 mb-4">Connect</h2>
+              <div className="flex flex-wrap gap-3">
+                {socials.instagram && (
+                  <a href={socials.instagram} target="_blank" rel="noreferrer" className="inline-flex items-center gap-2 bg-gradient-to-r from-purple-50 to-pink-50 border border-pink-200 text-pink-700 rounded-full px-4 py-2 text-xs font-bold hover:shadow-md transition">
+                    <span className="w-5 h-5 rounded-full bg-gradient-to-tr from-purple-500 via-pink-500 to-orange-400 flex items-center justify-center text-white text-[9px] font-bold">IG</span>
+                    Instagram
+                  </a>
+                )}
+                {socials.facebook && (
+                  <a href={socials.facebook} target="_blank" rel="noreferrer" className="inline-flex items-center gap-2 bg-blue-50 border border-blue-200 text-blue-700 rounded-full px-4 py-2 text-xs font-bold hover:shadow-md transition">
+                    <span className="w-5 h-5 rounded-full bg-blue-600 flex items-center justify-center text-white text-[9px] font-bold">FB</span>
+                    Facebook
+                  </a>
+                )}
+                {socials.tiktok && (
+                  <a href={socials.tiktok} target="_blank" rel="noreferrer" className="inline-flex items-center gap-2 bg-stone-50 border border-stone-200 text-stone-700 rounded-full px-4 py-2 text-xs font-bold hover:shadow-md transition">
+                    <span className="w-5 h-5 rounded-full bg-stone-900 flex items-center justify-center text-white text-[9px] font-bold">TT</span>
+                    TikTok
+                  </a>
+                )}
+                {socials.twitter && (
+                  <a href={socials.twitter} target="_blank" rel="noreferrer" className="inline-flex items-center gap-2 bg-sky-50 border border-sky-200 text-sky-700 rounded-full px-4 py-2 text-xs font-bold hover:shadow-md transition">
+                    <span className="w-5 h-5 rounded-full bg-sky-500 flex items-center justify-center text-white text-[9px] font-bold">X</span>
+                    X / Twitter
+                  </a>
+                )}
+                {socials.youtube && (
+                  <a href={socials.youtube} target="_blank" rel="noreferrer" className="inline-flex items-center gap-2 bg-red-50 border border-red-200 text-red-700 rounded-full px-4 py-2 text-xs font-bold hover:shadow-md transition">
+                    <span className="w-5 h-5 rounded-full bg-red-600 flex items-center justify-center text-white text-[9px] font-bold">YT</span>
+                    YouTube
+                  </a>
+                )}
+                {vendor.website && (
+                  <a href={vendor.website} target="_blank" rel="noreferrer" className="inline-flex items-center gap-2 bg-amari-50 border border-amari-200 text-amari-700 rounded-full px-4 py-2 text-xs font-bold hover:shadow-md transition">
+                    <Globe size={14} /> Website
+                  </a>
+                )}
+                {vendor.contactEmail && (
+                  <a href={`mailto:${vendor.contactEmail}`} className="inline-flex items-center gap-2 bg-stone-50 border border-stone-200 text-stone-600 rounded-full px-4 py-2 text-xs font-bold hover:shadow-md transition">
+                    <Mail size={14} /> Email
+                  </a>
+                )}
+                {vendor.contactPhone && (
+                  <a href={`tel:${vendor.contactPhone}`} className="inline-flex items-center gap-2 bg-green-50 border border-green-200 text-green-700 rounded-full px-4 py-2 text-xs font-bold hover:shadow-md transition">
+                    <Phone size={14} /> Call
+                  </a>
+                )}
+              </div>
+            </div>
+          );
+        })()}
+
         {/* ─── REVIEWS ────────────────────────────────────────────── */}
         <div ref={reviewsRef} className="mt-6 bg-white rounded-2xl p-6 sm:p-8 border border-stone-100 shadow-sm">
           <div className="flex items-center justify-between mb-6">

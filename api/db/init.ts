@@ -1,5 +1,6 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { getSql } from '../_lib/db.js';
+import { getSession } from '../_lib/auth.js';
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   try {
@@ -8,7 +9,20 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       return;
     }
 
+    // Allow unauthenticated init only for first-time setup (no users yet)
+    // After that, require admin auth
     const sql = getSql();
+    const session = getSession(req);
+
+    try {
+      const userCount = await sql`SELECT COUNT(*)::int AS cnt FROM users;`;
+      if (userCount?.[0]?.cnt > 0 && (!session || session.userType !== 'admin')) {
+        res.status(403).json({ error: 'Forbidden — admin access required' });
+        return;
+      }
+    } catch {
+      // Table doesn't exist yet — allow init to proceed
+    }
 
     await sql`CREATE EXTENSION IF NOT EXISTS pgcrypto;`;
 
@@ -106,6 +120,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     `;
 
     await sql`ALTER TABLE vendors ADD COLUMN IF NOT EXISTS user_id UUID;`;
+    await sql`ALTER TABLE vendors ADD COLUMN IF NOT EXISTS website VARCHAR(500);`;
+    await sql`ALTER TABLE vendors ADD COLUMN IF NOT EXISTS social_links TEXT;`;
 
     await sql`
       CREATE TABLE IF NOT EXISTS posts (
@@ -122,7 +138,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
     res.status(200).json({ ok: true });
   } catch (e: any) {
-    console.error('DB init error:', e);
-    res.status(500).json({ error: e?.message || 'Init failed' });
+    console.error('DB init error:', e?.message);
+    res.status(500).json({ error: 'Database initialization failed' });
   }
 }

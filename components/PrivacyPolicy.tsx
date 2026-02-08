@@ -55,10 +55,16 @@ Public profiles only display information intentionally provided for public viewi
   },
   {
     title: '4. Data Storage & Security',
-    body: `We implement appropriate technical and organizational measures to protect your data, including:
-\u2022 Secure servers
-\u2022 Restricted internal access
-\u2022 Encrypted data transmission where applicable
+    body: `We implement appropriate technical and organizational measures to protect your data in compliance with the Kenya Data Protection Act, 2019 and international best practices, including:
+\u2022 Dual-database architecture with automatic failover (primary and secondary) to ensure data availability
+\u2022 Encrypted data transmission (SSL/TLS) for all connections
+\u2022 Passwords hashed using industry-standard bcrypt algorithms
+\u2022 Secure, access-controlled servers hosted by reputable cloud providers
+\u2022 Restricted internal access on a need-to-know basis
+\u2022 Session tokens stored as HTTP-only cookies to prevent cross-site scripting
+\u2022 Regular security reviews and updates
+
+Your data is stored on servers that may be located outside Kenya. By using our platform, you consent to the transfer of data to these servers, which maintain equivalent or higher levels of data protection as required under the Kenya DPA.
 
 While we take reasonable steps to protect information, no digital platform can guarantee absolute security.`,
   },
@@ -72,14 +78,19 @@ While we take reasonable steps to protect information, no digital platform can g
 Users may request deletion of their accounts and associated data, subject to legal obligations.`,
   },
   {
-    title: '6. Your Rights',
-    body: `Depending on applicable law, you may have the right to:
-\u2022 Access your personal data
-\u2022 Correct inaccurate information
-\u2022 Request deletion of your data
-\u2022 Withdraw consent for certain processing activities
+    title: '6. Your Rights Under the Kenya Data Protection Act, 2019',
+    body: `As a data subject under Kenya's Data Protection Act, 2019, you have the following rights:
+\u2022 Right of access — Request a copy of the personal data we hold about you
+\u2022 Right to rectification — Request correction of inaccurate or incomplete data
+\u2022 Right to erasure — Request deletion of your personal data (subject to legal retention obligations)
+\u2022 Right to restrict processing — Request that we limit how we use your data
+\u2022 Right to data portability — Receive your data in a structured, commonly used format
+\u2022 Right to object — Object to processing of your data for specific purposes
+\u2022 Right to withdraw consent — Withdraw consent at any time without affecting the lawfulness of prior processing
 
-Requests can be made by contacting us using the details below.`,
+To exercise any of these rights, contact us at Fiona.kimingi@amariexperiences.com or use the data deletion request feature in your account settings. We will respond to your request within 30 days as required by the Act.
+
+You also have the right to lodge a complaint with the Office of the Data Protection Commissioner (ODPC) of Kenya if you believe your data rights have been violated.`,
   },
   {
     title: '7. Cookies',
@@ -99,8 +110,28 @@ You may control cookies through your browser settings.`,
     body: 'Amari is not intended for individuals under the age of 18. We do not knowingly collect data from minors.',
   },
   {
-    title: '10. Changes to This Policy',
-    body: 'We may update this Privacy Policy from time to time. Updates will be posted on this page with a revised effective date.',
+    title: '10. Legal Basis for Processing (Kenya DPA)',
+    body: `We process your personal data on the following lawful bases as defined by the Kenya Data Protection Act, 2019:
+\u2022 Consent — You have given explicit consent for us to process your data (e.g. during account registration)
+\u2022 Contractual necessity — Processing is necessary to provide our services to you
+\u2022 Legal obligation — Processing is required to comply with Kenyan law
+\u2022 Legitimate interest — Processing is necessary for our legitimate business interests, provided these do not override your fundamental rights
+
+We collect only the minimum data necessary for the stated purposes and do not engage in automated decision-making or profiling that produces legal effects.`,
+  },
+  {
+    title: '11. Data Protection Officer',
+    body: `In accordance with the Kenya Data Protection Act, 2019, our designated Data Protection contact is:
+
+Fiona Kimingi
+Email: Fiona.kimingi@amariexperiences.com
+Phone/WhatsApp: +254 796 535 120
+
+This contact is responsible for overseeing data protection compliance and handling data subject requests.`,
+  },
+  {
+    title: '12. Changes to This Policy',
+    body: 'We may update this Privacy Policy from time to time. Updates will be posted on this page with a revised effective date. Where changes are significant, we will notify registered users via email or in-app notification.',
   },
 ];
 
@@ -134,7 +165,7 @@ const PrivacyPolicy: React.FC = () => {
 
         {/* Contact */}
         <section className="bg-gradient-to-br from-amari-50 to-white rounded-2xl shadow-sm border border-amari-200 p-6 sm:p-8">
-          <h2 className="text-lg sm:text-xl font-serif font-bold text-amari-900 mb-4">11. Contact Us</h2>
+          <h2 className="text-lg sm:text-xl font-serif font-bold text-amari-900 mb-4">13. Contact Us</h2>
           <p className="text-stone-600 text-sm mb-4">If you have questions or requests regarding this Privacy Policy, please contact:</p>
           <div className="space-y-3">
             <div className="flex items-center gap-3 text-stone-600 text-sm">

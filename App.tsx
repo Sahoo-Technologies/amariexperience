@@ -23,6 +23,7 @@ import FAQ from './components/FAQ';
 import ContactUs from './components/ContactUs';
 import PrivacyPolicy from './components/PrivacyPolicy';
 import TermsOfService from './components/TermsOfService';
+import Wishlist from './components/Wishlist';
 import ScrollToTop from './components/ScrollToTop';
 import { AuthProvider } from './contexts/AuthContext';
 import { ArrowRight, Check, Star, Heart, Sun, MapPin, Sparkles, Play } from 'lucide-react';
@@ -332,6 +333,7 @@ const App: React.FC = () => {
             <Route path="/contact" element={<ContactUs />} />
             <Route path="/privacy" element={<PrivacyPolicy />} />
             <Route path="/terms" element={<TermsOfService />} />
+            <Route path="/wishlist" element={<Wishlist />} />
             <Route path="/concierge" element={<ConciergePage />} />
             <Route path="/admin" element={<AdminGuard><AdminDashboard /></AdminGuard>} />
             <Route path="/admin/vendor-verification" element={<AdminGuard><AdminVendorVerification /></AdminGuard>} />

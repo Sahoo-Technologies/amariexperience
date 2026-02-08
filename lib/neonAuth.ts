@@ -232,6 +232,47 @@ class NeonAuth {
     }
   }
 
+  // Request password reset
+  async forgotPassword(email: string): Promise<{ success: boolean; resetToken?: string; error?: string }> {
+    try {
+      const result = await this.request<{ ok: boolean; resetToken?: string; message?: string }>('/forgot-password', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+        body: JSON.stringify({ email })
+      });
+
+      if (!result.ok) {
+        return { success: false, error: result.error || 'Failed to process request' };
+      }
+
+      return { success: true, resetToken: result.data?.resetToken };
+    } catch (error) {
+      console.error('Forgot password error:', error);
+      return { success: false, error: 'Failed to process request' };
+    }
+  }
+
+  // Reset password with token
+  async resetPassword(token: string, newPassword: string): Promise<{ success: boolean; error?: string }> {
+    try {
+      const result = await this.request<{ ok: boolean; message?: string }>('/reset-password', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+        body: JSON.stringify({ token, newPassword })
+      });
+
+      if (!result.ok) {
+        return { success: false, error: result.error || 'Failed to reset password' };
+      }
+
+      localStorage.removeItem('currentUser');
+      return { success: true };
+    } catch (error) {
+      console.error('Reset password error:', error);
+      return { success: false, error: 'Failed to reset password' };
+    }
+  }
+
   // Initialize auth state
   async initializeAuth(): Promise<User | null> {
     try {

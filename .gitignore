@@ -1,1 +1,15 @@
 node_modules
+dist
+
+# Secrets — NEVER commit
+.env
+.env.local
+.env.production
+hostafricapwd.txt
+
+# Test / debug files
+test-auth-browser.html
+test-auth-flow.js
+test-auth-flow.mjs
+test-auth.html
+test-db-connection.html

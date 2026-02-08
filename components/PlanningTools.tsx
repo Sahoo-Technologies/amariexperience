@@ -2,13 +2,14 @@ import React, { useEffect, useState } from 'react';
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer, Legend } from 'recharts';
 import { INITIAL_BUDGET, INITIAL_GUESTS } from '../constants';
 import { BudgetItem, Guest, ItineraryItem } from '../types';
-import { Plus, Trash2, PieChart as PieIcon, Users, Calendar, MapPin, Edit3, Check, X, DollarSign, UserCheck, UserX, Clock, Target } from 'lucide-react';
+import { Plus, Trash2, PieChart as PieIcon, Users, Calendar, MapPin, Edit3, Check, X, DollarSign, UserCheck, UserX, Clock, Target, Palette } from 'lucide-react';
 
 const ITINERARY_STORAGE_KEY = 'amari_guest_itinerary_v1';
 const BUDGET_STORAGE_KEY = 'amari_budget_v1';
 const TOTAL_BUDGET_KEY = 'amari_total_budget_v1';
 const GUESTS_STORAGE_KEY = 'amari_guests_v1';
 const CURRENCY_STORAGE_KEY = 'amari_currency_v1';
+const CHART_COLORS_KEY = 'amari_chart_colors_v1';
 const USD_TO_KSH = 129;
 
 const COLORS = [
@@ -39,6 +40,16 @@ const PlanningTools: React.FC = () => {
     return 'USD';
   });
 
+  // Chart colors – persisted per category id
+  const [chartColors, setChartColors] = useState<Record<string, string>>(() => {
+    try { const v = localStorage.getItem(CHART_COLORS_KEY); if (v) return JSON.parse(v); } catch {}
+    return {};
+  });
+  const getColor = (index: number, id: string) => chartColors[id] || COLORS[index % COLORS.length];
+  const updateChartColor = (id: string, color: string) => {
+    setChartColors(prev => ({ ...prev, [id]: color }));
+  };
+
   // Guest state – persisted
   const [guests, setGuests] = useState<Guest[]>(() => {
     try { const r = localStorage.getItem(GUESTS_STORAGE_KEY); if (r) { const p = JSON.parse(r); if (Array.isArray(p)) return p; } } catch {}
@@ -64,6 +75,8 @@ const PlanningTools: React.FC = () => {
   // Save itinerary
   useEffect(() => { try { localStorage.setItem(ITINERARY_STORAGE_KEY, JSON.stringify(itineraryItems)); } catch {} }, [itineraryItems]);
 
+  // Persist chart colors
+  useEffect(() => { try { localStorage.setItem(CHART_COLORS_KEY, JSON.stringify(chartColors)); } catch {} }, [chartColors]);
   // Persist total budget
   useEffect(() => { try { localStorage.setItem(TOTAL_BUDGET_KEY, totalBudgetInput); } catch {} }, [totalBudgetInput]);
   // Persist currency
@@ -304,8 +317,8 @@ const PlanningTools: React.FC = () => {
                 <ResponsiveContainer width="100%" height="100%">
                   <PieChart>
                     <Pie data={budgetItems} cx="50%" cy="50%" innerRadius={60} outerRadius={100} paddingAngle={3} dataKey="estimated" cornerRadius={5} stroke="none">
-                      {budgetItems.map((_, index) => (
-                        <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                      {budgetItems.map((item, index) => (
+                        <Cell key={`cell-${index}`} fill={getColor(index, item.id)} />
                       ))}
                     </Pie>
                     <Tooltip formatter={(value) => fmt(Number(value))} />
@@ -336,7 +349,13 @@ const PlanningTools: React.FC = () => {
                           {editingBudgetId === item.id ? (
                             <>
                               <td className="px-3 sm:px-5 py-2">
-                                <input value={editBudget.category} onChange={e => setEditBudget(p => ({ ...p, category: e.target.value }))} className="w-full bg-amari-50 border border-amari-200 rounded-lg px-2 py-1.5 text-xs outline-none focus:ring-1 focus:ring-amari-400" />
+                                <div className="flex items-center gap-2">
+                                  <label className="relative flex-shrink-0 cursor-pointer">
+                                    <span className="block w-5 h-5 rounded-full border border-stone-200" style={{ background: getColor(budgetItems.indexOf(item), item.id) }} />
+                                    <input type="color" value={getColor(budgetItems.indexOf(item), item.id)} onChange={e => updateChartColor(item.id, e.target.value)} className="absolute inset-0 opacity-0 w-full h-full cursor-pointer" />
+                                  </label>
+                                  <input value={editBudget.category} onChange={e => setEditBudget(p => ({ ...p, category: e.target.value }))} className="w-full bg-amari-50 border border-amari-200 rounded-lg px-2 py-1.5 text-xs outline-none focus:ring-1 focus:ring-amari-400" />
+                                </div>
                               </td>
                               <td className="px-3 sm:px-5 py-2">
                                 <input type="number" value={editBudget.estimated} onChange={e => setEditBudget(p => ({ ...p, estimated: Number(e.target.value) || 0 }))} className="w-full bg-amari-50 border border-amari-200 rounded-lg px-2 py-1.5 text-xs text-right outline-none focus:ring-1 focus:ring-amari-400" />
@@ -353,7 +372,15 @@ const PlanningTools: React.FC = () => {
                             </>
                           ) : (
                             <>
-                              <td className="px-3 sm:px-5 py-3 font-medium text-stone-700 text-xs sm:text-sm">{item.category}</td>
+                              <td className="px-3 sm:px-5 py-3 font-medium text-stone-700 text-xs sm:text-sm">
+                                <div className="flex items-center gap-2">
+                                  <label className="relative flex-shrink-0 cursor-pointer group" title="Change chart color">
+                                    <span className="block w-4 h-4 rounded-full border border-stone-200 group-hover:scale-110 transition" style={{ background: getColor(budgetItems.indexOf(item), item.id) }} />
+                                    <input type="color" value={getColor(budgetItems.indexOf(item), item.id)} onChange={e => updateChartColor(item.id, e.target.value)} className="absolute inset-0 opacity-0 w-full h-full cursor-pointer" />
+                                  </label>
+                                  {item.category}
+                                </div>
+                              </td>
                               <td className="px-3 sm:px-5 py-3 text-right text-stone-500 text-xs sm:text-sm">{fmt(item.estimated)}</td>
                               <td className="px-3 sm:px-5 py-3 text-right font-medium text-amari-600 text-xs sm:text-sm">{fmt(item.actual)}</td>
                               <td className="px-2 py-3">

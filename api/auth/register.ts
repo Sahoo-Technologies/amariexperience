@@ -69,15 +69,15 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       }
     });
   } catch (e: any) {
-    console.error('Register error:', e);
+    console.error('Register error:', e?.message);
     if (e?.message?.includes('duplicate key') || e?.message?.includes('users_email_key')) {
       res.status(409).json({ error: 'An account with this email already exists' });
       return;
     }
-    res.status(500).json({ error: e?.message || 'Registration failed' });
+    res.status(500).json({ error: 'Registration failed. Please try again.' });
   }
  } catch (fatal: any) {
-    console.error('Register fatal:', fatal);
-    res.status(500).json({ error: fatal?.message || 'Internal server error' });
+    console.error('Register fatal:', fatal?.message);
+    res.status(500).json({ error: 'Internal server error' });
  }
 }

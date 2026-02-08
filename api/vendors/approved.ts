@@ -35,7 +35,11 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
           priceRange: row.price_range || '$$$',
           description: row.description || '',
           imageUrl: row.image_url || '/beach.jpeg',
-          location: row.location
+          location: row.location,
+          website: row.website || '',
+          socialLinks: row.social_links || null,
+          contactEmail: row.contact_email || '',
+          contactPhone: row.contact_phone || ''
         }
       });
       return;
@@ -55,16 +59,20 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       priceRange: row.price_range || '$$$',
       description: row.description || '',
       imageUrl: row.image_url || '/beach.jpeg',
-      location: row.location
+      location: row.location,
+      website: row.website || '',
+      socialLinks: row.social_links || null,
+      contactEmail: row.contact_email || '',
+      contactPhone: row.contact_phone || ''
     }));
 
     res.status(200).json({ vendors });
   } catch (e: any) {
-    console.error('Failed to fetch approved vendors:', e);
-    res.status(500).json({ error: e?.message || 'Failed to fetch vendors' });
+    console.error('Failed to fetch approved vendors:', e?.message);
+    res.status(500).json({ error: 'Failed to fetch vendors' });
   }
  } catch (fatal: any) {
-    console.error('Approved fatal:', fatal);
-    res.status(500).json({ error: fatal?.message || 'Internal server error' });
+    console.error('Approved fatal:', fatal?.message);
+    res.status(500).json({ error: 'Internal server error' });
  }
 }

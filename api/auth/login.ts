@@ -59,11 +59,11 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       }
     });
   } catch (e: any) {
-    console.error('Login error:', e);
-    res.status(500).json({ error: e?.message || 'Login failed' });
+    console.error('Login error:', e?.message);
+    res.status(500).json({ error: 'Login failed. Please try again.' });
   }
  } catch (fatal: any) {
-    console.error('Login fatal:', fatal);
-    res.status(500).json({ error: fatal?.message || 'Internal server error' });
+    console.error('Login fatal:', fatal?.message);
+    res.status(500).json({ error: 'Internal server error' });
  }
 }

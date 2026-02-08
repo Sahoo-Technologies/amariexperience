@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
-import { Eye, EyeOff, Mail, Lock, User, ArrowRight, Phone, Heart, Shield, Star, CheckCircle, AlertCircle } from 'lucide-react';
+import { neonAuth } from '../lib/neonAuth';
+import { Eye, EyeOff, Mail, Lock, User, ArrowRight, Phone, Heart, Shield, Star, CheckCircle, AlertCircle, KeyRound } from 'lucide-react';
 
 const Login: React.FC = () => {
   const [formData, setFormData] = useState({
@@ -11,13 +12,26 @@ const Login: React.FC = () => {
     firstName: '',
     lastName: '',
     phone: '',
-    userType: 'couple'
+    userType: 'couple',
+    dataConsent: ''
   });
   const [showPassword, setShowPassword] = useState(false);
   const [isLogin, setIsLogin] = useState(true);
   const [didSubmit, setDidSubmit] = useState(false);
   const [successMessage, setSuccessMessage] = useState('');
   const [validationErrors, setValidationErrors] = useState<Record<string, string>>({});
+  const [forgotMode, setForgotMode] = useState(false);
+  const [forgotEmail, setForgotEmail] = useState('');
+  const [forgotLoading, setForgotLoading] = useState(false);
+  const [forgotMessage, setForgotMessage] = useState('');
+  const [forgotError, setForgotError] = useState('');
+  const [resetToken, setResetToken] = useState('');
+  const [resetMode, setResetMode] = useState(false);
+  const [resetPassword, setResetPassword] = useState('');
+  const [resetConfirm, setResetConfirm] = useState('');
+  const [resetLoading, setResetLoading] = useState(false);
+  const [resetMessage, setResetMessage] = useState('');
+  const [resetError, setResetError] = useState('');
 
   const { login, register, isLoading, error, isAuthenticated, user } = useAuth();
   const navigate = useNavigate();
@@ -59,6 +73,7 @@ const Login: React.FC = () => {
     if (!isLogin) {
       if (!formData.firstName.trim()) errs.firstName = 'First name is required';
       if (!formData.lastName.trim()) errs.lastName = 'Last name is required';
+      if (formData.dataConsent !== 'true') errs.dataConsent = 'You must consent to data processing to create an account';
       if (formData.confirmPassword !== formData.password) {
         errs.confirmPassword = 'Passwords do not match';
       }
@@ -105,11 +120,55 @@ const Login: React.FC = () => {
     }
   };
 
+  const handleForgotPassword = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!forgotEmail.trim()) { setForgotError('Email is required'); return; }
+    setForgotLoading(true); setForgotError(''); setForgotMessage('');
+    try {
+      const result = await neonAuth.forgotPassword(forgotEmail.trim());
+      if (result.success && result.resetToken) {
+        setResetToken(result.resetToken);
+        setResetMode(true);
+        setForgotMode(false);
+        setForgotMessage('');
+      } else {
+        setForgotMessage('If an account with that email exists, a reset has been initiated. Check below.');
+      }
+    } catch {
+      setForgotError('Something went wrong. Please try again.');
+    } finally {
+      setForgotLoading(false);
+    }
+  };
+
+  const handleResetPassword = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setResetError('');
+    if (resetPassword.length < 8) { setResetError('Password must be at least 8 characters'); return; }
+    if (resetPassword !== resetConfirm) { setResetError('Passwords do not match'); return; }
+    setResetLoading(true);
+    try {
+      const result = await neonAuth.resetPassword(resetToken, resetPassword);
+      if (result.success) {
+        setResetMessage('Password reset successfully! You can now sign in.');
+        setTimeout(() => { setResetMode(false); setForgotMode(false); setResetMessage(''); }, 3000);
+      } else {
+        setResetError(result.error || 'Failed to reset password');
+      }
+    } catch {
+      setResetError('Something went wrong. Please try again.');
+    } finally {
+      setResetLoading(false);
+    }
+  };
+
   const toggleMode = () => {
     setIsLogin(!isLogin);
     setValidationErrors({});
     setSuccessMessage('');
     setDidSubmit(false);
+    setForgotMode(false);
+    setResetMode(false);
   };
 
   const inputClass = (field: string) =>
@@ -333,6 +392,11 @@ const Login: React.FC = () => {
                 </button>
               </div>
               {validationErrors.password && <p className="text-xs text-red-500 mt-1">{validationErrors.password}</p>}
+              {isLogin && (
+                <button type="button" onClick={() => { setForgotMode(true); setForgotEmail(formData.email); }} className="text-xs text-amari-500 font-bold hover:text-amari-600 transition mt-1 inline-block">
+                  Forgot password?
+                </button>
+              )}
             </div>
 
             {!isLogin && (
@@ -353,6 +417,25 @@ const Login: React.FC = () => {
                 {validationErrors.confirmPassword && <p className="text-xs text-red-500 mt-1">{validationErrors.confirmPassword}</p>}
               </div>
             )}
+
+            {!isLogin && (
+              <div className="flex items-start gap-3 bg-stone-50 p-4 rounded-xl border border-stone-100">
+                <input
+                  type="checkbox"
+                  name="dataConsent"
+                  id="dataConsent"
+                  checked={formData.dataConsent === 'true'}
+                  onChange={e => setFormData(prev => ({ ...prev, dataConsent: e.target.checked ? 'true' : '' }))}
+                  className="mt-0.5 w-4 h-4 rounded border-stone-300 text-amari-600 focus:ring-amari-500 flex-shrink-0"
+                />
+                <label htmlFor="dataConsent" className="text-xs text-stone-600 leading-relaxed">
+                  I consent to Amari Experience collecting and processing my personal data in accordance with the{' '}
+                  <Link to="/privacy" className="text-amari-500 font-bold hover:underline" target="_blank">Privacy Policy</Link>{' '}
+                  and Kenya's Data Protection Act, 2019. I understand I can withdraw consent or request data deletion at any time.
+                </label>
+              </div>
+            )}
+            {validationErrors.dataConsent && <p className="text-xs text-red-500 -mt-2">{validationErrors.dataConsent}</p>}
 
             <button
               type="submit"
@@ -408,6 +491,70 @@ const Login: React.FC = () => {
               &larr; Back to Amari Experience
             </Link>
           </div>
+
+          {/* Forgot Password Modal */}
+          {forgotMode && !resetMode && (
+            <div className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4" onClick={() => setForgotMode(false)}>
+              <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full p-8 animate-in zoom-in-95 duration-200" onClick={e => e.stopPropagation()}>
+                <div className="flex items-center gap-3 mb-6">
+                  <div className="w-11 h-11 rounded-xl bg-amari-50 flex items-center justify-center"><KeyRound size={20} className="text-amari-500" /></div>
+                  <div>
+                    <h3 className="text-lg font-bold text-stone-900">Reset Password</h3>
+                    <p className="text-xs text-stone-400">Enter your email to receive a password reset</p>
+                  </div>
+                </div>
+                {forgotMessage && <div className="mb-4 p-3 bg-green-50 border border-green-200 rounded-xl text-green-700 text-sm">{forgotMessage}</div>}
+                {forgotError && <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-xl text-red-600 text-sm">{forgotError}</div>}
+                <form onSubmit={handleForgotPassword} className="space-y-4">
+                  <div className="relative">
+                    <Mail size={16} className="absolute left-3.5 top-[14px] text-stone-400" />
+                    <input type="email" value={forgotEmail} onChange={e => setForgotEmail(e.target.value)} placeholder="your@email.com" className="w-full pl-11 pr-4 py-3.5 border border-stone-200 rounded-xl text-sm focus:ring-2 focus:ring-amari-400 focus:border-amari-400 outline-none" />
+                  </div>
+                  <div className="flex gap-3">
+                    <button type="button" onClick={() => setForgotMode(false)} className="flex-1 py-3 border border-stone-200 rounded-xl text-sm font-bold text-stone-500 hover:bg-stone-50 transition">Cancel</button>
+                    <button type="submit" disabled={forgotLoading} className="flex-1 py-3 bg-amari-600 text-white rounded-xl text-sm font-bold hover:bg-amari-700 transition disabled:opacity-50 flex items-center justify-center gap-2">
+                      {forgotLoading ? <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" /> : null}
+                      {forgotLoading ? 'Sending...' : 'Reset Password'}
+                    </button>
+                  </div>
+                </form>
+              </div>
+            </div>
+          )}
+
+          {/* Reset Password Form Modal */}
+          {resetMode && (
+            <div className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4" onClick={() => setResetMode(false)}>
+              <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full p-8 animate-in zoom-in-95 duration-200" onClick={e => e.stopPropagation()}>
+                <div className="flex items-center gap-3 mb-6">
+                  <div className="w-11 h-11 rounded-xl bg-green-50 flex items-center justify-center"><KeyRound size={20} className="text-green-600" /></div>
+                  <div>
+                    <h3 className="text-lg font-bold text-stone-900">Set New Password</h3>
+                    <p className="text-xs text-stone-400">Choose a strong password (min. 8 characters)</p>
+                  </div>
+                </div>
+                {resetMessage && <div className="mb-4 p-3 bg-green-50 border border-green-200 rounded-xl text-green-700 text-sm flex items-center gap-2"><CheckCircle size={16} />{resetMessage}</div>}
+                {resetError && <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-xl text-red-600 text-sm">{resetError}</div>}
+                <form onSubmit={handleResetPassword} className="space-y-4">
+                  <div className="relative">
+                    <Lock size={16} className="absolute left-3.5 top-[14px] text-stone-400" />
+                    <input type="password" value={resetPassword} onChange={e => setResetPassword(e.target.value)} placeholder="New password" className="w-full pl-11 pr-4 py-3.5 border border-stone-200 rounded-xl text-sm focus:ring-2 focus:ring-amari-400 focus:border-amari-400 outline-none" />
+                  </div>
+                  <div className="relative">
+                    <Lock size={16} className="absolute left-3.5 top-[14px] text-stone-400" />
+                    <input type="password" value={resetConfirm} onChange={e => setResetConfirm(e.target.value)} placeholder="Confirm new password" className="w-full pl-11 pr-4 py-3.5 border border-stone-200 rounded-xl text-sm focus:ring-2 focus:ring-amari-400 focus:border-amari-400 outline-none" />
+                  </div>
+                  <div className="flex gap-3">
+                    <button type="button" onClick={() => setResetMode(false)} className="flex-1 py-3 border border-stone-200 rounded-xl text-sm font-bold text-stone-500 hover:bg-stone-50 transition">Cancel</button>
+                    <button type="submit" disabled={resetLoading || !!resetMessage} className="flex-1 py-3 bg-amari-600 text-white rounded-xl text-sm font-bold hover:bg-amari-700 transition disabled:opacity-50 flex items-center justify-center gap-2">
+                      {resetLoading ? <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" /> : null}
+                      {resetLoading ? 'Resetting...' : 'Set New Password'}
+                    </button>
+                  </div>
+                </form>
+              </div>
+            </div>
+          )}
 
           {/* Security */}
           <div className="mt-8 flex items-center justify-center gap-2 text-stone-400">

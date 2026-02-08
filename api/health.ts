@@ -7,6 +7,7 @@ export default async function handler(_req: VercelRequest, res: VercelResponse) 
     const rows = await sql`SELECT 1 AS ok;`;
     res.status(200).json({ ok: true, db: rows?.[0]?.ok === 1 });
   } catch (error: any) {
-    res.status(500).json({ ok: false, error: error?.message || 'DB connection failed' });
+    console.error('Health check error:', error?.message);
+    res.status(500).json({ ok: false, error: 'DB connection failed' });
   }
 }

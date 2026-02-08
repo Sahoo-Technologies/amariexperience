@@ -265,21 +265,47 @@ export const updateApplicationStatus = async (id: string, status: 'Approved' | '
           throw new Error('Vendor cannot be approved without at least one verification document.');
         }
 
+        // Extract the first real work image as the vendor's public image
+        let imageUrl: string | null = null;
+        try {
+          const imgs = typeof app.real_work_images === 'string'
+            ? JSON.parse(app.real_work_images)
+            : app.real_work_images;
+          if (Array.isArray(imgs) && imgs.length > 0) {
+            imageUrl = typeof imgs[0] === 'string' ? imgs[0] : null;
+          }
+        } catch {}
+
+        const priceRange = app.starting_price ? `From ${app.starting_price}` : null;
+
+        // Parse social links JSON
+        let socialLinks: string | null = null;
+        try {
+          if (app.social_links) {
+            socialLinks = typeof app.social_links === 'string' ? app.social_links : JSON.stringify(app.social_links);
+          }
+        } catch {}
+
         await executeQuery(`
           INSERT INTO vendors (
             id, user_id, name, category, rating, price_range, description, image_url,
-            location, contact_email, contact_phone, approved_at
+            location, contact_email, contact_phone, website, social_links, approved_at
           ) VALUES (
             $1, $2, $3, $4, $5, $6, $7, $8,
-            $9, $10, $11, $12
+            $9, $10, $11, $12, $13, $14
           )
           ON CONFLICT (id) DO UPDATE SET
             user_id = EXCLUDED.user_id,
             name = EXCLUDED.name,
             category = EXCLUDED.category,
+            description = EXCLUDED.description,
+            image_url = EXCLUDED.image_url,
+            price_range = EXCLUDED.price_range,
             location = EXCLUDED.location,
             contact_email = EXCLUDED.contact_email,
             contact_phone = EXCLUDED.contact_phone,
+            website = EXCLUDED.website,
+            social_links = EXCLUDED.social_links,
             approved_at = EXCLUDED.approved_at
         `, [
           app.id,
@@ -287,12 +313,14 @@ export const updateApplicationStatus = async (id: string, status: 'Approved' | '
           app.business_name,
           app.vendor_category || app.vendor_type,
           0.0,
-          null,
+          priceRange,
           app.business_description || null,
-          null,
+          imageUrl,
           app.primary_location || app.location,
           app.contact_email || app.email,
           app.contact_phone || app.phone,
+          app.website || null,
+          socialLinks,
           new Date().toISOString()
         ]);
       }
@@ -324,6 +352,18 @@ export const getApprovedVendors = async () => {
   } catch (error) {
     console.error('Failed to get approved vendors:', error);
     return [];
+  }
+};
+
+// Remove an approved vendor from the directory
+export const removeVendor = async (id: string): Promise<void> => {
+  try {
+    await executeQuery(`DELETE FROM vendors WHERE id = $1`, [id]);
+    await executeQuery(`UPDATE vendor_applications SET status = 'Rejected' WHERE id = $1`, [id]);
+    console.log(`Vendor ${id} removed from directory`);
+  } catch (error) {
+    console.error('Failed to remove vendor:', error);
+    throw new Error('Failed to remove vendor');
   }
 };
 

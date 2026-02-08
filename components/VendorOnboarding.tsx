@@ -34,6 +34,11 @@ const VendorOnboarding: React.FC = () => {
     contactEmail: '',
     website: '',
     socialLinks: '',
+    socialInstagram: '',
+    socialFacebook: '',
+    socialTiktok: '',
+    socialTwitter: '',
+    socialYoutube: '',
     realWorkImages: [] as File[],
 
     startingPrice: '',
@@ -521,7 +526,14 @@ const VendorOnboarding: React.FC = () => {
         contactPhone: formData.contactPhone,
         contactEmail: formData.contactEmail,
         website: formData.website,
-        socialLinks: formData.socialLinks,
+        socialLinks: JSON.stringify({
+          instagram: formData.socialInstagram,
+          facebook: formData.socialFacebook,
+          tiktok: formData.socialTiktok,
+          twitter: formData.socialTwitter,
+          youtube: formData.socialYoutube,
+          other: formData.socialLinks,
+        }),
         realWorkImages: formData.realWorkImages,
 
         startingPrice: formData.startingPrice,
@@ -852,16 +864,34 @@ const VendorOnboarding: React.FC = () => {
                 />
               </div>
 
-              <div className="space-y-2 group">
-                <label className="text-sm font-bold text-amari-900 group-focus-within:text-amari-600 transition-colors">Social links</label>
-                <input
-                  type="text"
-                  name="socialLinks"
-                  value={formData.socialLinks}
-                  onChange={handleChange}
-                  className="w-full bg-amari-50 border-0 rounded-xl px-4 py-4 text-amari-900 ring-1 ring-inset ring-amari-200 focus:ring-2 focus:ring-amari-500 transition-all placeholder:text-amari-300 focus:bg-white"
-                  placeholder="Instagram, TikTok, Facebook, etc."
-                />
+              <div className="space-y-3">
+                <label className="text-sm font-bold text-amari-900">Social media links</label>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <div className="relative">
+                    <span className="absolute left-4 top-1/2 -translate-y-1/2 text-amari-400 text-xs font-bold">IG</span>
+                    <input type="url" name="socialInstagram" value={formData.socialInstagram} onChange={handleChange} className="w-full bg-amari-50 border-0 rounded-xl pl-10 pr-4 py-3.5 text-amari-900 ring-1 ring-inset ring-amari-200 focus:ring-2 focus:ring-amari-500 transition-all placeholder:text-amari-300 focus:bg-white text-sm" placeholder="https://instagram.com/..." />
+                  </div>
+                  <div className="relative">
+                    <span className="absolute left-4 top-1/2 -translate-y-1/2 text-amari-400 text-xs font-bold">FB</span>
+                    <input type="url" name="socialFacebook" value={formData.socialFacebook} onChange={handleChange} className="w-full bg-amari-50 border-0 rounded-xl pl-10 pr-4 py-3.5 text-amari-900 ring-1 ring-inset ring-amari-200 focus:ring-2 focus:ring-amari-500 transition-all placeholder:text-amari-300 focus:bg-white text-sm" placeholder="https://facebook.com/..." />
+                  </div>
+                  <div className="relative">
+                    <span className="absolute left-4 top-1/2 -translate-y-1/2 text-amari-400 text-xs font-bold">TT</span>
+                    <input type="url" name="socialTiktok" value={formData.socialTiktok} onChange={handleChange} className="w-full bg-amari-50 border-0 rounded-xl pl-10 pr-4 py-3.5 text-amari-900 ring-1 ring-inset ring-amari-200 focus:ring-2 focus:ring-amari-500 transition-all placeholder:text-amari-300 focus:bg-white text-sm" placeholder="https://tiktok.com/@..." />
+                  </div>
+                  <div className="relative">
+                    <span className="absolute left-4 top-1/2 -translate-y-1/2 text-amari-400 text-xs font-bold">X</span>
+                    <input type="url" name="socialTwitter" value={formData.socialTwitter} onChange={handleChange} className="w-full bg-amari-50 border-0 rounded-xl pl-10 pr-4 py-3.5 text-amari-900 ring-1 ring-inset ring-amari-200 focus:ring-2 focus:ring-amari-500 transition-all placeholder:text-amari-300 focus:bg-white text-sm" placeholder="https://x.com/..." />
+                  </div>
+                  <div className="relative">
+                    <span className="absolute left-4 top-1/2 -translate-y-1/2 text-amari-400 text-xs font-bold">YT</span>
+                    <input type="url" name="socialYoutube" value={formData.socialYoutube} onChange={handleChange} className="w-full bg-amari-50 border-0 rounded-xl pl-10 pr-4 py-3.5 text-amari-900 ring-1 ring-inset ring-amari-200 focus:ring-2 focus:ring-amari-500 transition-all placeholder:text-amari-300 focus:bg-white text-sm" placeholder="https://youtube.com/..." />
+                  </div>
+                  <div className="relative">
+                    <span className="absolute left-4 top-1/2 -translate-y-1/2 text-amari-400 text-xs font-bold">+</span>
+                    <input type="text" name="socialLinks" value={formData.socialLinks} onChange={handleChange} className="w-full bg-amari-50 border-0 rounded-xl pl-10 pr-4 py-3.5 text-amari-900 ring-1 ring-inset ring-amari-200 focus:ring-2 focus:ring-amari-500 transition-all placeholder:text-amari-300 focus:bg-white text-sm" placeholder="Other links..." />
+                  </div>
+                </div>
               </div>
             </div>
 

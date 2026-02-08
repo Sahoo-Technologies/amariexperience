@@ -92,11 +92,11 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
     res.status(200).json({ user: mapUser(rows[0]) });
   } catch (e: any) {
-    console.error('Me error:', e);
-    res.status(500).json({ error: e?.message || 'Failed to load user' });
+    console.error('Me error:', e?.message);
+    res.status(500).json({ error: 'Failed to load user' });
   }
  } catch (fatal: any) {
-    console.error('Me fatal:', fatal);
-    res.status(500).json({ error: fatal?.message || 'Internal server error' });
+    console.error('Me fatal:', fatal?.message);
+    res.status(500).json({ error: 'Internal server error' });
  }
 }

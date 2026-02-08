@@ -3,12 +3,27 @@ import { Link } from 'react-router-dom';
 import { getApprovedVendors } from '../services/vendorService';
 import { MapPin, Star, MessageSquare, Heart, Search, ArrowRight, Sparkles } from 'lucide-react';
 
+const WISHLIST_KEY = 'amari_wishlist_v1';
+const WISHLIST_DATA_KEY = 'amari_wishlist_data_v1';
+
 const VendorDirectory: React.FC = () => {
   const [selectedCategory, setSelectedCategory] = useState<string | 'All'>('All');
   const [vendors, setVendors] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
-  const [savedVendors, setSavedVendors] = useState<Set<string>>(new Set());
+  const [savedVendors, setSavedVendors] = useState<Set<string>>(() => {
+    try { const v = localStorage.getItem(WISHLIST_KEY); if (v) return new Set(JSON.parse(v)); } catch {}
+    return new Set();
+  });
   const [searchQuery, setSearchQuery] = useState('');
+
+  useEffect(() => {
+    try { localStorage.setItem(WISHLIST_KEY, JSON.stringify([...savedVendors])); } catch {}
+    // Also persist full vendor data for saved vendors so Wishlist page can use it
+    if (vendors.length > 0) {
+      const savedData = vendors.filter(v => savedVendors.has(v.id));
+      try { localStorage.setItem(WISHLIST_DATA_KEY, JSON.stringify(savedData)); } catch {}
+    }
+  }, [savedVendors, vendors]);
 
   const toggleSave = (vendorId: string) => {
     setSavedVendors(prev => {

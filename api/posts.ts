@@ -7,6 +7,7 @@ export default async function handler(_req: VercelRequest, res: VercelResponse) 
     const rows = await sql`SELECT * FROM posts;`;
     res.status(200).json({ rows });
   } catch (error: any) {
-    res.status(500).json({ error: error?.message || 'Query failed' });
+    console.error('Posts fetch error:', error?.message);
+    res.status(500).json({ error: 'Failed to fetch posts' });
   }
 }

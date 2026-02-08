@@ -49,6 +49,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
     res.status(200).json({ ok: true });
   } catch (e: any) {
-    res.status(500).json({ error: e?.message || 'Failed to change password' });
+    console.error('Password change error:', e?.message);
+    res.status(500).json({ error: 'Failed to change password. Please try again.' });
   }
 }

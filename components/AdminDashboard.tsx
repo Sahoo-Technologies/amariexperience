@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { getApplications, updateApplicationStatus, updateApplicationVerification } from '../services/vendorService';
+import { getApplications, updateApplicationStatus, updateApplicationVerification, getApprovedVendors, removeVendor } from '../services/vendorService';
 import { VendorApplication, GalleryComment, VendorReview } from '../types';
-import { Check, X, Clock, Eye, Sliders, FileText, Camera, Save, MessageSquare, Star, Trash2 } from 'lucide-react';
+import { Check, X, Clock, Eye, Sliders, FileText, Camera, Save, MessageSquare, Star, Trash2, Store, MapPin, AlertTriangle } from 'lucide-react';
 
 const COMMENTS_KEY = 'amari_gallery_comments_v1';
 const REVIEWS_KEY = 'amari_vendor_reviews_v1';
@@ -12,7 +12,10 @@ const AdminDashboard: React.FC = () => {
   const [selectedApp, setSelectedApp] = useState<VendorApplication | null>(null);
   const [loading, setLoading] = useState(false);
   const [verificationSaving, setVerificationSaving] = useState(false);
-  const [activeTab, setActiveTab] = useState<'applications' | 'reviews'>('applications');
+  const [activeTab, setActiveTab] = useState<'applications' | 'reviews' | 'vendors'>('applications');
+  const [approvedVendors, setApprovedVendors] = useState<any[]>([]);
+  const [vendorsLoading, setVendorsLoading] = useState(false);
+  const [removingVendorId, setRemovingVendorId] = useState<string | null>(null);
   const [galleryComments, setGalleryComments] = useState<GalleryComment[]>([]);
   const [vendorReviews, setVendorReviews] = useState<VendorReview[]>([]);
 
@@ -54,6 +57,36 @@ const AdminDashboard: React.FC = () => {
   useEffect(() => {
     refreshData();
   }, []);
+
+  const refreshVendors = async () => {
+    setVendorsLoading(true);
+    try {
+      const v = await getApprovedVendors();
+      setApprovedVendors(v || []);
+    } catch (e) {
+      console.error('Failed to fetch vendors:', e);
+    } finally {
+      setVendorsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    if (activeTab === 'vendors') refreshVendors();
+  }, [activeTab]);
+
+  const handleRemoveVendor = async (id: string, name: string) => {
+    if (!confirm(`Remove "${name}" from the directory? This will hide them from the public vendor listings.`)) return;
+    setRemovingVendorId(id);
+    try {
+      await removeVendor(id);
+      setApprovedVendors(prev => prev.filter(v => v.id !== id));
+      refreshData();
+    } catch (e) {
+      alert((e as any)?.message || 'Failed to remove vendor');
+    } finally {
+      setRemovingVendorId(null);
+    }
+  };
 
   const handleStatusUpdate = async (id: string, status: 'Approved' | 'Rejected') => {
     try {
@@ -135,6 +168,9 @@ const AdminDashboard: React.FC = () => {
             <span className="bg-amari-500 text-white text-[10px] font-bold rounded-full w-5 h-5 flex items-center justify-center">{galleryComments.length + vendorReviews.length}</span>
           )}
         </button>
+        <button onClick={() => setActiveTab('vendors')} className={`px-5 py-2 rounded-lg text-sm font-bold transition flex items-center gap-2 ${activeTab === 'vendors' ? 'bg-white text-stone-900 shadow-sm' : 'text-stone-500 hover:text-stone-700'}`}>
+          <Store size={14} /> Live Vendors
+        </button>
       </div>
 
       {/* ─── REVIEWS TAB ─────────────────────────────────────── */}
@@ -211,6 +247,61 @@ const AdminDashboard: React.FC = () => {
               )}
             </div>
           </div>
+        </div>
+      )}
+
+      {/* ─── VENDORS TAB ──────────────────────────────────────── */}
+      {activeTab === 'vendors' && (
+        <div className="bg-white rounded-2xl shadow-sm border border-stone-200 overflow-hidden">
+          <div className="p-5 border-b border-stone-100 flex items-center justify-between">
+            <div>
+              <h3 className="font-bold text-stone-900">Live Vendors</h3>
+              <p className="text-xs text-stone-400 mt-0.5">Approved vendors currently visible on the website</p>
+            </div>
+            <div className="flex items-center gap-3">
+              <span className="bg-green-50 text-green-600 text-xs font-bold px-3 py-1 rounded-full">{approvedVendors.length} live</span>
+              <button onClick={refreshVendors} disabled={vendorsLoading} className="text-stone-400 hover:text-stone-600 transition">
+                <Sliders size={16} />
+              </button>
+            </div>
+          </div>
+          {vendorsLoading ? (
+            <div className="p-12 text-center text-stone-400 text-sm">Loading vendors...</div>
+          ) : approvedVendors.length === 0 ? (
+            <div className="p-12 text-center text-stone-400 text-sm">No approved vendors found.</div>
+          ) : (
+            <div className="divide-y divide-stone-50">
+              {approvedVendors.map(v => (
+                <div key={v.id} className="p-4 flex items-center gap-4 hover:bg-stone-50 transition">
+                  <div className="w-12 h-12 rounded-xl overflow-hidden bg-stone-100 flex-shrink-0">
+                    <img src={v.imageUrl} alt={v.name} className="w-full h-full object-cover" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <h4 className="font-bold text-stone-800 text-sm truncate">{v.name}</h4>
+                    <div className="flex items-center gap-3 mt-0.5 flex-wrap">
+                      <span className="text-[10px] font-bold uppercase text-amari-500">{v.category}</span>
+                      <span className="text-[10px] text-stone-400 flex items-center gap-1"><MapPin size={10} />{v.location}</span>
+                      {v.rating > 0 && (
+                        <span className="text-[10px] text-stone-400 flex items-center gap-0.5"><Star size={10} className="text-amari-gold fill-amari-gold" />{v.rating}</span>
+                      )}
+                    </div>
+                  </div>
+                  <button
+                    onClick={() => handleRemoveVendor(v.id, v.name)}
+                    disabled={removingVendorId === v.id}
+                    className="flex items-center gap-1.5 px-3 py-2 text-xs font-bold text-red-600 bg-red-50 border border-red-100 rounded-xl hover:bg-red-100 transition disabled:opacity-50"
+                  >
+                    {removingVendorId === v.id ? (
+                      <span className="animate-spin w-3.5 h-3.5 border-2 border-red-300 border-t-transparent rounded-full" />
+                    ) : (
+                      <Trash2 size={13} />
+                    )}
+                    Remove
+                  </button>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       )}
 
