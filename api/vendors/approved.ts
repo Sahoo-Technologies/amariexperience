@@ -72,11 +72,19 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
     res.status(200).json({ vendors });
   } catch (e: any) {
-    console.error('Failed to fetch approved vendors:', e?.message);
-    res.status(500).json({ error: 'Failed to fetch vendors' });
+    console.error('Failed to fetch approved vendors:', e);
+    const isProd = process.env.NODE_ENV === 'production';
+    res.status(500).json({
+      error: 'Failed to fetch vendors',
+      ...(isProd ? {} : { details: e?.message || String(e) })
+    });
   }
  } catch (fatal: any) {
-    console.error('Approved fatal:', fatal?.message);
-    res.status(500).json({ error: 'Internal server error' });
+    console.error('Approved fatal:', fatal);
+    const isProd = process.env.NODE_ENV === 'production';
+    res.status(500).json({
+      error: 'Internal server error',
+      ...(isProd ? {} : { details: fatal?.message || String(fatal) })
+    });
  }
 }

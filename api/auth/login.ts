@@ -59,11 +59,19 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       }
     });
   } catch (e: any) {
-    console.error('Login error:', e?.message);
-    res.status(500).json({ error: 'Login failed. Please try again.' });
+    console.error('Login error:', e);
+    const isProd = process.env.NODE_ENV === 'production';
+    res.status(500).json({
+      error: 'Login failed. Please try again.',
+      ...(isProd ? {} : { details: e?.message || String(e) })
+    });
   }
  } catch (fatal: any) {
-    console.error('Login fatal:', fatal?.message);
-    res.status(500).json({ error: 'Internal server error' });
+    console.error('Login fatal:', fatal);
+    const isProd = process.env.NODE_ENV === 'production';
+    res.status(500).json({
+      error: 'Internal server error',
+      ...(isProd ? {} : { details: fatal?.message || String(fatal) })
+    });
  }
 }
