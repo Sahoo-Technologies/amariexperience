@@ -54,8 +54,8 @@ export async function runQuery(query: string, params: unknown[] = []): Promise<a
   const primary = getNeonSql();
   if (primary) {
     try {
-      const result = await (primary as any)(query, params);
-      return Array.isArray(result) ? result : result?.rows ?? [];
+      const result = await (primary as any).query(query, params);
+      return result?.rows ?? (Array.isArray(result) ? result : []);
     } catch (neonErr: any) {
       console.error('[DB] Neon query failed, attempting Supabase failover:', neonErr?.message);
     }
@@ -66,8 +66,8 @@ export async function runQuery(query: string, params: unknown[] = []): Promise<a
   if (secondary) {
     try {
       console.warn('[DB] Executing query on Supabase (failover)');
-      const result = await (secondary as any)(query, params);
-      return Array.isArray(result) ? result : result?.rows ?? [];
+      const result = await (secondary as any).query(query, params);
+      return result?.rows ?? (Array.isArray(result) ? result : []);
     } catch (supaErr: any) {
       console.error('[DB] Supabase failover also failed:', supaErr?.message);
       throw supaErr;
