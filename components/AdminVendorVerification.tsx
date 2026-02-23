@@ -62,7 +62,10 @@ const AdminVendorVerification: React.FC = () => {
   };
 
   const saveVerification = async () => {
-    if (!selectedApp) return;
+    if (!selectedApp) {
+      alert('No application selected.');
+      return;
+    }
     setSaving(true);
     try {
       await updateApplicationVerification(selectedApp.id, {
@@ -73,6 +76,7 @@ const AdminVendorVerification: React.FC = () => {
         adminNotes: selectedApp.adminNotes || ''
       });
       await refreshData();
+      alert('Verification saved successfully!');
     } catch (error) {
       console.error('Failed to save verification metadata:', error);
       alert((error as any)?.message || 'Failed to save verification metadata');
@@ -82,10 +86,14 @@ const AdminVendorVerification: React.FC = () => {
   };
 
   const handleFinalDecision = async (status: 'Approved' | 'Rejected') => {
-    if (!selectedApp) return;
+    if (!selectedApp) {
+      alert('No application selected.');
+      return;
+    }
     try {
       await updateApplicationStatus(selectedApp.id, status);
       await refreshData();
+      alert('Status updated successfully!');
     } catch (error) {
       console.error('Failed to update status:', error);
       alert((error as any)?.message || 'Failed to update application status');

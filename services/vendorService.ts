@@ -360,33 +360,38 @@ export const updateApplicationStatus = async (id: string, status: 'Approved' | '
     if (status === 'Approved') {
       const apps = await executeQuery('SELECT * FROM vendor_applications WHERE id = $1', [id]);
       const app = Array.isArray(apps) && apps.length > 0 ? apps[0] : null;
-      if (app) {
-        const hasVerificationDoc = !!app.verification_document_url;
-        if (!hasVerificationDoc) {
-          throw new Error('Vendor cannot be approved without at least one verification document.');
+      if (!app) throw new Error('Application not found for approval.');
+      const hasVerificationDoc = !!app.verification_document_url;
+      if (!hasVerificationDoc) {
+        throw new Error('Vendor cannot be approved without at least one verification document.');
+      }
+
+      // Extract the first real work image as the vendor's public image
+      let imageUrl = null;
+      try {
+        const imgs = typeof app.real_work_images === 'string'
+          ? JSON.parse(app.real_work_images)
+          : app.real_work_images;
+        if (Array.isArray(imgs) && imgs.length > 0) {
+          imageUrl = typeof imgs[0] === 'string' ? imgs[0] : null;
         }
+      } catch (imgErr) {
+        console.error('Failed to parse real work images:', imgErr);
+      }
 
-        // Extract the first real work image as the vendor's public image
-        let imageUrl: string | null = null;
-        try {
-          const imgs = typeof app.real_work_images === 'string'
-            ? JSON.parse(app.real_work_images)
-            : app.real_work_images;
-          if (Array.isArray(imgs) && imgs.length > 0) {
-            imageUrl = typeof imgs[0] === 'string' ? imgs[0] : null;
-          }
-        } catch {}
+      const priceRange = app.starting_price ? `From ${app.starting_price}` : null;
 
-        const priceRange = app.starting_price ? `From ${app.starting_price}` : null;
+      // Parse social links JSON
+      let socialLinks = null;
+      try {
+        if (app.social_links) {
+          socialLinks = typeof app.social_links === 'string' ? app.social_links : JSON.stringify(app.social_links);
+        }
+      } catch (linkErr) {
+        console.error('Failed to parse social links:', linkErr);
+      }
 
-        // Parse social links JSON
-        let socialLinks: string | null = null;
-        try {
-          if (app.social_links) {
-            socialLinks = typeof app.social_links === 'string' ? app.social_links : JSON.stringify(app.social_links);
-          }
-        } catch {}
-
+      try {
         await executeQuery(`
           INSERT INTO vendors (
             id, user_id, name, category, rating, price_range, description, image_url,
@@ -428,13 +433,16 @@ export const updateApplicationStatus = async (id: string, status: 'Approved' | '
           app.other_services || null,
           new Date().toISOString()
         ]);
+      } catch (vendorErr) {
+        console.error('Failed to insert/update vendor:', vendorErr);
+        throw new Error('Failed to insert/update vendor for approval.');
       }
     }
-    
+
     console.log(`Application ${id} status updated to:`, status);
   } catch (error) {
     console.error('Failed to update application status:', error);
-    throw new Error('Failed to update application status');
+    throw new Error(error?.message || 'Failed to update application status');
   }
 };
 

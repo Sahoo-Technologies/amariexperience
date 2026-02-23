@@ -103,6 +103,7 @@ const AdminDashboard: React.FC = () => {
       if (selectedApp?.id === id) {
         setSelectedApp(prev => prev ? ({ ...prev, status }) : null);
       }
+      alert('Status updated successfully!');
     } catch (error) {
       console.error('Failed to update status:', error);
       alert((error as any)?.message || 'Failed to update application status');
@@ -114,7 +115,10 @@ const AdminDashboard: React.FC = () => {
   };
 
   const saveVerification = async () => {
-    if (!selectedApp) return;
+    if (!selectedApp) {
+      alert('No application selected.');
+      return;
+    }
     setVerificationSaving(true);
     try {
       await updateApplicationVerification(selectedApp.id, {
@@ -125,6 +129,7 @@ const AdminDashboard: React.FC = () => {
         adminNotes: selectedApp.adminNotes || ''
       });
       await refreshData();
+      alert('Verification saved successfully!');
     } catch (error) {
       console.error('Failed to save verification metadata:', error);
       alert((error as any)?.message || 'Failed to save verification metadata');
