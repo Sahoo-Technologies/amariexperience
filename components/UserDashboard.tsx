@@ -74,6 +74,14 @@ const UserDashboard: React.FC = () => {
               </Link>
               <span className="text-stone-400">/</span>
               <span className="text-stone-700 font-medium">Dashboard</span>
+              {user?.userType === 'vendor' && (
+                <>
+                  <span className="text-stone-400">/</span>
+                  <Link to="/dashboard/vendor/profile/edit" className="text-amari-600 hover:underline flex items-center gap-1">
+                    <Edit size={16} /> Edit Vendor Profile
+                  </Link>
+                </>
+              )}
             </div>
             
             <div className="flex items-center gap-4">

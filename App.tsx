@@ -11,6 +11,7 @@ import { getSiteImage } from './services/siteImageService';
 // Lazy-loaded route components for code splitting
 const VendorDirectory = lazy(() => import('./components/VendorDirectory'));
 const VendorProfile = lazy(() => import('./components/VendorProfile'));
+const VendorProfileEdit = lazy(() => import('./components/VendorProfileEdit'));
 const PlanningTools = lazy(() => import('./components/PlanningTools'));
 const AirlineBooking = lazy(() => import('./components/AirlineBooking'));
 const InspirationGallery = lazy(() => import('./components/InspirationGallery'));
@@ -317,6 +318,7 @@ const App: React.FC = () => {
               <Route path="/partner" element={<VendorOnboarding />} />
               <Route path="/vendors" element={<VendorDirectory />} />
               <Route path="/vendor/:id" element={<VendorProfile />} />
+              <Route path="/dashboard/vendor/profile/edit" element={<Suspense fallback={<PageLoader />}><VendorProfileEdit /></Suspense>} />
               <Route path="/vendor-categories" element={<VendorCategories />} />
               <Route path="/vendor-terms" element={<VendorTerms />} />
               <Route path="/tools" element={<PlanningTools />} />

@@ -489,3 +489,34 @@ export const getApprovedVendorById = async (id: string) => {
     return null;
   }
 };
+
+export const getVendorProfile = async (userId: string) => {
+  if (!userId) throw new Error('No user ID');
+  const rows = await executeQuery('SELECT * FROM vendor_applications WHERE user_id = $1 ORDER BY submitted_at DESC LIMIT 1', [userId]);
+  return rows && rows[0] ? rows[0] : null;
+};
+
+export const updateVendorProfile = async (userId: string, updates: any) => {
+  if (!userId) throw new Error('No user ID');
+  // Only allow updating safe fields
+  const allowed = [
+    'business_name', 'business_description', 'contact_email', 'contact_phone',
+    'website', 'areas_served', 'primary_location', 'vendor_category', 'vendor_subcategories',
+    'other_services', 'vendor_story', 'social_links', 'pricing_model', 'starting_price',
+    'starting_price_includes', 'minimum_booking_requirement', 'advance_booking_notice',
+    'setup_time_required', 'breakdown_time_required', 'outdoor_experience',
+    'destination_wedding_experience', 'special_requirements', 'category_specific'
+  ];
+  const setClause = Object.keys(updates)
+    .filter((k) => allowed.includes(k))
+    .map((k, i) => `${k} = $${i + 1}`)
+    .join(', ');
+  const values = Object.keys(updates)
+    .filter((k) => allowed.includes(k))
+    .map((k) => updates[k]);
+  if (!setClause) throw new Error('No valid fields to update');
+  await executeQuery(
+    `UPDATE vendor_applications SET ${setClause} WHERE user_id = $${values.length + 1}`,
+    [...values, userId]
+  );
+};
