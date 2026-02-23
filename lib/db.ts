@@ -260,6 +260,11 @@ export const testConnection = async () => {
 // Initialize database tables
 export const initializeDatabase = async () => {
   try {
+    // Skip if already initialized this session
+    if (sessionStorage.getItem('db_init_done')) {
+      return true;
+    }
+
     const env = (import.meta as any).env || {};
     const initUrl = env.VITE_DB_INIT_URL || '/api/db/init';
 
@@ -272,10 +277,15 @@ export const initializeDatabase = async () => {
       credentials: 'include'
     });
 
+    // 200 = success, 403 = already initialised (users exist)
+    if (response.ok || response.status === 403) {
+      sessionStorage.setItem('db_init_done', '1');
+    }
+
     if (!response.ok) {
       const errorText = await response.text();
       console.error('Database init failed:', errorText);
-      return false;
+      return response.status === 403; // 403 means DB is ready, just not admin
     }
 
     console.log('Database tables initialized successfully');

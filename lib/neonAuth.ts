@@ -278,14 +278,23 @@ class NeonAuth {
   // Initialize auth state
   async initializeAuth(): Promise<User | null> {
     try {
-      // Ensure database tables exist — only once per app lifecycle
-      if (!this.dbInitDone) {
+      // Ensure database tables exist — only once per session
+      const dbReady = sessionStorage.getItem('db_init_done');
+      if (!this.dbInitDone && !dbReady) {
         this.dbInitDone = true;
-        await fetch(`${API_BASE}/api/db/init`, {
-          method: 'POST',
-          headers: { 'Accept': 'application/json' },
-          credentials: 'include'
-        }).catch(() => {});
+        try {
+          const initRes = await fetch(`${API_BASE}/api/db/init`, {
+            method: 'POST',
+            headers: { 'Accept': 'application/json' },
+            credentials: 'include'
+          });
+          // 200 = success, 403 = already initialised (users exist) — both mean DB is ready
+          if (initRes.status === 200 || initRes.status === 403) {
+            sessionStorage.setItem('db_init_done', '1');
+          }
+        } catch {
+          // Network error — will retry on next load
+        }
       }
 
       const user = await this.verifySession();

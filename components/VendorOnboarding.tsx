@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { submitApplication, getLatestApplicationByUserId } from '../services/vendorService';
-import { initializeDatabase } from '../lib/db';
+
 import { CheckCircle, Store, MapPin, Phone, Mail, ArrowRight, Upload, Info, Globe, Target, Eye, Waves } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
@@ -65,16 +65,7 @@ const VendorOnboarding: React.FC = () => {
     termsAccepted: false
   });
 
-  useEffect(() => {
-    // Initialize database on component mount
-    initializeDatabase().then(success => {
-      if (success) {
-        console.log('Database initialized successfully');
-      } else {
-        console.error('Failed to initialize database');
-      }
-    });
-  }, []);
+  // Database init is handled globally by AuthContext — no need to call here
 
   useEffect(() => {
     if (!isAuthenticated) {
