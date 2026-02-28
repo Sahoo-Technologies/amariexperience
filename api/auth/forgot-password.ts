@@ -1,22 +1,11 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import crypto from 'crypto';
 import { getSql } from '../_lib/db.js';
+import { createRateLimiter, getClientIp } from '../_lib/rateLimit.js';
+import { createLogger } from '../_lib/logger.js';
 
-// Simple in-memory rate limiter (per serverless instance)
-const rateLimitMap = new Map<string, { count: number; resetAt: number }>();
-const RATE_LIMIT_WINDOW_MS = 15 * 60 * 1000; // 15 minutes
-const RATE_LIMIT_MAX = 5; // max 5 requests per window per IP
-
-function isRateLimited(ip: string): boolean {
-  const now = Date.now();
-  const entry = rateLimitMap.get(ip);
-  if (!entry || now > entry.resetAt) {
-    rateLimitMap.set(ip, { count: 1, resetAt: now + RATE_LIMIT_WINDOW_MS });
-    return false;
-  }
-  entry.count++;
-  return entry.count > RATE_LIMIT_MAX;
-}
+const log = createLogger('auth/forgot-password');
+const forgotLimiter = createRateLimiter('forgot-password', { windowMs: 15 * 60 * 1000, maxAttempts: 5 });
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   if (req.method !== 'POST') {
@@ -24,9 +13,9 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     return;
   }
 
-  // Rate limit by IP
-  const clientIp = (req.headers['x-forwarded-for'] as string)?.split(',')[0]?.trim() || (req as any).socket?.remoteAddress || 'unknown';
-  if (isRateLimited(clientIp)) {
+  const clientIp = getClientIp(req);
+  if (forgotLimiter.isLimited(clientIp)) {
+    log.warn('Rate limited', { ip: clientIp });
     res.status(429).json({ error: 'Too many requests. Please try again later.' });
     return;
   }
@@ -113,7 +102,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       ...(isProd ? {} : { resetToken })
     });
   } catch (e: any) {
-    console.error('Forgot password error:', e?.message);
+    log.error('Forgot password failed', e instanceof Error ? e : new Error(String(e?.message)));
     res.status(500).json({ error: 'Failed to process request. Please try again.' });
   }
 }

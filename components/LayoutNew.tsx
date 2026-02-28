@@ -106,6 +106,7 @@ const LayoutNew: React.FC<LayoutProps> = ({ children }) => {
 
       {/* ─── NAVBAR ────────────────────────────────────────────────── */}
       <nav
+        aria-label="Main navigation"
         className={`sticky top-0 z-50 transition-all duration-500 ${
           isScrolled
             ? 'glass shadow-lg shadow-stone-900/5 border-b border-white/40'
@@ -221,6 +222,7 @@ const LayoutNew: React.FC<LayoutProps> = ({ children }) => {
                 onClick={() => setIsMobileMenuOpen(v => !v)}
                 aria-expanded={isMobileMenuOpen}
                 aria-controls="mobile-menu"
+                aria-label={isMobileMenuOpen ? 'Close menu' : 'Open menu'}
                 className="lg:hidden w-10 h-10 flex items-center justify-center rounded-xl hover:bg-amari-50 text-amari-900 transition active:scale-95"
               >
                 {isMobileMenuOpen ? <X size={22} /> : <Menu size={22} />}
@@ -330,7 +332,7 @@ const LayoutNew: React.FC<LayoutProps> = ({ children }) => {
       <Suspense fallback={null}><GeminiPlanner /></Suspense>
 
       {/* ─── FOOTER ────────────────────────────────────────────────── */}
-      <footer className="relative bg-amari-950 text-white overflow-hidden">
+      <footer className="relative bg-amari-950 text-white overflow-hidden" role="contentinfo">
         {/* Decorative gradient */}
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[400px] bg-gradient-to-b from-amari-500/10 to-transparent rounded-full blur-[120px] pointer-events-none" />
 

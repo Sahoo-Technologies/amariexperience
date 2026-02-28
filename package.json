@@ -6,31 +6,57 @@
   "scripts": {
     "dev": "node ./node_modules/vite/bin/vite.js",
     "build": "node ./node_modules/vite/bin/vite.js build",
-    "preview": "node ./node_modules/vite/bin/vite.js preview"
+    "preview": "node ./node_modules/vite/bin/vite.js preview",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint . --max-warnings 0",
+    "lint:fix": "eslint . --fix",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage"
   },
   "dependencies": {
     "@google/genai": "^1.32.0",
     "@neondatabase/serverless": "^1.0.2",
+    "@vercel/analytics": "^1.6.1",
     "@vercel/og": "^0.8.5",
     "bcryptjs": "^2.4.3",
     "cookie": "^1.0.2",
+    "i18next": "^25.8.13",
+    "i18next-browser-languagedetector": "^8.2.1",
     "jsonwebtoken": "^9.0.2",
     "lucide-react": "^0.556.0",
     "react": "^19.2.1",
     "react-dom": "^19.2.1",
+    "react-i18next": "^16.5.4",
     "react-router-dom": "^7.10.1",
-    "recharts": "^3.5.1"
+    "recharts": "^3.5.1",
+    "zod": "^4.3.6"
   },
   "devDependencies": {
+    "@eslint/js": "^9.39.3",
     "@tailwindcss/vite": "^4.1.18",
+    "@testing-library/jest-dom": "^6.9.1",
+    "@testing-library/react": "^16.3.2",
+    "@testing-library/user-event": "^14.6.1",
     "@types/bcryptjs": "^2.4.6",
     "@types/cookie": "^1.0.0",
     "@types/jsonwebtoken": "^9.0.10",
     "@types/node": "^22.14.0",
     "@vercel/node": "^5.3.7",
     "@vitejs/plugin-react": "^5.0.0",
+    "eslint": "^9.39.3",
+    "eslint-plugin-react-hooks": "^5.2.0",
+    "eslint-plugin-react-refresh": "^0.4.26",
+    "globals": "^17.3.0",
+    "jsdom": "^28.1.0",
+    "prettier": "^3.8.1",
     "tailwindcss": "^4.1.18",
     "typescript": "~5.8.2",
-    "vite": "^6.2.0"
+    "typescript-eslint": "^8.56.1",
+    "vite": "^6.2.0",
+    "vite-plugin-pwa": "^1.2.0",
+    "vitest": "^4.0.18"
   }
 }

@@ -2,22 +2,11 @@ import type { VercelRequest, VercelResponse } from '@vercel/node';
 import bcrypt from 'bcryptjs';
 import { getSql } from '../_lib/db.js';
 import { setSessionCookie } from '../_lib/auth.js';
+import { createRateLimiter, getClientIp } from '../_lib/rateLimit.js';
+import { createLogger } from '../_lib/logger.js';
 
-// Rate limiting for registration
-const regAttempts = new Map<string, { count: number; resetAt: number }>();
-const REG_WINDOW_MS = 60 * 60 * 1000; // 1 hour
-const REG_MAX_ATTEMPTS = 5; // max 5 registrations per hour per IP
-
-function isRegRateLimited(ip: string): boolean {
-  const now = Date.now();
-  const entry = regAttempts.get(ip);
-  if (!entry || now > entry.resetAt) {
-    regAttempts.set(ip, { count: 1, resetAt: now + REG_WINDOW_MS });
-    return false;
-  }
-  entry.count++;
-  return entry.count > REG_MAX_ATTEMPTS;
-}
+const log = createLogger('auth/register');
+const registerLimiter = createRateLimiter('register', { windowMs: 60 * 60 * 1000, maxAttempts: 5 });
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
  try {
@@ -26,8 +15,9 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     return;
   }
 
-  const clientIp = (req.headers['x-forwarded-for'] as string)?.split(',')[0]?.trim() || 'unknown';
-  if (isRegRateLimited(clientIp)) {
+  const clientIp = getClientIp(req);
+  if (registerLimiter.isLimited(clientIp)) {
+    log.warn('Rate limited', { ip: clientIp });
     res.status(429).json({ error: 'Too many registration attempts. Please try again later.' });
     return;
   }
@@ -93,7 +83,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       }
     });
   } catch (e: any) {
-    console.error('Register error:', e?.message);
+    log.error('Registration query failed', e instanceof Error ? e : new Error(String(e?.message)));
     if (e?.message?.includes('duplicate key') || e?.message?.includes('users_email_key')) {
       res.status(409).json({ error: 'An account with this email already exists' });
       return;
@@ -101,7 +91,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     res.status(500).json({ error: 'Registration failed. Please try again.' });
   }
  } catch (fatal: any) {
-    console.error('Register fatal:', fatal?.message);
+    log.error('Fatal error', fatal instanceof Error ? fatal : new Error(String(fatal?.message)));
     res.status(500).json({ error: 'Internal server error' });
  }
 }

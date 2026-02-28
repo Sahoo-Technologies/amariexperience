@@ -4,6 +4,7 @@ import { defineConfig, loadEnv } from 'vite';
 import type { ViteDevServer } from 'vite';
 import react from '@vitejs/plugin-react';
 import tailwindcss from '@tailwindcss/vite';
+import { VitePWA } from 'vite-plugin-pwa';
 
 /* ───────────────────────────────────────────────────────────────
    Dev-only plugin: serves /api/* routes using the Vercel-style
@@ -92,7 +93,49 @@ export default defineConfig(({ mode }) => {
         port: 3000,
         host: '0.0.0.0',
       },
-      plugins: [tailwindcss(), react(), apiDevPlugin()],
+      plugins: [
+        tailwindcss(),
+        react(),
+        apiDevPlugin(),
+        VitePWA({
+          registerType: 'autoUpdate',
+          includeAssets: ['favicon.ico', 'favicon.png', 'amariexperienceslogo.jpeg'],
+          manifest: {
+            name: 'Amari Experience — Diani Wedding Planner',
+            short_name: 'Amari',
+            description: 'Simplify your destination wedding in Diani with curated vendors and smart tools.',
+            theme_color: '#04757B',
+            background_color: '#FAF9F6',
+            display: 'standalone',
+            start_url: '/',
+            icons: [
+              { src: '/favicon.png', sizes: '192x192', type: 'image/png' },
+              { src: '/favicon.png', sizes: '512x512', type: 'image/png', purpose: 'any maskable' },
+            ],
+          },
+          workbox: {
+            globPatterns: ['**/*.{js,css,html,ico,png,svg,woff2}'],
+            runtimeCaching: [
+              {
+                urlPattern: /^https:\/\/fonts\.(googleapis|gstatic)\.com\/.*/i,
+                handler: 'CacheFirst',
+                options: {
+                  cacheName: 'google-fonts',
+                  expiration: { maxEntries: 20, maxAgeSeconds: 60 * 60 * 24 * 365 },
+                },
+              },
+              {
+                urlPattern: /\/api\//,
+                handler: 'NetworkFirst',
+                options: {
+                  cacheName: 'api-cache',
+                  expiration: { maxEntries: 50, maxAgeSeconds: 60 * 5 },
+                },
+              },
+            ],
+          },
+        }),
+      ],
       define: {
         'process.env.API_KEY': JSON.stringify(env.GEMINI_API_KEY),
         'process.env.GEMINI_API_KEY': JSON.stringify(env.GEMINI_API_KEY)

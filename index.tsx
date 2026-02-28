@@ -1,7 +1,11 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
+import { inject } from '@vercel/analytics';
+import './lib/i18n';
 import './styles.css';
 import App from './App';
+
+inject();
 
 const rootElement = document.getElementById('root');
 if (!rootElement) {

@@ -1,7 +1,8 @@
 import React, { useState, useEffect, Suspense, lazy } from 'react';
-import { HashRouter as Router, Routes, Route, Link } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
 import Layout from './components/LayoutNew';
 import ScrollToTop from './components/ScrollToTop';
+import ErrorBoundary from './components/ErrorBoundary';
 import AdminGuard from './components/AdminGuard';
 import { AuthProvider } from './contexts/AuthContext';
 import { ArrowRight, Check, Star, Heart, Sun, MapPin, Sparkles, Play } from 'lucide-react';
@@ -307,6 +308,7 @@ const App: React.FC = () => {
     <AuthProvider>
       <Router>
         <ScrollToTop />
+        <ErrorBoundary>
         <Layout>
           <Suspense fallback={<PageLoader />}>
             <Routes>
@@ -341,6 +343,7 @@ const App: React.FC = () => {
             </Routes>
           </Suspense>
         </Layout>
+        </ErrorBoundary>
       </Router>
     </AuthProvider>
   );
