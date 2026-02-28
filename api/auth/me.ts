@@ -61,7 +61,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       }
 
       const setClause = entries
-        .map(([key], index) => `${allowed[key]} = $${index + 1}`)
+        .map(([key], index) => `${allowed[key!]!} = $${index + 1}`)
         .join(', ');
       const values = entries.map(([, value]) => value);
 
@@ -90,7 +90,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       return;
     }
 
-    res.status(200).json({ user: mapUser(rows[0]) });
+    res.status(200).json({ user: mapUser(rows[0]!) });
   } catch (e: any) {
     console.error('Me error:', e?.message);
     res.status(500).json({ error: 'Failed to load user' });

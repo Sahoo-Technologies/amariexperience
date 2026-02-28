@@ -48,7 +48,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       return;
     }
 
-    const user = rows[0];
+    const user = rows[0]!;
 
     // Generate a secure reset token
     const resetToken = crypto.randomBytes(32).toString('hex');

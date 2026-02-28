@@ -57,7 +57,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       return;
     }
 
-    const resetRecord = rows[0];
+    const resetRecord = rows[0]!;
 
     // Hash new password
     const passwordHash = await bcrypt.hash(newPassword, 10);

@@ -46,7 +46,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         RETURNING *;
       `;
 
-      res.status(201).json({ post: rows[0] });
+      res.status(201).json({ post: rows[0] ?? null });
       return;
     }
 
@@ -77,7 +77,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         return;
       }
 
-      res.status(200).json({ post: rows[0] });
+      res.status(200).json({ post: rows[0] ?? null });
       return;
     }
 

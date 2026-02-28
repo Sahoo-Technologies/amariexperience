@@ -59,7 +59,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       RETURNING id, email, first_name, last_name, phone, user_type, profile_image, email_verified, is_active, created_at;
     `;
 
-    const user = rows[0];
+    const user = rows[0] as Record<string, any> | undefined;
     if (!user) {
       res.status(500).json({ error: 'Registration failed' });
       return;

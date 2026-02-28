@@ -44,7 +44,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       return;
     }
 
-    const user = rows[0];
+    const user = rows[0]!;
     const ok = await bcrypt.compare(password, user.password_hash);
     if (!ok) {
       res.status(401).json({ error: 'Invalid email or password' });

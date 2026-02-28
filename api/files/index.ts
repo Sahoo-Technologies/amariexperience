@@ -40,7 +40,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       return;
     }
 
-    const file = rows[0];
+    const file = rows[0]!;
     const dataUrl: string = file.file_data;
 
     // Parse the data URL: data:<mime>;base64,<payload>

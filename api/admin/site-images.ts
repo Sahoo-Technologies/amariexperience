@@ -48,7 +48,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         RETURNING *;
       `;
 
-      res.status(200).json({ image: rows[0] });
+      res.status(200).json({ image: rows[0] ?? null });
       return;
     }
 

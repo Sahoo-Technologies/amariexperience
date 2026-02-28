@@ -39,7 +39,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       return;
     }
 
-    const ok = await bcrypt.compare(currentPassword, rows[0].password_hash);
+    const ok = await bcrypt.compare(currentPassword, rows[0]!.password_hash);
     if (!ok) {
       res.status(400).json({ error: 'Current password is incorrect' });
       return;
